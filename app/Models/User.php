@@ -22,6 +22,17 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'username',
+        'bio',
+        'avatar',
+        'cover',
+        'location',
+        'website',
+        'social_links',
+    ];
+
+    protected $casts = [
+        'social_links' => 'array',
     ];
 
     /**
