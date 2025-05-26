@@ -23,6 +23,10 @@ return new class extends Migration
             $table->enum('status', ['draft', 'published'])->default('published');
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
+
+            $table->index(['status', 'visibility']);
+            $table->index(['user_id', 'status']);
+            $table->index('published_at');
         });
 
         // platforms
