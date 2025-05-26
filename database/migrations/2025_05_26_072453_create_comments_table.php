@@ -17,9 +17,9 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('comments')->nullOnDelete();
             $table->morphs('commentable');
             $table->text('body');
-            $table->boolean('is_approved')->default(true);
-            $table->boolean('is_deleted')->default(false);
+            $table->boolean('approved')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
