@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -71,6 +72,11 @@ class User extends Authenticatable
             ->implode('');
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function followers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'followers', 'user_id', 'follower_id');
@@ -89,5 +95,10 @@ class User extends Authenticatable
     public function isFollowedBy(User $user): bool
     {
         return $this->followers()->where('user_id', $user->id)->exists();
+    }
+
+    public function prompts(): HasMany
+    {
+        return $this->hasMany(Prompt::class);
     }
 }
