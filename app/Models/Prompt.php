@@ -31,4 +31,24 @@ class Prompt extends Model implements Viewable
     {
         return $this->likes()->where('user_id', $user->id)->exists();
     }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function aiModels(): BelongsToMany
+    {
+        return $this->belongsToMany(AiModel::class);
+    }
+
+    public function platform(): BelongsToMany
+    {
+        return $this->belongsToMany(Platform::class);
+    }
+
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 }
