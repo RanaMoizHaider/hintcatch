@@ -42,6 +42,15 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        // followers
+        Schema::create('followers', function (Blueprint $table) {
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('follower_id')->constrained('users')->cascadeOnDelete();
+            $table->timestamps();
+
+            $table->unique(['user_id', 'follower_id']);
+        });
     }
 
     /**
