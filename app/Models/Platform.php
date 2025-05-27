@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Platform extends Model
 {
@@ -16,4 +17,9 @@ class Platform extends Model
         'features' => 'array',
         'best_practices' => 'array',
     ];
+
+    public function prompts(): BelongsToMany
+    {
+        return $this->belongsToMany(Prompt::class, 'platform_prompts');
+    }
 }

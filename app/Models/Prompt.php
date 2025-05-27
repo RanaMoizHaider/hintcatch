@@ -39,12 +39,12 @@ class Prompt extends Model implements Viewable
 
     public function aiModels(): BelongsToMany
     {
-        return $this->belongsToMany(AiModel::class);
+        return $this->belongsToMany(AiModel::class, 'ai_model_prompts');
     }
 
-    public function platform(): BelongsToMany
+    public function platforms(): BelongsToMany
     {
-        return $this->belongsToMany(Platform::class);
+        return $this->belongsToMany(Platform::class, 'platform_prompts');
     }
 
     public function comments(): MorphMany
