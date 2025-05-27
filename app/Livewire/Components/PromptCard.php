@@ -20,6 +20,7 @@ class PromptCard extends Component
     public $modelLimit = 1;
     public $contentLimit = 150;
     public $linkable = true;
+    public $layout = 'card'; // 'card', 'list', 'horizontal'
 
     public function mount(
         $prompt,
@@ -34,7 +35,8 @@ class PromptCard extends Component
         $platformLimit = 2,
         $modelLimit = 1,
         $contentLimit = 150,
-        $linkable = true
+        $linkable = true,
+        $layout = 'card'
     ) {
         $this->prompt = $prompt;
         $this->showUser = $showUser;
@@ -49,6 +51,7 @@ class PromptCard extends Component
         $this->modelLimit = $modelLimit;
         $this->contentLimit = $contentLimit;
         $this->linkable = $linkable;
+        $this->layout = $layout;
     }
 
     public function render()

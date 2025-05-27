@@ -30,9 +30,6 @@ class UserAvatar extends Component
         $this->online = $online;
         $this->linkable = $linkable;
         $this->avatarSize = $this->getAvatarSize();
-        $this->avatarSrc = $this->getAvatarSrc();
-        $this->avatarSize = $this->getAvatarSize();
-        $this->avatarSrc = $this->getAvatarSrc();
     }
 
     public function getAvatarSize()
@@ -46,11 +43,6 @@ class UserAvatar extends Component
         ];
         
         return $sizeClasses[$this->size];
-    }
-
-    public function getAvatarSrc()
-    {
-        return $this->user->avatar ?? '/placeholder.svg';
     }
 
     public function render()
