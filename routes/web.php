@@ -1,11 +1,43 @@
 <?php
 
+use App\Models\{Prompt, Category, AiModel, Platform, User};
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Home page with prompts
+Volt::route('/', 'home')->name('home');
+
+Volt::route('/explore', 'explore')
+    ->name('explore');
+
+// Categories routes
+Volt::route('/categories', 'categories.index')
+    ->name('categories.index');
+
+Volt::route('/categories/{category}', 'categories.show')
+    ->name('categories.show');
+
+// AI Models routes
+Volt::route('/models', 'models.index')
+    ->name('models.index');
+
+Volt::route('/models/{model}', 'models.show')
+    ->name('models.show');
+
+// Platforms routes
+Volt::route('/platforms', 'platforms.index')
+    ->name('platforms.index');
+
+Volt::route('/platforms/{platform}', 'platforms.show')
+    ->name('platforms.show');
+
+// Prompt routes
+Volt::route('/prompts/{prompt}', 'prompts.show')
+    ->name('prompts.show');
+
+// Profile routes
+Volt::route('/profile/{user}', 'profile.show')
+    ->name('profile.show');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
