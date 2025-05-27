@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->enum('visibility', ['public', 'private', 'unlisted'])->default('public');
             $table->enum('status', ['draft', 'published'])->default('published');
+            $table->boolean('featured')->default(false);
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
 
