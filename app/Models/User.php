@@ -68,16 +68,8 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the user's initials
+     * Get the user's gravatar URL
      */
-    public function initials(): string
-    {
-        return Str::of($this->name)
-            ->explode(' ')
-            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
-            ->implode('');
-    }
-
     protected function gravatar(): Attribute
     {
         return Attribute::make(
