@@ -13,6 +13,11 @@ class Platform extends Model
 
     protected $guarded = [];
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     protected $casts = [
         'features' => 'array',
         'best_practices' => 'array',

@@ -61,6 +61,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'username';
+    }
+
     /**
      * Get the user's initials
      */

@@ -17,6 +17,11 @@ class Prompt extends Model implements Viewable
 
     protected $guarded = [];
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
