@@ -29,6 +29,7 @@ class AiModelFactory extends Factory
             'color' => $this->faker->hexColor(),
             'icon' => 'heroicon-o-' . $this->faker->randomElement(['cpu-chip', 'bolt', 'sparkles', 'beaker']),
             'features' => $this->faker->sentences(3),
+            'release_date' => $this->faker->dateTimeBetween('-2 years', 'now'),
         ];
     }
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('color')->nullable();
             $table->string('icon')->nullable();
             $table->json('features')->nullable();
+            $table->date('release_date')->nullable();
             $table->timestamps();
         });
     }

@@ -13,6 +13,13 @@ class AiModel extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'release_date' => 'datetime:Y-m-d',
+        ];
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
