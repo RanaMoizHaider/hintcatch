@@ -39,6 +39,7 @@ new #[Layout('components.layouts.web')] class extends Component {
 
         // Get related prompts
         $this->relatedPrompts = Prompt::with(['user', 'category'])
+            ->withViewsCount()
             ->where('id', '!=', $this->prompt->id)
             ->where('category_id', $this->prompt->category_id)
             ->where('status', 'published')

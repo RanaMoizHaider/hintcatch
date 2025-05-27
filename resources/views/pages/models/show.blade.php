@@ -4,49 +4,38 @@ use App\Models\AiModel;
 use App\Models\Prompt;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use Livewire\WithPagination;
 
 new #[Layout('components.layouts.web')] class extends Component {
+    use WithPagination;
+
     public AiModel $model;
-    public $activeTab = 'popular';
-    public $perPage = 12;
-    public $page = 1;
+    public $activeTab = 'trending';
+    public $viewMode = 'grid';
 
     public function mount(AiModel $model)
     {
         $this->model = $model;
     }
 
-    public function getPrompts()
+    public function getPromptsProperty()
     {
         $query = $this->model->prompts()
             ->with(['user', 'category', 'platforms', 'aiModels'])
-            ->withCount(['likes', 'comments']);
+            ->withCount(['likes', 'comments'])
+            ->withViewsCount();
 
         return match($this->activeTab) {
-            'newest' => $query->latest()->paginate($this->perPage, ['*'], 'page', $this->page),
-            'trending' => $query->withCount(['likes' => function($q) {
-                    $q->where('created_at', '>=', now()->subDays(7));
-                }])
-                ->orderByDesc('likes_count')
-                ->paginate($this->perPage, ['*'], 'page', $this->page),
-            default => $query->orderByDesc('likes_count')->paginate($this->perPage, ['*'], 'page', $this->page),
+            'newest' => $query->latest()->paginate(12),
+            'trending' => $query->orderByViews('desc')->paginate(12),
+            default => $query->orderByDesc('likes_count')->paginate(12),
         };
-    }
-
-    public function getPromptsProperty()
-    {
-        return $this->getPrompts();
     }
 
     public function setActiveTab($tab)
     {
         $this->activeTab = $tab;
-        $this->page = 1;
-    }
-
-    public function loadMore()
-    {
-        $this->page++;
+        $this->resetPage();
     }
 }; ?>
 
@@ -110,10 +99,10 @@ new #[Layout('components.layouts.web')] class extends Component {
                                     <span class="text-sm text-zinc-600 dark:text-zinc-400 ml-2">{{ $model->provider }}</span>
                                 </div>
                             @endif
-                            @if($model->created_at)
+                            @if($model->release_date)
                                 <div>
-                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Added:</span>
-                                    <span class="text-sm text-zinc-600 dark:text-zinc-400 ml-2">{{ $model->created_at->format('M j, Y') }}</span>
+                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Release Date:</span>
+                                    <span class="text-sm text-zinc-600 dark:text-zinc-400 ml-2">{{ $model->release_date->format('M j, Y') }}</span>
                                 </div>
                             @endif
                         </div>
@@ -132,9 +121,9 @@ new #[Layout('components.layouts.web')] class extends Component {
             <div class="flex items-center justify-between mb-6">
                 <div class="flex space-x-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg">
                     <button 
-                        wire:click="setActiveTab('popular')"
-                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors {{ $activeTab === 'popular' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-zinc-700/50' }}">
-                        Popular
+                        wire:click="setActiveTab('trending')"
+                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors {{ $activeTab === 'trending' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-zinc-700/50' }}">
+                        Trending
                     </button>
                     <button 
                         wire:click="setActiveTab('newest')"
@@ -142,47 +131,81 @@ new #[Layout('components.layouts.web')] class extends Component {
                         Newest
                     </button>
                     <button 
-                        wire:click="setActiveTab('trending')"
-                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors {{ $activeTab === 'trending' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-zinc-700/50' }}">
-                        Trending
+                        wire:click="setActiveTab('popular')"
+                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors {{ $activeTab === 'popular' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-zinc-700/50' }}">
+                        Popular
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button 
+                        wire:click="$set('viewMode', 'grid')"
+                        class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'grid' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                    </button>
+                    <button 
+                        wire:click="$set('viewMode', 'list')"
+                        class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'list' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
             
-            <!-- Prompts Grid -->
-            <x-card-grid :columns="3" wire:loading.class="opacity-50">
-                @forelse($this->prompts as $prompt)
-                    <livewire:components.prompt-card 
-                        :prompt="$prompt"
-                        :show-user="false"
-                        :show-stats="true" 
-                        :show-category="true"
-                        :show-platforms="true"
-                        :show-models="false"
-                        :platform-limit="2"
-                    />
-                @empty
-                    <x-empty-state 
-                        icon="document"
-                        title="No prompts found"
-                        description="No prompts are available for this model yet."
-                        class="col-span-full"
-                    />
-                @endforelse
-            </x-card-grid>
-
-            <!-- Load More Button -->
-            @if($this->prompts->hasMorePages())
-                <div class="flex justify-center mt-8">
-                    <button 
-                        wire:click="loadMore" 
-                        wire:loading.attr="disabled"
-                        class="px-6 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50">
-                        <span wire:loading.remove wire:target="loadMore">Load More</span>
-                        <span wire:loading wire:target="loadMore">Loading...</span>
-                    </button>
+            <!-- Prompts Grid/List -->
+            @if($viewMode === 'grid')
+                <x-card-grid :columns="3" wire:loading.class="opacity-50" class="grid-auto-rows-[1fr]">
+                    @forelse($this->prompts as $prompt)
+                        <livewire:components.prompt-card 
+                            :prompt="$prompt"
+                            :show-user="false"
+                            :show-stats="true" 
+                            :show-category="true"
+                            :show-platforms="true"
+                            :show-models="false"
+                            :platform-limit="2"
+                            class="h-full"
+                            wire:key="prompt-{{ $prompt->id }}"
+                        />
+                    @empty
+                        <x-empty-state 
+                            icon="document"
+                            title="No prompts found"
+                            description="No prompts are available for this model yet."
+                            class="col-span-full"
+                        />
+                    @endforelse
+                </x-card-grid>
+            @else
+                <div class="space-y-4" wire:loading.class="opacity-50">
+                    @forelse($this->prompts as $prompt)
+                        <livewire:components.prompt-card 
+                            :prompt="$prompt"
+                            :show-user="false"
+                            :show-stats="true" 
+                            :show-category="true"
+                            :show-platforms="true"
+                            :show-models="false"
+                            :platform-limit="2"
+                            :layout="'list'"
+                            wire:key="prompt-list-{{ $prompt->id }}"
+                        />
+                    @empty
+                        <x-empty-state 
+                            icon="document"
+                            title="No prompts found"
+                            description="No prompts are available for this model yet."
+                        />
+                    @endforelse
                 </div>
             @endif
+
+            <!-- Pagination -->
+            <div class="mt-8">
+                {{ $this->prompts->links() }}
+            </div>
         </section>
     </div>
 </div>

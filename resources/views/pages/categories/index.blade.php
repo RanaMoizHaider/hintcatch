@@ -6,7 +6,7 @@ use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.web')] class extends Component {
     public $search = '';
-    public $sortBy = 'name'; // name, prompts_count
+    public $sortBy = 'popular'; // popular, newest, name
 
     public function getCategoriesProperty()
     {
@@ -21,7 +21,15 @@ new #[Layout('components.layouts.web')] class extends Component {
             });
         }
 
-        return $query->orderBy($this->sortBy === 'prompts_count' ? 'prompts_count' : 'name')
+        return $query->when($this->sortBy === 'newest', function ($q) {
+                    $q->latest();
+                }, function ($q) {
+                    if ($this->sortBy === 'name') {
+                        $q->orderByRaw('LOWER(name)');
+                    } else { // popular - highest prompt count first
+                        $q->orderBy('prompts_count', 'desc');
+                    }
+                })
                      ->get();
     }
 
@@ -47,11 +55,11 @@ new #[Layout('components.layouts.web')] class extends Component {
             </p>
         </section>
 
-        <!-- Search and Sort -->
+        <!-- Search and Filters/Sort -->
         <div class="mb-8">
             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 <div class="relative flex-1 max-w-md">
-                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                     <input 
@@ -65,8 +73,9 @@ new #[Layout('components.layouts.web')] class extends Component {
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-zinc-700 dark:text-zinc-400">Sort by:</span>
                     <select wire:model.live="sortBy" class="px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100">
+                        <option value="popular">Popular</option>
+                        <option value="newest">Newest</option>
                         <option value="name">Name</option>
-                        <option value="prompts_count">Prompt Count</option>
                     </select>
                 </div>
             </div>
@@ -75,8 +84,8 @@ new #[Layout('components.layouts.web')] class extends Component {
         <!-- Categories Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($this->categories as $category)
-                <a href="{{ route('categories.show', $category->slug) }}" class="block group">
-                    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-all duration-200 group-hover:border-zinc-400 dark:group-hover:border-zinc-500">
+                <a href="{{ route('categories.show', $category->slug) }}" class="block group h-full" wire:key="category-{{ $category->id }}">
+                    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-all duration-200 group-hover:border-zinc-400 dark:group-hover:border-zinc-500 h-full flex flex-col">
                         <div class="flex items-start justify-between mb-3">
                             <h2 class="text-xl font-medium text-zinc-900 dark:text-white group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
                                 {{ $category->name }}
@@ -87,20 +96,30 @@ new #[Layout('components.layouts.web')] class extends Component {
                         </div>
                         
                         @if($category->description)
-                            <p class="text-sm text-zinc-700 dark:text-zinc-400 mb-4 line-clamp-3">
+                            <p class="text-sm text-zinc-700 dark:text-zinc-400 mb-4 line-clamp-3 flex-1">
                                 {{ $category->description }}
                             </p>
                         @endif
 
                         @if($category->children->count() > 0)
-                            <div class="space-y-2">
+                            <div class="space-y-2 mt-auto">
                                 <h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Subcategories:</h3>
                                 <div class="flex flex-wrap gap-1">
                                     @foreach($category->children->take(3) as $child)
-                                        <livewire:components.badge variant="primary" size="xs" text="{{ $child->name }}" />
+                                        <livewire:components.badge 
+                                            variant="primary" 
+                                            size="xs" 
+                                            text="{{ $child->name }}" 
+                                            wire:key="subcategory-{{ $category->id }}-{{ $child->id }}"
+                                        />
                                     @endforeach
                                     @if($category->children->count() > 3)
-                                        <livewire:components.badge variant="secondary" size="xs" text="+{{ $category->children->count() - 3 }} more" />
+                                        <livewire:components.badge 
+                                            variant="secondary" 
+                                            size="xs" 
+                                            text="+{{ $category->children->count() - 3 }} more" 
+                                            wire:key="subcategory-more-{{ $category->id }}"
+                                        />
                                     @endif
                                 </div>
                             </div>

@@ -6,7 +6,7 @@ use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.web')] class extends Component {
     public $search = '';
-    public $sortBy = 'name'; // name, prompts_count
+    public $sortBy = 'popular'; // popular, newest, oldest, name
     public $provider = ''; // filter by provider
 
     public function getProvidersProperty()
@@ -31,14 +31,17 @@ new #[Layout('components.layouts.web')] class extends Component {
             ->when($this->provider, function ($query) {
                 $query->where('provider', $this->provider);
             })
+            ->when($this->sortBy === 'newest', function ($query) {
+                $query->orderBy('release_date', 'desc');
+            })
+            ->when($this->sortBy === 'oldest', function ($query) {
+                $query->orderBy('release_date', 'asc');
+            })
             ->when($this->sortBy === 'name', function ($query) {
-                $query->orderBy('name');
+                $query->orderByRaw('LOWER(name)');
             })
-            ->when($this->sortBy === 'latest', function ($query) {
-                $query->latest();
-            })
-            ->when($this->sortBy === 'prompts', function ($query) {
-                $query->withCount('prompts')->orderBy('prompts_count', 'desc');
+            ->when($this->sortBy === 'popular', function ($query) {
+                $query->orderBy('prompts_count', 'desc');
             })
             ->withCount('prompts')
             ->get();
@@ -71,10 +74,9 @@ new #[Layout('components.layouts.web')] class extends Component {
             </p>
         </section>
 
-        <!-- Search and Filters -->
+        <!-- Search and Filters/Sort -->
         <div class="mb-8">
-            <div class="flex flex-col lg:flex-row gap-4">
-                <!-- Search -->
+            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 <div class="relative flex-1 max-w-md">
                     <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -83,29 +85,30 @@ new #[Layout('components.layouts.web')] class extends Component {
                         type="text" 
                         wire:model.live.debounce.300ms="search"
                         placeholder="Search models..." 
-                        class="w-full pl-10 pr-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 focus:ring-2 focus:ring-zinc-500 focus:border-transparent"
+                        class="w-full pl-10 pr-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:border-transparent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
                     >
                 </div>
                 
-                <!-- Filters -->
                 <div class="flex flex-wrap items-center gap-4">
                     <!-- Provider Filter -->
                     <div class="flex items-center gap-2">
-                        <label for="provider" class="text-sm text-zinc-600 dark:text-zinc-400 whitespace-nowrap">Provider:</label>
-                        <select wire:model.live="provider" id="provider" class="px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm">
+                        <label for="provider" class="text-sm text-zinc-700 dark:text-zinc-400 whitespace-nowrap">Provider:</label>
+                        <select wire:model.live="provider" id="provider" class="px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100">
                             <option value="">All Providers</option>
                             @foreach($this->providers as $providerOption)
-                                <option value="{{ $providerOption }}">{{ $providerOption }}</option>
+                                <option value="{{ $providerOption }}" {{ $provider === $providerOption ? 'selected' : '' }}>{{ $providerOption }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <!-- Sort -->
                     <div class="flex items-center gap-2">
-                        <label for="sortBy" class="text-sm text-zinc-600 dark:text-zinc-400 whitespace-nowrap">Sort by:</label>
-                        <select wire:model.live="sortBy" id="sortBy" class="px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm">
+                        <label for="sortBy" class="text-sm text-zinc-700 dark:text-zinc-400 whitespace-nowrap">Sort by:</label>
+                        <select wire:model.live="sortBy" id="sortBy" class="px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100">
+                            <option value="popular">Popular</option>
+                            <option value="newest">Newest</option>
+                            <option value="oldest">Oldest</option>
                             <option value="name">Name</option>
-                            <option value="prompts_count">Prompt Count</option>
                         </select>
                     </div>
                 </div>
@@ -133,6 +136,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                             removable="true"
                             removeAction="$set('provider', '')"
                             text="Provider: {{ $provider }}"
+                            wire:key="provider-filter-{{ $provider }}"
                         />
                     @endif
                 </div>
@@ -142,8 +146,8 @@ new #[Layout('components.layouts.web')] class extends Component {
         <!-- Models Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($this->models as $model)
-                <a href="{{ route('models.show', $model->slug) }}" class="block group">
-                    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-all duration-200 group-hover:border-zinc-300 dark:group-hover:border-zinc-600">
+                <a href="{{ route('models.show', $model->slug) }}" class="block group h-full">
+                    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-all duration-200 group-hover:border-zinc-300 dark:group-hover:border-zinc-600 h-full flex flex-col">
                         <div class="flex items-start justify-between mb-2">
                             <h2 class="text-xl font-medium group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-colors">
                                 {{ $model->name }}
@@ -157,14 +161,18 @@ new #[Layout('components.layouts.web')] class extends Component {
                             <p class="text-sm text-zinc-600 dark:text-zinc-400 font-medium mb-2">{{ $model->provider }}</p>
                         @endif
 
+                        @if($model->release_date)
+                            <p class="text-xs text-zinc-500 dark:text-zinc-500 mb-2">Released {{ $model->release_date->format('M j, Y') }}</p>
+                        @endif
+
                         @if($model->description)
-                            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 line-clamp-3">
+                            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 line-clamp-3 flex-1">
                                 {{ $model->description }}
                             </p>
                         @endif
 
                         @if($model->features && is_array($model->features))
-                            <div class="space-y-3">
+                            <div class="space-y-3 mt-auto">
                                 <div>
                                     <h3 class="text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Key Features:</h3>
                                     <div class="flex flex-wrap gap-1">

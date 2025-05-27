@@ -24,6 +24,8 @@ new #[Layout('components.layouts.web')] class extends Component {
     #[Url] 
     public $models = [];
 
+    public $viewMode = 'grid';
+
     public $availableCategories;
     public $availablePlatforms;
     public $availableModels;
@@ -66,6 +68,7 @@ new #[Layout('components.layouts.web')] class extends Component {
     public function getPromptsProperty()
     {
         $query = Prompt::with(['user', 'tags', 'category', 'platforms', 'aiModels'])
+            ->withViewsCount()
             ->published()
             ->visible();
 
@@ -89,7 +92,7 @@ new #[Layout('components.layouts.web')] class extends Component {
         // Apply sorting based on active tab
         switch ($this->activeTab) {
             case 'trending':
-                $query->orderBy('views_count', 'desc');
+                $query->orderByViews('desc');
                 break;
             case 'newest':
                 $query->latest();
@@ -143,14 +146,14 @@ new #[Layout('components.layouts.web')] class extends Component {
             <p class="text-zinc-700 dark:text-gray-400 max-w-2xl mb-6">
                 Discover and filter through thousands of high-quality prompts for various AI platforms and models.
             </p>
-            <div class="relative max-w-xl">
-                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="relative max-w-md">
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
                 <input 
                     type="text" 
                     placeholder="Search for prompts..." 
-                    class="pl-10 h-12 w-full rounded-full border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 focus:outline-none focus:ring-2 focus:ring-zinc-500 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
+                    class="w-full pl-10 pr-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:border-transparent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
                     wire:keydown.enter="$dispatch('search', { query: $event.target.value })"
                 >
             </div>
@@ -230,23 +233,52 @@ new #[Layout('components.layouts.web')] class extends Component {
                             <button wire:click="$set('activeTab', 'popular')" class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-zinc-700 dark:text-zinc-300 {{ $activeTab === 'popular' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}">Popular</button>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button class="px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 bg-white dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">Grid</button>
-                            <button class="px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300">List</button>
+                            <button 
+                                wire:click="$set('viewMode', 'grid')"
+                                class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'grid' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                </svg>
+                            </button>
+                            <button 
+                                wire:click="$set('viewMode', 'list')"
+                                class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'list' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                     
                     @if($this->prompts->count() > 0)
-                        <x-card-grid :columns="2">
-                            @foreach($this->prompts as $prompt)
-                                <livewire:components.prompt-card 
-                                    :prompt="$prompt"
-                                    :show-user="true"
-                                    :show-stats="true" 
-                                    :show-tags="true"
-                                    :tag-limit="2"
-                                />
-                            @endforeach
-                        </x-card-grid>
+                        @if($viewMode === 'grid')
+                            <x-card-grid :columns="2">
+                                @foreach($this->prompts as $prompt)
+                                    <livewire:components.prompt-card 
+                                        :prompt="$prompt"
+                                        :show-user="true"
+                                        :show-stats="true" 
+                                        :show-tags="true"
+                                        :tag-limit="2"
+                                        wire:key="prompt-{{ $prompt->id }}"
+                                    />
+                                @endforeach
+                            </x-card-grid>
+                        @else
+                            <div class="space-y-4">
+                                @foreach($this->prompts as $prompt)
+                                    <livewire:components.prompt-card 
+                                        :prompt="$prompt"
+                                        :show-user="true"
+                                        :show-stats="true" 
+                                        :show-tags="true"
+                                        :tag-limit="2"
+                                        :layout="'list'"
+                                        wire:key="prompt-list-{{ $prompt->id }}"
+                                    />
+                                @endforeach
+                            </div>
+                        @endif
 
                         <div class="mt-8">
                             {{ $this->prompts->links() }}

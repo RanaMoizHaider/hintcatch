@@ -15,6 +15,7 @@
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @fluxAppearance
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800 flex flex-col">
         <x-header />
@@ -22,5 +23,6 @@
             {{ $slot }}
         </main>
         <x-footer />
+        @fluxScripts
     </body>
 </html>
