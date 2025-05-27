@@ -27,7 +27,7 @@ class PromptFactory extends Factory
             'category_id' => Category::factory(),
             'visibility' => $this->faker->randomElement(['public', 'private', 'unlisted']),
             'status' => $this->faker->randomElement(['draft', 'published']),
-            'featured' => $this->faker->boolean();
+            'featured' => $this->faker->boolean(),
             'published_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
     }
