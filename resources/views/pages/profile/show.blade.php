@@ -15,7 +15,11 @@ new #[Layout('components.layouts.web')] class extends Component {
     public function mount(User $user)
     {
         $this->user = $user->load(['prompts' => function($query) {
-            $query->published()->visible()->latest();
+            $query->where('status', 'published')
+                  ->where('visibility', 'public')
+                  ->whereNotNull('published_at')
+                  ->where('published_at', '<=', now())
+                  ->latest();
         }]);
     }
 
@@ -27,21 +31,25 @@ new #[Layout('components.layouts.web')] class extends Component {
     public function getPromptsProperty()
     {
         return $this->user->prompts()
-            ->with(['tags', 'category', 'likes'])
-            ->published()
-            ->visible()
+            ->with(['tags', 'category', 'likes', 'user'])
+            ->where('status', 'published')
+            ->where('visibility', 'public')
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now())
             ->latest()
             ->paginate(12);
     }
 
     public function getLikedPromptsProperty()
     {
-        return Prompt::with(['user', 'tags', 'category'])
+        return Prompt::with(['user', 'tags', 'category', 'likes'])
             ->whereHas('likes', function($query) {
                 $query->where('user_id', $this->user->id);
             })
-            ->published()
-            ->visible()
+            ->where('status', 'published')
+            ->where('visibility', 'public')
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now())
             ->latest()
             ->paginate(12);
     }
@@ -49,16 +57,25 @@ new #[Layout('components.layouts.web')] class extends Component {
     public function getStatsProperty()
     {
         return [
-            'prompts_count' => $this->user->prompts()->published()->visible()->count(),
+            'prompts_count' => $this->user->prompts()
+                ->where('status', 'published')
+                ->where('visibility', 'public')
+                ->whereNotNull('published_at')
+                ->where('published_at', '<=', now())
+                ->count(),
             'likes_received' => $this->user->prompts()
-                ->published()
-                ->visible()
+                ->where('status', 'published')
+                ->where('visibility', 'public')
+                ->whereNotNull('published_at')
+                ->where('published_at', '<=', now())
                 ->withCount('likes')
                 ->get()
                 ->sum('likes_count'),
             'total_views' => $this->user->prompts()
-                ->published()
-                ->visible()
+                ->where('status', 'published')
+                ->where('visibility', 'public')
+                ->whereNotNull('published_at')
+                ->where('published_at', '<=', now())
                 ->get()
                 ->sum(function($prompt) {
                     return views($prompt)->count();
@@ -76,7 +93,7 @@ new #[Layout('components.layouts.web')] class extends Component {
             <div class="flex flex-col md:flex-row gap-8 items-start">
                 <img src="{{ $user->gravatar ?? '/placeholder.svg' }}" alt="{{ $user->name }}" class="w-24 h-24 md:w-32 md:h-32 rounded-full">
 
-                <div class="flex-1"></div>
+                <div class="flex-1">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
                         <div>
                             <h1 class="text-2xl font-bold">{{ $user->name }}</h1>
@@ -199,6 +216,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                                     :show-featured-badge="true"
                                     :show-tags="true"
                                     :tag-limit="2"
+                                    wire:key="user-prompt-{{ $prompt->id }}"
                                 />
                             @endforeach
                         </x-card-grid>
@@ -227,6 +245,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                                     :show-stats="false" 
                                     :show-tags="true"
                                     :tag-limit="2"
+                                    wire:key="liked-prompt-{{ $prompt->id }}"
                                 />
                             @endforeach
                         </x-card-grid>
