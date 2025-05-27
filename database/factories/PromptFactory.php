@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,14 +19,16 @@ class PromptFactory extends Factory
     public function definition(): array
     {
         return [
+            'title' => $this->faker->sentence(4),
+            'slug' => $this->faker->unique()->slug(),
+            'content' => $this->faker->paragraphs(3, true),
+            'description' => $this->faker->paragraph(),
             'user_id' => User::factory(),
-            'title' => $this->faker->sentence,
-            'slug' => $this->faker->slug,
-            'description' => $this->faker->paragraph,
-            'content' => $this->faker->paragraph,
+            'category_id' => Category::factory(),
             'visibility' => $this->faker->randomElement(['public', 'private', 'unlisted']),
             'status' => $this->faker->randomElement(['draft', 'published']),
-            'published_at' => $this->faker->dateTime,
+            'featured' => $this->faker->boolean();
+            'published_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
     }
 }

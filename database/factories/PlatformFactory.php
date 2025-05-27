@@ -16,15 +16,16 @@ class PlatformFactory extends Factory
      */
     public function definition(): array
     {
+        $name = $this->faker->unique()->randomElement(['ChatGPT', 'Claude', 'Gemini', 'Copilot', 'Midjourney', 'DALL-E', 'Stable Diffusion']);
         return [
-            'name' => $this->faker->word,
-            'slug' => $this->faker->slug,
-            'description' => $this->faker->sentence,
-            'image' => $this->faker->imageUrl,
-            'color' => $this->faker->hexColor,
-            'icon' => $this->faker->imageUrl,
-            'features' => $this->faker->paragraphs(3),
-            'best_practices' => $this->faker->paragraphs(3),
+            'name' => $name,
+            'slug' => \Str::slug($name),
+            'description' => $this->faker->sentence(),
+            'image' => $this->faker->imageUrl(400, 300, 'tech'),
+            'color' => $this->faker->hexColor(),
+            'icon' => 'heroicon-o-' . $this->faker->randomElement(['cpu-chip', 'bolt', 'sparkles', 'beaker']),
+            'features' => $this->faker->sentences(3),
+            'best_practices' => $this->faker->sentences(3),
         ];
     }
 }

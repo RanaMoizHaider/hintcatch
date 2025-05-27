@@ -24,8 +24,7 @@ class CommentFactory extends Factory
             'commentable_id' => Prompt::factory(),
             'commentable_type' => Prompt::class,
             'body' => $this->faker->paragraph,
-            'is_approved' => true,
-            'is_deleted' => false,
+            'approved' => true,
         ];
     }
 }

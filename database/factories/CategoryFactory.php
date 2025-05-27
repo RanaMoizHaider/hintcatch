@@ -16,13 +16,14 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
+        $name = $this->faker->unique()->words(2, true);
         return [
-            'name' => $this->faker->word,
-            'slug' => $this->faker->slug,
-            'description' => $this->faker->sentence,
-            'image' => $this->faker->imageUrl,
-            'color' => $this->faker->hexColor,
-            'icon' => $this->faker->imageUrl,
+            'name' => $name,
+            'slug' => \Str::slug($name),
+            'description' => $this->faker->sentence(),
+            'image' => $this->faker->imageUrl(400, 300, 'tech'),
+            'color' => $this->faker->hexColor(),
+            'icon' => 'heroicon-o-' . $this->faker->randomElement(['code-bracket', 'cpu-chip', 'cog', 'light-bulb', 'academic-cap']),
             'parent_id' => null,
         ];
     }
