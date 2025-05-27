@@ -18,7 +18,7 @@
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800 flex flex-col">
         <x-header />
-        <main class="flex-1 w-full max-w-4xl mx-auto px-4 py-8">
+        <main>
             {{ $slot }}
         </main>
         <x-footer />
