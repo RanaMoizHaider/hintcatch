@@ -13,16 +13,19 @@ new #[Layout('components.layouts.web')] class extends Component {
     public function mount()
     {
         $this->trendingPrompts = Prompt::with(['user', 'tags', 'category'])
-            ->orderBy('views_count', 'desc')
+            ->withViewsCount()
+            ->orderByViews('desc')
             ->take(12)
             ->get();
             
         $this->newestPrompts = Prompt::with(['user', 'tags', 'category'])
+            ->withViewsCount()
             ->latest()
             ->take(12)
             ->get();
             
         $this->popularPrompts = Prompt::with(['user', 'tags', 'category'])
+            ->withViewsCount()
             ->withCount('likes')
             ->orderBy('likes_count', 'desc')
             ->take(12)
@@ -30,6 +33,7 @@ new #[Layout('components.layouts.web')] class extends Component {
             
         $this->featuredPrompts = Prompt::featured()
             ->with(['user', 'tags', 'category'])
+            ->withViewsCount()
             ->take(6)
             ->get();
     }
@@ -60,72 +64,15 @@ new #[Layout('components.layouts.web')] class extends Component {
         @if($featuredPrompts->count() > 0)
         <section class="mb-12">
             <h2 class="text-2xl font-bold mb-6">Featured Prompts</h2>
-            <livewire:card-grid>
+            <x-card-grid>
                 @foreach($featuredPrompts as $prompt)
                     <livewire:components.prompt-card :prompt="$prompt" :linkable="true" />
                 @endforeach
-            </livewire:card-grid>
+            </x-card-grid>
         </section>
         @endif
 
         <div class="flex flex-col md:flex-row gap-8">
-            <!-- Filter Sidebar -->
-            <div class="w-full md:w-64 shrink-0">
-                <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6">
-                    <h3 class="font-medium mb-4 text-zinc-900 dark:text-white">Filter by Category</h3>
-                    <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Creative Writing</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Business</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Technical</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Marketing</span>
-                        </label>
-                    </div>
-
-                    <h3 class="font-medium mb-4 mt-6 text-zinc-900 dark:text-white">AI Platform</h3>
-                    <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">ChatGPT</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Claude</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Midjourney</span>
-                        </label>
-                    </div>
-
-                    <h3 class="font-medium mb-4 mt-6 text-zinc-900 dark:text-white">AI Model</h3>
-                    <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">GPT-4</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Claude 3.5</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 focus:ring-zinc-500 dark:bg-zinc-700">
-                            <span class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">Gemini Pro</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
             <!-- Main Content -->
             <div class="flex-1">
                 <div x-data="{ activeTab: 'trending' }">
@@ -150,7 +97,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                     </div>
 
                     <div x-show="activeTab === 'newest'">
-                        <x-card-grid :columns="2">
+                        <x-card-grid>
                             @foreach($newestPrompts as $prompt)
                                 <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" />
                             @endforeach
@@ -158,7 +105,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                     </div>
 
                     <div x-show="activeTab === 'popular'">
-                        <x-card-grid :columns="2">
+                        <x-card-grid>
                             @foreach($popularPrompts as $prompt)
                                 <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" />
                             @endforeach
