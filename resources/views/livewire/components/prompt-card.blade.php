@@ -10,7 +10,7 @@
             @endif
         </h3>
         @if($showFeaturedBadge && $prompt->featured)
-            <livewire:components.badge variant="primary" size="sm" text="Featured" class="flex-shrink-0" />
+            <livewire:components.badge variant="success" size="sm" text="Featured" class="flex-shrink-0" />
         @endif
     </div>
     
