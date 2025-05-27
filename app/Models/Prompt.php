@@ -75,7 +75,7 @@ class Prompt extends Model implements Viewable
     }
 
     #[Scope]
-    protected function featured($query): void
+    protected function featured(Builder $query): void
     {
         $query->where('featured', true);
     }
