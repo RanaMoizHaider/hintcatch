@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Provider extends Model
 {
@@ -30,8 +31,23 @@ class Provider extends Model
         'is_active' => 'boolean',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function aiModels(): HasMany
     {
         return $this->hasMany(AiModel::class);
+    }
+
+    public function prompts(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Prompt::class,
+            AiModel::class,
+            'provider_id',
+            'ai_model_id'
+        )->published()->visible();
     }
 }

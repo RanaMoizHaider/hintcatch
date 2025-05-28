@@ -25,6 +25,6 @@ class Platform extends Model
 
     public function prompts(): BelongsToMany
     {
-        return $this->belongsToMany(Prompt::class, 'platform_prompts');
+        return $this->belongsToMany(Prompt::class, 'platform_prompts')->published()->visible();
     }
 }

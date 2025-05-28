@@ -31,7 +31,7 @@ class Category extends Model
 
     public function prompts(): HasMany
     {
-        return $this->hasMany(Prompt::class);
+        return $this->hasMany(Prompt::class)->published()->visible();
     }
 
     public function countPrompts(): int

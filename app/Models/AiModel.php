@@ -37,6 +37,6 @@ class AiModel extends Model
 
     public function prompts(): BelongsToMany
     {
-        return $this->belongsToMany(Prompt::class, 'ai_model_prompts');
+        return $this->belongsToMany(Prompt::class, 'ai_model_prompts')->published()->visible();
     }
 }
