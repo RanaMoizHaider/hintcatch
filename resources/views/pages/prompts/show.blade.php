@@ -9,11 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 new #[Layout('components.layouts.web')] class extends Component {
     public Prompt $prompt;
-    public $newComment = '';
     public $isLiked = false;
     public $isSaved = false;
     public $activeTab = 'comments';
     public $relatedPrompts;
+
+    protected $listeners = ['comment-added' => 'refreshPrompt'];
 
     public function mount(Prompt $prompt)
     {
@@ -69,25 +70,7 @@ new #[Layout('components.layouts.web')] class extends Component {
         $this->prompt->refresh();
     }
 
-    public function addComment()
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
 
-        $this->validate([
-            'newComment' => 'required|min:3|max:1000'
-        ]);
-
-        $this->prompt->comments()->create([
-            'user_id' => Auth::id(),
-            'body' => $this->newComment
-        ]);
-
-        $this->newComment = '';
-        $this->prompt->refresh();
-        $this->prompt->load('comments.user');
-    }
 
     public function copyPrompt()
     {
@@ -97,6 +80,17 @@ new #[Layout('components.layouts.web')] class extends Component {
     public function setActiveTab($tab)
     {
         $this->activeTab = $tab;
+    }
+
+    public function refreshPrompt()
+    {
+        $this->prompt->refresh();
+        $this->prompt->load(['comments.user']);
+    }
+
+    public function getCommentCount()
+    {
+        return $this->prompt->comments()->count();
     }
 }; ?>
 
@@ -195,45 +189,8 @@ new #[Layout('components.layouts.web')] class extends Component {
                     </div>
 
                     @if($activeTab === 'comments')
-                        <div class="space-y-6">
-                            @foreach($prompt->comments as $comment)
-                                <div class="flex gap-4">
-                                    <livewire:components.user-avatar :user="$comment->user" size="sm" />
-                                    <div>
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="font-medium">{{ $comment->user->name }}</span>
-                                            <span class="text-xs text-zinc-600 dark:text-zinc-400">
-                                                {{ $comment->created_at->diffForHumans() }}
-                                            </span>
-                                        </div>
-                                        <p class="text-sm">{{ $comment->content }}</p>
-                                    </div>
-                                </div>
-                            @endforeach
-
-                            @auth
-                                <div class="mt-6">
-                                    <h3 class="font-medium mb-2">Add a comment</h3>
-                                    <form wire:submit="addComment">
-                                        <textarea 
-                                            wire:model="newComment"
-                                            class="w-full p-3 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400" 
-                                            rows="3" 
-                                            placeholder="Share your thoughts about this prompt..."
-                                        ></textarea>
-                                        @error('newComment') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                        <div class="mt-2 flex justify-end">
-                                            <button type="submit" class="px-4 py-2 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 rounded-md hover:bg-zinc-700 dark:hover:bg-zinc-300">Post Comment</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            @else
-                                <div class="mt-6 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-md text-center">
-                                    <p class="text-zinc-600 dark:text-zinc-400">
-                                        <a href="{{ route('login') }}" class="text-zinc-800 dark:text-zinc-200 hover:underline">Sign in</a> to leave a comment
-                                    </p>
-                                </div>
-                            @endauth
+                        <div>
+                            <livewire:components.comments :commentable="$prompt" />
                         </div>
                     @endif
 
