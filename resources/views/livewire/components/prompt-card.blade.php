@@ -1,4 +1,4 @@
-<div>
+<div class="{{ $layout !== 'list' ? 'h-full' : '' }}">
     @if($layout === 'list')
         <!-- List Layout -->
         <article class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-shadow">
@@ -162,7 +162,7 @@
         </article>
     @else
         <!-- Default Card Layout -->
-        <article class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-shadow">
+        <article class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-shadow h-full flex flex-col">
             <div class="flex items-start justify-between mb-3">
                 <h3 class="font-semibold text-lg leading-tight flex-1 mr-2">
                     @if($linkable)
@@ -189,7 +189,7 @@
                 </div>
             @endif
             
-            <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4 line-clamp-3">
+            <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4 line-clamp-3 flex-1">
                 {{ $prompt->description ?? Str::limit($prompt->content, $contentLimit) }}
             </p>
             
@@ -222,7 +222,7 @@
             
             @if($showStats)
                 <!-- Footer Stats -->
-                <div class="flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400">
+                <div class="flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400 mt-auto">
                     <div class="flex items-center space-x-4">
                         <span class="flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
