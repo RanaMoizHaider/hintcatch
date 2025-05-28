@@ -28,6 +28,9 @@ new #[Layout('components.layouts.web')] class extends Component {
     #[Url]
     public $providers = [];
 
+    #[Url]
+    public $search = '';
+
     public $viewMode = 'grid';
 
     public $availableCategories;
@@ -67,6 +70,11 @@ new #[Layout('components.layouts.web')] class extends Component {
         $this->availableModels = AiModel::with('provider')->withCount('prompts')->get();
     }
 
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
     public function updatedActiveTab()
     {
         $this->resetPage();
@@ -98,6 +106,7 @@ new #[Layout('components.layouts.web')] class extends Component {
         $this->platforms = [];
         $this->models = [];
         $this->providers = [];
+        $this->search = '';
         $this->resetPage();
     }
 
@@ -107,6 +116,21 @@ new #[Layout('components.layouts.web')] class extends Component {
             ->withViewsCount()
             ->published()
             ->visible();
+
+        // Apply search filter
+        if (!empty($this->search)) {
+            $query->where(function($q) {
+                $q->where('title', 'like', '%' . $this->search . '%')
+                  ->orWhere('content', 'like', '%' . $this->search . '%')
+                  ->orWhere('description', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('tags', function($tagQuery) {
+                      $tagQuery->where('name', 'like', '%' . $this->search . '%');
+                  })
+                  ->orWhereHas('category', function($catQuery) {
+                      $catQuery->where('name', 'like', '%' . $this->search . '%');
+                  });
+            });
+        }
 
         // Apply filters
         if (!empty($this->categories)) {
@@ -153,6 +177,11 @@ new #[Layout('components.layouts.web')] class extends Component {
     public function getAppliedFiltersProperty()
     {
         $filters = [];
+        
+        // Add search filter if active
+        if (!empty($this->search)) {
+            $filters[] = ['type' => 'Search', 'value' => $this->search];
+        }
         
         foreach ($this->categories as $categoryId) {
             $category = $this->availableCategories->find($categoryId);
@@ -201,9 +230,9 @@ new #[Layout('components.layouts.web')] class extends Component {
                 </svg>
                 <input 
                     type="text" 
+                    wire:model.live.debounce.300ms="search"
                     placeholder="Search for prompts..." 
                     class="w-full pl-10 pr-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:border-transparent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
-                    wire:keydown.enter="$dispatch('search', { query: $event.target.value })"
                 >
             </div>
         </section>
@@ -287,13 +316,13 @@ new #[Layout('components.layouts.web')] class extends Component {
                                                     </button>
                                                 @endif
                                             </div>
-                                            <livewire:components.badge 
+                                            {{-- <livewire:components.badge 
                                                 variant="secondary" 
                                                 size="xs" 
                                                 :text="$category->prompts_count" 
                                                 wire:key="cat-badge-{{ $category->id }}"
                                                 class="ml-1 shrink-0"
-                                            />
+                                            /> --}}
                                         </div>
 
                                         <!-- Subcategories -->
@@ -326,13 +355,13 @@ new #[Layout('components.layouts.web')] class extends Component {
                                                                     </button>
                                                                 @endif
                                                             </div>
-                                                            <livewire:components.badge 
+                                                            {{-- <livewire:components.badge 
                                                                 variant="secondary" 
                                                                 size="xs" 
                                                                 :text="$subcategory->prompts_count" 
                                                                 wire:key="subcat-badge-{{ $subcategory->id }}"
                                                                 class="ml-1 shrink-0"
-                                                            />
+                                                            /> --}}
                                                         </div>
 
                                                         <!-- Sub-subcategories -->
@@ -351,13 +380,13 @@ new #[Layout('components.layouts.web')] class extends Component {
                                                                             for="subsubcategory-{{ $subSubcategory->id }}"
                                                                             class="ml-2 text-xs text-zinc-500 dark:text-zinc-500 flex-1 truncate cursor-pointer"
                                                                         >{{ $subSubcategory->name }}</label>
-                                                                        <livewire:components.badge 
+                                                                        {{-- <livewire:components.badge 
                                                                             variant="secondary" 
                                                                             size="xs" 
                                                                             :text="$subSubcategory->prompts_count" 
                                                                             wire:key="subsubcat-badge-{{ $subSubcategory->id }}"
                                                                             class="ml-1 shrink-0"
-                                                                        />
+                                                                        /> --}}
                                                                     </div>
                                                                 @endforeach
                                                             </div>
@@ -420,13 +449,13 @@ new #[Layout('components.layouts.web')] class extends Component {
                                                 for="platform-{{ $platform->id }}"
                                                 class="ml-2 text-sm text-zinc-700 dark:text-zinc-300 flex-1 truncate cursor-pointer"
                                             >{{ $platform->name }}</label>
-                                            <livewire:components.badge 
+                                            {{-- <livewire:components.badge 
                                                 variant="primary" 
                                                 size="xs" 
                                                 :text="$platform->prompts_count" 
                                                 wire:key="platform-badge-{{ $platform->id }}"
                                                 class="ml-1 shrink-0"
-                                            />
+                                            /> --}}
                                         </div>
                                     @endforeach
                                 </div>
@@ -497,13 +526,13 @@ new #[Layout('components.layouts.web')] class extends Component {
                                                         </button>
                                                     @endif
                                                 </div>
-                                                <livewire:components.badge 
+                                                {{-- <livewire:components.badge 
                                                     variant="warning" 
                                                     size="xs" 
                                                     :text="$provider->total_prompts_count" 
                                                     wire:key="provider-badge-{{ $provider->id }}"
                                                     class="ml-1 shrink-0"
-                                                />
+                                                /> --}}
                                             </div>
 
                                             <!-- AI Models under this Provider -->
@@ -522,13 +551,13 @@ new #[Layout('components.layouts.web')] class extends Component {
                                                                 for="model-{{ $model->id }}"
                                                                 class="ml-2 text-xs text-zinc-600 dark:text-zinc-400 flex-1 truncate cursor-pointer"
                                                             >{{ $model->name }}</label>
-                                                            <livewire:components.badge 
+                                                            {{-- <livewire:components.badge 
                                                                 variant="success" 
                                                                 size="xs" 
                                                                 :text="$model->prompts_count" 
                                                                 wire:key="provider-model-badge-{{ $model->id }}"
                                                                 class="ml-1 shrink-0"
-                                                            />
+                                                            /> --}}
                                                         </div>
                                                     @endforeach
                                                 </div>
