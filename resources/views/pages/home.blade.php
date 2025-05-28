@@ -56,7 +56,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                 <input 
                     type="text" 
                     placeholder="Search for prompts..." 
-                    class="pl-10 h-12 w-full rounded-full border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+                    class="pl-10 h-12 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 focus:outline-none focus:ring-2 focus:ring-zinc-500"
                     wire:keydown.enter="$dispatch('search', { query: $event.target.value })"
                 >
             </div>

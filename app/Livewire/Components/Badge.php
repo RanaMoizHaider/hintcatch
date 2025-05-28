@@ -9,7 +9,7 @@ class Badge extends Component
     public $text = '';
     public $size = 'base'; // 'xs', 'sm', 'base', 'lg'
     public $variant = 'default'; // 'default', 'primary', 'secondary', 'success', 'warning', 'danger'
-    public $rounded = 'rounded-full';
+    public $rounded = 'rounded-md';
     public $removable = false;
     public $removeAction = null;
     public $class = '';
@@ -19,7 +19,7 @@ class Badge extends Component
         $text = '',
         $size = 'base',
         $variant = 'default',
-        $rounded = 'rounded-full',
+        $rounded = 'rounded-md',
         $removable = false,
         $removeAction = null,
         $class = ''

@@ -161,7 +161,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                             <h2 class="text-xl font-medium group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-colors">
                                 {{ $model->name }}
                             </h2>
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 ml-2 shrink-0">
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 ml-2 shrink-0">
                                 {{ $model->prompts_count }}
                             </span>
                         </div>
@@ -186,12 +186,12 @@ new #[Layout('components.layouts.web')] class extends Component {
                                     <h3 class="text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Key Features:</h3>
                                     <div class="flex flex-wrap gap-1">
                                         @foreach(collect($model->features)->take(4) as $feature)
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200">
                                                 {{ $feature }}
                                             </span>
                                         @endforeach
                                         @if(count($model->features) > 4)
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
                                                 +{{ count($model->features) - 4 }} more
                                             </span>
                                         @endif

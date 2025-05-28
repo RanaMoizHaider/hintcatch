@@ -59,7 +59,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                 <div class="flex items-center gap-3 mb-2">
                     <h1 class="text-3xl font-bold">{{ $model->name }}</h1>
                     @if($model->provider)
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                        <span class="inline-flex items-center px-3 py-1 rounded-md text-sm border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
                             {{ $model->provider->name }}
                         </span>
                     @endif
