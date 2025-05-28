@@ -15,7 +15,7 @@ new #[Layout('components.layouts.web')] class extends Component {
 
     public function mount(AiModel $model)
     {
-        $this->model = $model;
+        $this->model = $model->load('provider');
     }
 
     public function getPromptsProperty()
@@ -60,7 +60,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                     <h1 class="text-3xl font-bold">{{ $model->name }}</h1>
                     @if($model->provider)
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                            {{ $model->provider }}
+                            {{ $model->provider->name }}
                         </span>
                     @endif
                 </div>
@@ -96,7 +96,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                             @if($model->provider)
                                 <div>
                                     <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Provider:</span>
-                                    <span class="text-sm text-zinc-600 dark:text-zinc-400 ml-2">{{ $model->provider }}</span>
+                                    <span class="text-sm text-zinc-600 dark:text-zinc-400 ml-2">{{ $model->provider->name }}</span>
                                 </div>
                             @endif
                             @if($model->release_date)

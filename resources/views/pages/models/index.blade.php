@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\AiModel;
+use App\Models\Provider;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -11,25 +12,27 @@ new #[Layout('components.layouts.web')] class extends Component {
 
     public function getProvidersProperty()
     {
-        return AiModel::distinct('provider')
-            ->pluck('provider')
-            ->filter()
-            ->sort()
-            ->values();
+        return Provider::whereHas('aiModels')
+            ->orderBy('name')
+            ->get()
+            ->pluck('name', 'id');
     }
 
     public function getModelsProperty()
     {
         return AiModel::query()
+            ->with('provider')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
                       ->orWhere('description', 'like', '%' . $this->search . '%')
-                      ->orWhere('provider', 'like', '%' . $this->search . '%');
+                      ->orWhereHas('provider', function ($providerQuery) {
+                          $providerQuery->where('name', 'like', '%' . $this->search . '%');
+                      });
                 });
             })
             ->when($this->provider, function ($query) {
-                $query->where('provider', $this->provider);
+                $query->where('provider_id', $this->provider);
             })
             ->when($this->sortBy === 'newest', function ($query) {
                 $query->orderBy('release_date', 'desc');
@@ -60,6 +63,12 @@ new #[Layout('components.layouts.web')] class extends Component {
     public function updatedProvider()
     {
         // This will trigger re-rendering when provider changes
+    }
+
+    public function getSelectedProviderNameProperty()
+    {
+        if (!$this->provider) return null;
+        return $this->providers[$this->provider] ?? 'Unknown';
     }
 }; ?>
 
@@ -95,8 +104,8 @@ new #[Layout('components.layouts.web')] class extends Component {
                         <label for="provider" class="text-sm text-zinc-700 dark:text-zinc-400 whitespace-nowrap">Provider:</label>
                         <select wire:model.live="provider" id="provider" class="px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100">
                             <option value="">All Providers</option>
-                            @foreach($this->providers as $providerOption)
-                                <option value="{{ $providerOption }}" {{ $provider === $providerOption ? 'selected' : '' }}>{{ $providerOption }}</option>
+                            @foreach($this->providers as $providerId => $providerName)
+                                <option value="{{ $providerId }}" {{ $provider == $providerId ? 'selected' : '' }}>{{ $providerName }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -135,7 +144,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                             size="sm" 
                             removable="true"
                             removeAction="$set('provider', '')"
-                            text="Provider: {{ $provider }}"
+                            text="Provider: {{ $this->selectedProviderName }}"
                             wire:key="provider-filter-{{ $provider }}"
                         />
                     @endif
@@ -158,7 +167,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                         </div>
 
                         @if($model->provider)
-                            <p class="text-sm text-zinc-600 dark:text-zinc-400 font-medium mb-2">{{ $model->provider }}</p>
+                            <p class="text-sm text-zinc-600 dark:text-zinc-400 font-medium mb-2">{{ $model->provider->name }}</p>
                         @endif
 
                         @if($model->release_date)
