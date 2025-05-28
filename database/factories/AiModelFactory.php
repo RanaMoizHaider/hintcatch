@@ -16,14 +16,17 @@ class AiModelFactory extends Factory
      */
     public function definition(): array
     {
-        $providers = ['OpenAI', 'Anthropic', 'Google', 'Microsoft', 'Meta', 'Stability AI'];
         $models = ['GPT-4', 'GPT-4.5', 'GPT-4o', 'Claude-3', 'Claude-3.5', 'Claude-4', 'Gemini Pro', 'LLaMA 2', 'PaLM 2', 'Mistral 7B'];
         $name = $this->faker->unique()->randomElement($models);
         
         return [
             'name' => $name,
             'slug' => \Str::slug($name),
-            'provider' => $this->faker->randomElement($providers),
+            'provider_id' => function () {
+                // Try to get an existing provider, or create one if none exist
+                return \App\Models\Provider::inRandomOrder()->first()?->id 
+                    ?? \App\Models\Provider::factory()->create()->id;
+            },
             'description' => $this->faker->sentence(),
             'image' => $this->faker->imageUrl(400, 300, 'tech'),
             'color' => $this->faker->hexColor(),

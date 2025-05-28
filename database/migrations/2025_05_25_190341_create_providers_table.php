@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ai_models', function (Blueprint $table) {
+        Schema::create('providers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->foreignId('provider_id')->constrained('providers')->cascadeOnDelete();
             $table->text('description')->nullable();
-            $table->string('image')->nullable();
+            $table->string('website')->nullable();
+            $table->string('api_endpoint')->nullable();
+            $table->string('logo')->nullable();
             $table->string('color')->nullable();
-            $table->string('icon')->nullable();
-            $table->json('features')->nullable();
-            $table->date('release_date')->nullable();
+            $table->json('supported_features')->nullable(); // e.g., ['text', 'image', 'code', 'voice']
+            $table->json('pricing_model')->nullable(); // e.g., {'type': 'pay-per-use', 'currency': 'USD'}
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ai_models');
+        Schema::dropIfExists('providers');
     }
 };
