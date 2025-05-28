@@ -138,7 +138,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                             <span>{{ $prompt->likes->count() }}</span>
                         </button>
                         
-                        <button class="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                        {{-- <button class="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
                             </svg>
@@ -150,7 +150,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
                             </svg>
                             <span>Share</span>
-                        </button>
+                        </button> --}}
                         
                         <button
                             x-data="{ copied: false }"
@@ -266,14 +266,14 @@ new #[Layout('components.layouts.web')] class extends Component {
                             <span class="text-lg font-semibold">{{ views($prompt)->count() }}</span>
                             <span class="text-xs text-zinc-600 dark:text-zinc-400">Views</span>
                         </div>
-                        <div class="flex flex-col items-center p-3 bg-zinc-50 dark:bg-zinc-900 rounded-md">
+                        <div class="flex flex-col col-span-full items-center p-3 bg-zinc-50 dark:bg-zinc-900 rounded-md">
                             <span class="text-lg font-semibold">{{ $prompt->comments->count() }}</span>
                             <span class="text-xs text-zinc-600 dark:text-zinc-400">Comments</span>
                         </div>
-                        <div class="flex flex-col items-center p-3 bg-zinc-50 dark:bg-zinc-900 rounded-md">
+                        {{-- <div class="flex flex-col items-center p-3 bg-zinc-50 dark:bg-zinc-900 rounded-md">
                             <span class="text-lg font-semibold">0</span>
                             <span class="text-xs text-zinc-600 dark:text-zinc-400">Saves</span>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
