@@ -24,8 +24,8 @@ class PlatformFactory extends Factory
             'image' => $this->faker->imageUrl(400, 300, 'tech'),
             'color' => $this->faker->hexColor(),
             'icon' => 'heroicon-o-' . $this->faker->randomElement(['cpu-chip', 'bolt', 'sparkles', 'beaker']),
-            'features' => $this->faker->sentences(3),
-            'best_practices' => $this->faker->sentences(3),
+            'features' => $this->faker->sentences(rand(1, 5)),
+            'best_practices' => $this->faker->sentences(rand(1, 5)),
         ];
     }
 }
