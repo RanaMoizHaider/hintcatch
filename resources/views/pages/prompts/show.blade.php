@@ -81,7 +81,7 @@ new #[Layout('components.layouts.web')] class extends Component {
 
         $this->prompt->comments()->create([
             'user_id' => Auth::id(),
-            'content' => $this->newComment
+            'body' => $this->newComment
         ]);
 
         $this->newComment = '';
@@ -158,20 +158,17 @@ new #[Layout('components.layouts.web')] class extends Component {
                             <span>Share</span>
                         </button>
                         
-                        <button 
-                            wire:click="copyPrompt"
-                            class="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                            x-data
-                            @prompt-copied.window="
-                                navigator.clipboard.writeText($event.detail.content);
-                                $el.textContent = 'Copied!';
-                                setTimeout(() => $el.querySelector('span').textContent = 'Copy', 2000);
+                        <button
+                            x-data="{ copied: false }"
+                            data-content="{{ e($prompt->content) }}"
+                            @click="
+                                navigator.clipboard.writeText($el.dataset.content)
+                                    .then(() => { copied = true; setTimeout(() => copied = false, 2000); })
+                                    .catch(() => alert('Could not copy to clipboard'));
                             "
+                            class="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800"
                         >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>Copy</span>
+                            <span x-text="copied ? 'Copied!' : 'Copy'"></span>
                         </button>
                     </div>
                 </div>
