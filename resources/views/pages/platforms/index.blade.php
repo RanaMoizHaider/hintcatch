@@ -81,7 +81,7 @@ new #[Layout('components.layouts.web')] class extends Component {
         <!-- Platforms Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($this->platforms as $platform)
-                <a href="{{ route('platforms.show', $platform->slug) }}" class="block group h-full">
+                <a href="{{ route('platforms.show', $platform->slug) }}" class="block group h-full" wire:key="category-{{ $platform->id }}">
                     <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-all duration-200 group-hover:border-zinc-400 dark:group-hover:border-zinc-500 h-full flex flex-col">
                         <div class="flex items-start justify-between mb-3">
                             <h2 class="text-xl font-medium text-zinc-900 dark:text-white group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
@@ -100,36 +100,20 @@ new #[Layout('components.layouts.web')] class extends Component {
 
                         <div class="mt-auto">
                             @if($platform->features && is_array($platform->features))
-                                <div class="space-y-3">
-                                    <div>
-                                        <h3 class="text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-200">Key Features:</h3>
-                                        <div class="flex flex-wrap gap-1">
-                                            @foreach(collect($platform->features)->take(4) as $feature)
-                                                <livewire:components.badge variant="primary" size="xs" text="{{ $feature }}" />
-                                            @endforeach
-                                            @if(count($platform->features) > 4)
-                                                <livewire:components.badge variant="secondary" size="xs" text="+{{ count($platform->features) - 4 }} more" />
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if($platform->best_practices && is_array($platform->best_practices))
                                 <div class="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-700">
-                                    <h3 class="text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-200">Best Practices:</h3>
+                                    <h3 class="text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-200">Key Features:</h3>
                                     <ul class="text-xs text-zinc-700 dark:text-zinc-400 space-y-1">
-                                        @foreach(collect($platform->best_practices)->take(2) as $practice)
+                                        @foreach(collect($platform->features)->take(2) as $feature)
                                             <li class="flex items-start">
                                             <svg class="w-3 h-3 text-green-500 mr-1 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            {{ Str::limit($practice, 60) }}
+                                            {{ Str::limit($feature, 60) }}
                                         </li>
                                     @endforeach
-                                    @if(count($platform->best_practices) > 2)
+                                    @if(count($platform->features) > 2)
                                         <li class="text-zinc-500 dark:text-zinc-500">
-                                            +{{ count($platform->best_practices) - 2 }} more practices
+                                            +{{ count($platform->features) - 2 }} more {{ Str::plural('feature', count($platform->features) - 2) }}
                                         </li>
                                     @endif
                                 </ul>
