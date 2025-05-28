@@ -166,7 +166,7 @@
             <div class="flex items-start justify-between mb-3">
                 <h3 class="font-semibold text-lg leading-tight flex-1 mr-2">
                     @if($linkable)
-                        <a href="{{ route('prompts.show', $prompt) }}" class="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors">
+                        <a href="{{ route('prompts.show', $prompt) }}" class="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors" wire:navigate>
                             {{ $prompt->title }}
                         </a>
                     @else
@@ -174,7 +174,7 @@
                     @endif
                 </h3>
                 @if($showFeaturedBadge && $prompt->featured)
-                    <livewire:components.badge variant="success" size="sm" text="Featured" class="flex-shrink-0" />
+                    <livewire:components.badge variant="success" size="sm" text="Featured" class="flex-shrink-0" wire:key="featured-{{ $prompt->id }}" />
                 @endif
             </div>
             
@@ -197,24 +197,32 @@
             @if($showCategory || $showPlatforms || $showModels || $showTags)
                 <div class="flex flex-wrap gap-2 mb-4">
                     @if($showCategory && $prompt->category)
-                        <livewire:components.badge variant="secondary" size="sm" :text="$prompt->category->name" />
+                    <div>
+                        <livewire:components.badge variant="secondary" size="sm" :text="$prompt->category->name" wire:key="category-{{ $prompt->id }}-{{ $prompt->user->id }}" />
+                    </div>
                     @endif
-                    
+
                     @if($showPlatforms)
                         @foreach($prompt->platforms->take($platformLimit) as $platform)
-                            <livewire:components.badge variant="primary" size="sm" :text="$platform->name" />
+                        <div>
+                            <livewire:components.badge variant="primary" size="sm" :text="$platform->name" wire:key="platform-{{ $prompt->id }}-{{ $platform->id }}" />
+                        </div>
                         @endforeach
                     @endif
                     
                     @if($showModels)
                         @foreach($prompt->aiModels->take($modelLimit) as $model)
-                            <livewire:components.badge variant="success" size="sm" :text="$model->name" />
+                        <div>
+                            <livewire:components.badge variant="success" size="sm" :text="$model->name" wire:key="model-{{ $prompt->id }}-{{ $model->id }}" />
+                        </div>
                         @endforeach
                     @endif
                     
                     @if($showTags)
                         @foreach($prompt->tags->take($tagLimit) as $tag)
-                            <livewire:components.badge variant="default" size="sm" :text="$tag->name" />
+                        <div>
+                            <livewire:components.badge variant="default" size="sm" :text="$tag->name" wire:key="tag-{{ $prompt->id }}-{{ $tag->id }}" />
+                        </div>
                         @endforeach
                     @endif
                 </div>

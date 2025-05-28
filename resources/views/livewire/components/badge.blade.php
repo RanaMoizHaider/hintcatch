@@ -1,5 +1,5 @@
 <span class="{{ $computedClasses }}">
-    {{ $text ?: $slot }}
+    {{ $text }}
     
     @if($removable && $removeAction)
         <button wire:click="{{ $removeAction }}" class="ml-1 -mr-1 p-0.5 rounded-full hover:bg-black/10 dark:hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-1">
