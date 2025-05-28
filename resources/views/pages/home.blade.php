@@ -9,6 +9,7 @@ new #[Layout('components.layouts.web')] class extends Component {
     public $newestPrompts;
     public $popularPrompts;
     public $featuredPrompts;
+    public $viewMode = 'grid';
 
     public function mount()
     {
@@ -66,7 +67,7 @@ new #[Layout('components.layouts.web')] class extends Component {
             <h2 class="text-2xl font-bold mb-6">Featured Prompts</h2>
             <x-card-grid>
                 @foreach($featuredPrompts as $prompt)
-                    <livewire:components.prompt-card :prompt="$prompt" :linkable="true" />
+                    <livewire:components.prompt-card :prompt="$prompt" :linkable="true" wire:key="featured-{{ $prompt->id }}" />
                 @endforeach
             </x-card-grid>
         </section>
@@ -83,33 +84,69 @@ new #[Layout('components.layouts.web')] class extends Component {
                             <button @click="activeTab = 'popular'" :class="{ 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white': activeTab === 'popular' }" class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700">Popular</button>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button class="px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300">Grid</button>
-                            <button class="px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300">List</button>
+                            <button 
+                                wire:click="$set('viewMode', 'grid')"
+                                class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'grid' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                </svg>
+                            </button>
+                            <button 
+                                wire:click="$set('viewMode', 'list')"
+                                class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'list' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                     
                     <div x-show="activeTab === 'trending'">
-                        <x-card-grid>
-                            @foreach($trendingPrompts as $prompt)
-                                <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" />
-                            @endforeach
-                        </x-card-grid>
+                        @if($viewMode === 'grid')
+                            <x-card-grid>
+                                @foreach($trendingPrompts as $prompt)
+                                    <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" wire:key="trending-{{ $prompt->id }}" />
+                                @endforeach
+                            </x-card-grid>
+                        @else
+                            <div class="space-y-4">
+                                @foreach($trendingPrompts as $prompt)
+                                    <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" :layout="'list'" wire:key="trending-list-{{ $prompt->id }}" />
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
 
                     <div x-show="activeTab === 'newest'">
-                        <x-card-grid>
-                            @foreach($newestPrompts as $prompt)
-                                <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" />
-                            @endforeach
-                        </x-card-grid>
+                        @if($viewMode === 'grid')
+                            <x-card-grid>
+                                @foreach($newestPrompts as $prompt)
+                                    <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" wire:key="newest-{{ $prompt->id }}" />
+                                @endforeach
+                            </x-card-grid>
+                        @else
+                            <div class="space-y-4">
+                                @foreach($newestPrompts as $prompt)
+                                    <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" :layout="'list'" wire:key="newest-list-{{ $prompt->id }}" />
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
 
                     <div x-show="activeTab === 'popular'">
-                        <x-card-grid>
-                            @foreach($popularPrompts as $prompt)
-                                <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" />
-                            @endforeach
-                        </x-card-grid>
+                        @if($viewMode === 'grid')
+                            <x-card-grid>
+                                @foreach($popularPrompts as $prompt)
+                                    <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" wire:key="popular-{{ $prompt->id }}" />
+                                @endforeach
+                            </x-card-grid>
+                        @else
+                            <div class="space-y-4">
+                                @foreach($popularPrompts as $prompt)
+                                    <livewire:components.prompt-card :prompt="$prompt" :linkable="true" :show-featured-badge="false" :layout="'list'" wire:key="popular-list-{{ $prompt->id }}" />
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
