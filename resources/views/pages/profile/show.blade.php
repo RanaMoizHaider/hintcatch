@@ -23,6 +23,12 @@ new #[Layout('components.layouts.web')] class extends Component {
         }]);
     }
 
+    public function setActiveTab($tab)
+    {
+        $this->activeTab = $tab;
+        $this->resetPage();
+    }
+
     public function updatedActiveTab()
     {
         $this->resetPage();
@@ -174,37 +180,29 @@ new #[Layout('components.layouts.web')] class extends Component {
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div x-data="{ activeTab: '{{ $activeTab }}' }">
+        </div>        <div>
             <div class="flex space-x-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg mb-6 w-fit">
                 <button 
-                    @click="activeTab = 'prompts'" 
-                    wire:click="$set('activeTab', 'prompts')"
-                    :class="{ 'bg-white dark:bg-zinc-700 shadow-sm': activeTab === 'prompts' }" 
-                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
+                    wire:click="setActiveTab('prompts')"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ease-in-out {{ $activeTab === 'prompts' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}"
                 >
                     Prompts ({{ $this->stats['prompts_count'] }})
                 </button>
                 <button 
-                    @click="activeTab = 'liked'" 
-                    wire:click="$set('activeTab', 'liked')"
-                    :class="{ 'bg-white dark:bg-zinc-700 shadow-sm': activeTab === 'liked' }" 
-                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
+                    wire:click="setActiveTab('liked')"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ease-in-out {{ $activeTab === 'liked' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}"
                 >
                     Liked
                 </button>
                 <button 
-                    @click="activeTab = 'collections'" 
-                    wire:click="$set('activeTab', 'collections')"
-                    :class="{ 'bg-white dark:bg-zinc-700 shadow-sm': activeTab === 'collections' }" 
-                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
+                    wire:click="setActiveTab('collections')"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ease-in-out {{ $activeTab === 'collections' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}"
                 >
                     Collections
                 </button>
             </div>
 
-            <div x-show="activeTab === 'prompts'" x-transition>
+            <div class="min-h-[400px]" wire:loading.class="opacity-50" wire:target="setActiveTab">
                 @if($activeTab === 'prompts')
                     @if($this->prompts->count() > 0)
                         <x-card-grid :columns="3">
@@ -232,9 +230,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                         />
                     @endif
                 @endif
-            </div>
 
-            <div x-show="activeTab === 'liked'" x-transition>
                 @if($activeTab === 'liked')
                     @if($this->likedPrompts->count() > 0)
                         <x-card-grid :columns="3">
@@ -261,18 +257,18 @@ new #[Layout('components.layouts.web')] class extends Component {
                         />
                     @endif
                 @endif
-            </div>
 
-            <div x-show="activeTab === 'collections'" x-transition>
-                <div class="text-center py-12">
-                    <svg class="mx-auto h-12 w-12 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">Collections coming soon</h3>
-                    <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                        Collections feature will be available soon.
-                    </p>
-                </div>
+                @if($activeTab === 'collections')
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">Collections coming soon</h3>
+                        <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                            Collections feature will be available soon.
+                        </p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
