@@ -27,7 +27,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                     if ($this->sortBy === 'name') {
                         $q->orderByRaw('LOWER(name)');
                     } else { // popular - highest prompt count first
-                        $q->orderBy('prompts_count', 'desc');
+                        $q->orderByDesc('prompts_count');
                     }
                 })
                      ->get();

@@ -22,7 +22,7 @@ class Comments extends Component
     {
         $this->comments = $this->commentable->comments()
             ->with('user')
-            ->orderBy('created_at', 'desc')
+            ->orderByDesc('created_at')
             ->get();
     }
 

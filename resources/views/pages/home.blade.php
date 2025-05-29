@@ -15,7 +15,7 @@ new #[Layout('components.layouts.web')] class extends Component {
     {
         $this->trendingPrompts = Prompt::with(['user', 'tags', 'category'])
             ->withViewsCount()
-            ->orderByViews('desc')
+            ->orderByDesc('views_count')
             ->take(12)
             ->get();
             
@@ -28,7 +28,7 @@ new #[Layout('components.layouts.web')] class extends Component {
         $this->popularPrompts = Prompt::with(['user', 'tags', 'category'])
             ->withViewsCount()
             ->withCount('likes')
-            ->orderBy('likes_count', 'desc')
+            ->orderByDesc('likes_count')
             ->take(12)
             ->get();
             

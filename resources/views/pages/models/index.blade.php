@@ -35,16 +35,16 @@ new #[Layout('components.layouts.web')] class extends Component {
                 $query->where('provider_id', $this->provider);
             })
             ->when($this->sortBy === 'newest', function ($query) {
-                $query->orderBy('release_date', 'desc');
+                $query->orderByDesc('release_date');
             })
             ->when($this->sortBy === 'oldest', function ($query) {
-                $query->orderBy('release_date', 'asc');
+                $query->orderBy('release_date');
             })
             ->when($this->sortBy === 'name', function ($query) {
                 $query->orderByRaw('LOWER(name)');
             })
             ->when($this->sortBy === 'popular', function ($query) {
-                $query->orderBy('prompts_count', 'desc');
+                $query->orderByDesc('prompts_count');
             })
             ->withCount('prompts')
             ->get();

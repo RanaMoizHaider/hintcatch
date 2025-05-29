@@ -158,13 +158,13 @@ new #[Layout('components.layouts.web')] class extends Component {
         // Apply sorting based on active tab
         switch ($this->activeTab) {
             case 'trending':
-                $query->orderByViews('desc');
+                $query->orderByDesc('views_count');
                 break;
             case 'newest':
                 $query->latest();
                 break;
             case 'popular':
-                $query->withCount('likes')->orderBy('likes_count', 'desc');
+                $query->withCount('likes')->orderByDesc('likes_count');
                 break;
             default: // 'all'
                 $query->latest();

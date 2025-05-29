@@ -24,7 +24,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                 $query->orderByRaw('LOWER(name)');
             })
             ->when($this->sortBy === 'popular', function ($query) {
-                $query->orderBy('prompts_count', 'desc');
+                $query->orderByDesc('prompts_count');
             })
             ->withCount('prompts')
             ->get();

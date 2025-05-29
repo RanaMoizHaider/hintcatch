@@ -27,7 +27,7 @@ new #[Layout('components.layouts.web')] class extends Component {
 
         return match($this->activeTab) {
             'newest' => $query->latest()->paginate(12),
-            'trending' => $query->orderByViews('desc')->paginate(12),
+            'trending' => $query->orderByDesc('views_count')->paginate(12),
             default => $query->orderByDesc('likes_count')->paginate(12),
         };
     }
