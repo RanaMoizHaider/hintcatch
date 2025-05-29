@@ -17,6 +17,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $guarded = ['is_admin'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -37,6 +39,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'social_links' => 'array',
+        'is_admin' => 'boolean',
     ];
 
     /**
