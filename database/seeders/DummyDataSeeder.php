@@ -26,6 +26,7 @@ class DummyDataSeeder extends Seeder
             'email' => 'admin@hintcatch.com',
             'username' => 'admin',
             'bio' => 'Admin of Hint Catch - AI prompt sharing platform',
+            'is_admin' => true,
         ]);
 
         $testUser = User::factory()->create([
