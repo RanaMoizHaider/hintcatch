@@ -12,20 +12,49 @@
             </a>
 
             <flux:navlist variant="outline">
-                <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                </flux:navlist.group>
+                @if(auth()->user()->is_admin)
+                    <!-- Admin Navigation -->
+                    <flux:navlist.group :heading="__('Admin Dashboard')" class="grid">
+                        <flux:navlist.item icon="chart-bar-square" :href="route('admin.dashboard')" :current="request()->routeIs('admin.dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    </flux:navlist.group>
+
+                    <flux:navlist.group :heading="__('Content Management')" class="grid">
+                        <flux:navlist.item icon="folder" :href="route('admin.categories.index')" :current="request()->routeIs('admin.categories.*')" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
+                        <flux:navlist.item icon="building-office" :href="route('admin.providers.index')" :current="request()->routeIs('admin.providers.*')" wire:navigate>{{ __('Providers') }}</flux:navlist.item>
+                        <flux:navlist.item icon="cpu-chip" :href="route('admin.ai-models.index')" :current="request()->routeIs('admin.ai-models.*')" wire:navigate>{{ __('AI Models') }}</flux:navlist.item>
+                        <flux:navlist.item icon="device-tablet" :href="route('admin.platforms.index')" :current="request()->routeIs('admin.platforms.*')" wire:navigate>{{ __('Platforms') }}</flux:navlist.item>
+                        <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.prompts.index')" :current="request()->routeIs('admin.prompts.*')" wire:navigate>{{ __('Prompts') }}</flux:navlist.item>
+                    </flux:navlist.group>
+
+                    <flux:navlist.group :heading="__('Public Site')" class="grid">
+                        <flux:navlist.item icon="globe-alt" :href="route('home')" wire:navigate>{{ __('View Site') }}</flux:navlist.item>
+                    </flux:navlist.group>
+                @else
+                    <!-- User Navigation -->
+                    <flux:navlist.group :heading="__('Dashboard')" class="grid">
+                        <flux:navlist.item icon="home" :href="route('user.dashboard')" :current="request()->routeIs('user.dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    </flux:navlist.group>
+
+                    <flux:navlist.group :heading="__('My Content')" class="grid">
+                        <flux:navlist.item icon="chat-bubble-left-right" :href="route('user.prompts.index')" :current="request()->routeIs('user.prompts.*')" wire:navigate>{{ __('My Prompts') }}</flux:navlist.item>
+                        <flux:navlist.item icon="plus" :href="route('user.prompts.create')" :current="request()->routeIs('user.prompts.create')" wire:navigate>{{ __('Create Prompt') }}</flux:navlist.item>
+                    </flux:navlist.group>
+
+                    <flux:navlist.group :heading="__('Explore')" class="grid">
+                        <flux:navlist.item icon="globe-alt" :href="route('home')" wire:navigate>{{ __('Browse Prompts') }}</flux:navlist.item>
+                        <flux:navlist.item icon="magnifying-glass" :href="route('explore')" wire:navigate>{{ __('Explore') }}</flux:navlist.item>
+                        <flux:navlist.item icon="folder" :href="route('categories.index')" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
+                        <flux:navlist.item icon="cpu-chip" :href="route('models.index')" wire:navigate>{{ __('AI Models') }}</flux:navlist.item>
+                        <flux:navlist.item icon="device-tablet" :href="route('platforms.index')" wire:navigate>{{ __('Platforms') }}</flux:navlist.item>
+                    </flux:navlist.group>
+                @endif
             </flux:navlist>
 
             <flux:spacer />
 
             <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                {{ __('Repository') }}
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                {{ __('Documentation') }}
+                <flux:navlist.item icon="folder-git-2" href="https://github.com/RanaMoizHaider/hintcatch" target="_blank">
+                {{ __('GitHub') }}
                 </flux:navlist.item>
             </flux:navlist>
 
