@@ -48,6 +48,12 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     // Admin Dashboard
     Volt::route('/dashboard', 'admin.dashboard')->name('dashboard');
 });
+
+// User routes
+Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(function () {
+    // User Dashboard
+    Volt::route('/dashboard', 'user.dashboard')->name('dashboard');
+});
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
