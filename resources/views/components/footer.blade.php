@@ -80,7 +80,7 @@
             
             <div class="flex items-center space-x-4">
                 <flux:text size="sm" class="text-zinc-500 dark:text-zinc-400">
-                    Made with ❤️ for the AI community
+                    Made with ❤️ and 🤖 for the AI community
                 </flux:text>
             </div>
         </div>
