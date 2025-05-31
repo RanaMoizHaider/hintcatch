@@ -13,9 +13,8 @@
             href="{{ $editRoute }}" 
             size="sm" 
             variant="ghost"
-        >
-            <flux:icon.pencil class="size-4" />
-        </flux:button>
+            icon="pencil"
+        />
         
         <!-- Delete Button (conditional) -->
         @if($canDelete && $deleteAction)
@@ -25,9 +24,8 @@
                 size="sm"
                 variant="ghost"
                 class="text-red-600 hover:text-red-700"
-            >
-                <flux:icon.trash class="size-4" />
-            </flux:button>
+                icon="trash"
+            />
         @endif
     </div>
 </td>
