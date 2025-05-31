@@ -71,12 +71,12 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the user's gravatar URL
+     * Get the user's avatar URL
      */
-    protected function gravatar(): Attribute
+    protected function avatar(): Attribute
     {
         return Attribute::make(
-            get: fn () => 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($this->email)))
+            get: fn () => 'https://unavatar.io/' . $this->email
         );
     }
 
