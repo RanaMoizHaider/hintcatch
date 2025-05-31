@@ -224,7 +224,7 @@ class extends Component {
         <section class="mb-8">
             <h1 class="text-3xl font-bold mb-4">Explore Prompts</h1>
             <p class="text-zinc-700 dark:text-zinc-400 max-w-2xl mb-6">
-                Discover and filter through thousands of high-quality prompts for various AI platforms and models.
+                Discover and filter through many high-quality prompts for various AI platforms and models.
             </p>
         </section>
 
