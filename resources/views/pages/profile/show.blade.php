@@ -6,7 +6,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 
-new #[Layout('components.layouts.web')] class extends Component {
+new
+#[Layout('components.layouts.web')]
+class extends Component {
     use WithPagination;
 
     public User $user;
@@ -97,7 +99,7 @@ new #[Layout('components.layouts.web')] class extends Component {
     <div class="container mx-auto px-4 py-8">
         <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 mb-8">
             <div class="flex flex-col md:flex-row gap-8 items-start">
-                <img src="{{ $user->gravatar ?? '/placeholder.svg' }}" alt="{{ $user->name }}" class="w-24 h-24 md:w-32 md:h-32 rounded-full">
+                <img src="{{ $user->avatar ?? '/placeholder.svg' }}" alt="{{ $user->name }}" class="w-24 h-24 md:w-32 md:h-32 rounded-full">
 
                 <div class="flex-1">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
@@ -109,14 +111,14 @@ new #[Layout('components.layouts.web')] class extends Component {
                         <div class="flex gap-3">
                             @auth
                                 @if(auth()->id() !== $user->id)
-                                    <button class="px-4 py-2 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 rounded-md hover:bg-zinc-700 dark:hover:bg-zinc-300">Follow</button>
-                                    <button class="px-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800">Message</button>
+                                    <flux:button variant="primary">Follow</flux:button>
+                                    <flux:button variant="outline">Message</flux:button>
                                 @else
-                                    <a href="{{ route('dashboard') }}" class="px-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800">Edit Profile</a>
+                                    <flux:button variant="outline" href="{{ route('dashboard') }}">Edit Profile</flux:button>
                                 @endif
                             @else
-                                <button class="px-4 py-2 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 rounded-md hover:bg-zinc-700 dark:hover:bg-zinc-300">Follow</button>
-                                <button class="px-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800">Message</button>
+                                <flux:button variant="primary">Follow</flux:button>
+                                <flux:button variant="outline">Message</flux:button>
                             @endauth
                         </div>
                     </div>
@@ -126,36 +128,27 @@ new #[Layout('components.layouts.web')] class extends Component {
                     <div class="flex flex-wrap gap-y-2 gap-x-4 text-sm text-zinc-600 dark:text-zinc-400 mb-4">
                         @if($user->location ?? false)
                             <div class="flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
+                                <flux:icon.map-pin class="size-4" />
                                 <span>{{ $user->location }}</span>
                             </div>
                         @endif
 
                         <div class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
+                            <flux:icon.calendar class="size-4" />
                             <span>Joined {{ $user->created_at->format('F Y') }}</span>
                         </div>
 
                         @if($user->twitter ?? false)
                             <div class="flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"></path>
-                                </svg>
-                                <a href="https://twitter.com/{{ $user->twitter }}" target="_blank" class="hover:underline">@{{ $user->twitter }}</a>
+                                <flux:icon.twitter class="size-4" />
+                                <flux:link href="https://twitter.com/{{ $user->twitter }}" target="_blank" variant="ghost" class="hover:underline">@{{ $user->twitter }}</flux:link>
                             </div>
                         @endif
 
                         @if($user->website ?? false)
                             <div class="flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                                </svg>
-                                <a href="{{ $user->website }}" target="_blank" class="hover:underline">{{ parse_url($user->website, PHP_URL_HOST) ?? $user->website }}</a>
+                                <flux:icon.link class="size-4" />
+                                <flux:link href="{{ $user->website }}" target="_blank" class="hover:underline">{{ parse_url($user->website, PHP_URL_HOST) ?? $user->website }}</flux:link>
                             </div>
                         @endif
                     </div>
@@ -181,26 +174,29 @@ new #[Layout('components.layouts.web')] class extends Component {
                 </div>
             </div>
         </div>        <div>
-            <div class="flex space-x-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg mb-6 w-fit">
-                <button 
+            <flux:button.group class="mb-6">
+                <flux:button 
                     wire:click="setActiveTab('prompts')"
-                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ease-in-out {{ $activeTab === 'prompts' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}"
+                    variant="{{ $activeTab === 'prompts' ? 'filled' : 'subtle' }}"
+                    size="sm"
                 >
                     Prompts ({{ $this->stats['prompts_count'] }})
-                </button>
-                <button 
+                </flux:button>
+                <flux:button 
                     wire:click="setActiveTab('liked')"
-                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ease-in-out {{ $activeTab === 'liked' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}"
+                    variant="{{ $activeTab === 'liked' ? 'filled' : 'subtle' }}"
+                    size="sm"
                 >
                     Liked
-                </button>
-                <button 
+                </flux:button>
+                <flux:button 
                     wire:click="setActiveTab('collections')"
-                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ease-in-out {{ $activeTab === 'collections' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}"
+                    variant="{{ $activeTab === 'collections' ? 'filled' : 'subtle' }}"
+                    size="sm"
                 >
                     Collections
-                </button>
-            </div>
+                </flux:button>
+            </flux:button.group>
 
             <div class="min-h-[400px]" wire:loading.class="opacity-50" wire:target="setActiveTab">
                 @if($activeTab === 'prompts')
@@ -259,15 +255,11 @@ new #[Layout('components.layouts.web')] class extends Component {
                 @endif
 
                 @if($activeTab === 'collections')
-                    <div class="text-center py-12">
-                        <svg class="mx-auto h-12 w-12 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">Collections coming soon</h3>
-                        <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                            Collections feature will be available soon.
-                        </p>
-                    </div>
+                    <x-empty-state 
+                        icon="archive-box"
+                        title="Collections coming soon"
+                        description="Collections feature will be available soon."
+                    />
                 @endif
             </div>
         </div>

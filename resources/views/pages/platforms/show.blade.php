@@ -6,7 +6,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 
-new #[Layout('components.layouts.web')] class extends Component {
+new
+#[Layout('components.layouts.web')]
+class extends Component {
     use WithPagination;
 
     public Platform $platform;
@@ -45,12 +47,10 @@ new #[Layout('components.layouts.web')] class extends Component {
     <div class="container mx-auto px-4 py-8">
         <!-- Breadcrumb -->
         <nav class="mb-6">
-            <a href="{{ route('platforms.index') }}" class="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Back to Platforms
-            </a>
+            <flux:breadcrumbs>
+                <flux:breadcrumbs.item href="{{ route('platforms.index') }}">Platforms</flux:breadcrumbs.item>
+                <flux:breadcrumbs.item>{{ $platform->name }}</flux:breadcrumbs.item>
+            </flux:breadcrumbs>
         </nav>
 
         <!-- Platform Header -->
@@ -75,9 +75,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                         <div class="space-y-2">
                             @foreach($platform->features as $feature)
                                 <div class="flex items-start">
-                                    <svg class="w-4 h-4 text-zinc-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
+                                    <flux:icon.check class="size-4 text-zinc-500 mr-2 mt-0.5 shrink-0" />
                                     <span class="text-sm text-zinc-600 dark:text-zinc-400">{{ $feature }}</span>
                                 </div>
                             @endforeach
@@ -91,9 +89,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                         <div class="space-y-2">
                             @foreach($platform->best_practices as $practice)
                                 <div class="flex items-start">
-                                    <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
+                                    <flux:icon.check class="size-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                                     <span class="text-sm text-zinc-600 dark:text-zinc-400">{{ $practice }}</span>
                                 </div>
                             @endforeach
@@ -111,39 +107,45 @@ new #[Layout('components.layouts.web')] class extends Component {
 
             <!-- Tab Navigation -->
             <div class="flex items-center justify-between mb-6">
-                <div class="flex space-x-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg">
-                    <button 
+                <flux:button.group>
+                    <flux:button 
                         wire:click="setActiveTab('trending')"
-                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors {{ $activeTab === 'trending' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-zinc-700/50' }}">
+                        variant="{{ $activeTab === 'trending' ? 'filled' : 'subtle' }}"
+                        size="sm"
+                    >
                         Trending
-                    </button>
-                    <button 
+                    </flux:button>
+                    <flux:button 
                         wire:click="setActiveTab('newest')"
-                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors {{ $activeTab === 'newest' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-zinc-700/50' }}">
+                        variant="{{ $activeTab === 'newest' ? 'filled' : 'subtle' }}"
+                        size="sm"
+                    >
                         Newest
-                    </button>
-                    <button 
+                    </flux:button>
+                    <flux:button 
                         wire:click="setActiveTab('popular')"
-                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors {{ $activeTab === 'popular' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-zinc-700/50' }}">
+                        variant="{{ $activeTab === 'popular' ? 'filled' : 'subtle' }}"
+                        size="sm"
+                    >
                         Popular
-                    </button>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button 
+                    </flux:button>
+                </flux:button.group>
+                <flux:button.group>
+                    <flux:button 
                         wire:click="$set('viewMode', 'grid')"
-                        class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'grid' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                        </svg>
-                    </button>
-                    <button 
+                        variant="{{ $viewMode === 'grid' ? 'filled' : 'outline' }}"
+                        icon="squares-2x2"
+                        size="sm"
+                        square
+                    />
+                    <flux:button 
                         wire:click="$set('viewMode', 'list')"
-                        class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'list' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+                        variant="{{ $viewMode === 'list' ? 'filled' : 'outline' }}"
+                        icon="bars-3"
+                        size="sm"
+                        square
+                    />
+                </flux:button.group>
             </div>
             
             <!-- Prompts Grid/List -->

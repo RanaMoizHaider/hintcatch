@@ -1,15 +1,24 @@
 <?php
 
 use App\Models\Prompt;
+use App\Models\Category;
+use App\Models\User;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.web')] class extends Component {
+new
+#[Layout('components.layouts.web')]
+class extends Component {
     public $trendingPrompts;
     public $newestPrompts;
     public $popularPrompts;
     public $featuredPrompts;
     public $viewMode = 'grid';
+    public $activeTab = 'trending';
+    
+    public $totalPrompts;
+    public $totalCategories;
+    public $totalUsers;
 
     public function mount()
     {
@@ -32,39 +41,97 @@ new #[Layout('components.layouts.web')] class extends Component {
             ->take(12)
             ->get();
             
-        $this->featuredPrompts = Prompt::featured()
+        $this->featuredPrompts = Prompt::where('featured', true)
             ->with(['user', 'tags', 'category'])
             ->withViewsCount()
             ->take(6)
             ->get();
+            
+        // Get real statistics
+        $this->totalPrompts = Prompt::count();
+        $this->totalCategories = Category::count();
+        $this->totalUsers = User::count();
     }
 }; ?>
 
 <div>
     <x-slot name="title">Hint Catch - Modern AI Prompts Directory</x-slot>
     
-    <div class="container mx-auto px-4 py-8">
-        <section class="mb-12 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Discover the Best AI Prompts</h1>
-            <p class="text-lg text-zinc-700 dark:text-zinc-400 max-w-2xl mx-auto mb-8">
-                Find, share, and use high-quality prompts for your favorite AI platforms and models
-            </p>
-            <div class="relative max-w-xl mx-auto">
-                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <input 
-                    type="text" 
-                    placeholder="Search for prompts..." 
-                    class="pl-10 h-12 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 focus:outline-none focus:ring-2 focus:ring-zinc-500"
-                    wire:keydown.enter="$dispatch('search', { query: $event.target.value })"
+    <!-- Hero Section -->
+    <section class="py-16 md:py-24">
+        <div class="text-center max-w-4xl mx-auto">
+            <!-- Main Heading -->
+            <flux:heading size="4xl" level="1" class="md:text-5xl lg:text-6xl tracking-tight mb-6">
+                Discover the Best 
+                <span class="text-zinc-600 dark:text-zinc-400">AI Prompts</span>
+            </flux:heading>
+            
+            <!-- Subtitle -->
+            <flux:subheading size="lg" class="md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed">
+                <span class="font-semibold text-zinc-800 dark:text-zinc-200">All you need is a hint to catch your pace</span><br>
+                Find, share, and use high-quality prompts for ChatGPT, Claude, Gemini, and other AI platforms. 
+                Boost your productivity with proven templates from our community.
+            </flux:subheading>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+                <flux:button 
+                    href="{{ route('explore') }}" 
+                    variant="filled" 
+                    size="base"
+                    class="px-8 py-4"
+                    icon:trailing=arrow-right
+                    wire:navigate
                 >
+                    Explore Prompts
+                </flux:button>
+                
+                @auth
+                    <flux:button 
+                        href="{{ route('user.prompts.create') }}" 
+                        variant="outline" 
+                        size="base"
+                        class="px-8 py-4"
+                        wire:navigate
+                    >
+                        Submit a Prompt
+                    </flux:button>
+                @else
+                    <flux:button 
+                        href="{{ route('register') }}" 
+                        variant="outline" 
+                        size="base"
+                        class="px-8 py-4"
+                        wire:navigate
+                    >
+                        Join Community
+                    </flux:button>
+                @endauth
             </div>
-        </section>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
+                <div class="text-center">
+                    <flux:heading size="xl" class="text-zinc-900 dark:text-zinc-100 mb-2">{{ number_format($totalPrompts) }}</flux:heading>
+                    <flux:text class="text-zinc-600 dark:text-zinc-400">Curated Prompts</flux:text>
+                </div>
+                <div class="text-center">
+                    <flux:heading size="xl" class="text-zinc-900 dark:text-zinc-100 mb-2">{{ number_format($totalCategories) }}</flux:heading>
+                    <flux:text class="text-zinc-600 dark:text-zinc-400">Categories</flux:text>
+                </div>
+                <div class="text-center">
+                    <flux:heading size="xl" class="text-zinc-900 dark:text-zinc-100 mb-2">{{ number_format($totalUsers) }}</flux:heading>
+                    <flux:text class="text-zinc-600 dark:text-zinc-400">Community Members</flux:text>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mx-auto px-4 py-8">
 
         @if($featuredPrompts->count() > 0)
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6">Featured Prompts</h2>
+            <flux:heading size="2xl" class="mb-6">Featured Prompts</flux:heading>
             <x-card-grid>
                 @foreach($featuredPrompts as $prompt)
                     <livewire:components.prompt-card :prompt="$prompt" :linkable="true" wire:key="featured-{{ $prompt->id }}" />
@@ -76,32 +143,32 @@ new #[Layout('components.layouts.web')] class extends Component {
         <div class="flex flex-col md:flex-row gap-8">
             <!-- Main Content -->
             <div class="flex-1">
-                <div x-data="{ activeTab: 'trending' }">
+                <div>
                     <div class="flex items-center justify-between mb-4">
-                        <div class="flex space-x-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg">
-                            <button @click="activeTab = 'trending'" :class="{ 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white': activeTab === 'trending' }" class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700">Trending</button>
-                            <button @click="activeTab = 'newest'" :class="{ 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white': activeTab === 'newest' }" class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700">Newest</button>
-                            <button @click="activeTab = 'popular'" :class="{ 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white': activeTab === 'popular' }" class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700">Popular</button>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button 
+                        <flux:button.group>
+                            <flux:button wire:click="$set('activeTab', 'trending')" variant="{{ $activeTab === 'trending' ? 'filled' : 'subtle' }}" size="sm">Trending</flux:button>
+                            <flux:button wire:click="$set('activeTab', 'newest')" variant="{{ $activeTab === 'newest' ? 'filled' : 'subtle' }}" size="sm">Newest</flux:button>
+                            <flux:button wire:click="$set('activeTab', 'popular')" variant="{{ $activeTab === 'popular' ? 'filled' : 'subtle' }}" size="sm">Popular</flux:button>
+                        </flux:button.group>
+                        <flux:button.group>
+                            <flux:button 
                                 wire:click="$set('viewMode', 'grid')"
-                                class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'grid' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                                </svg>
-                            </button>
-                            <button 
+                                variant="{{ $viewMode === 'grid' ? 'filled' : 'outline' }}"
+                                icon="squares-2x2"
+                                size="sm"
+                                square
+                            />
+                            <flux:button 
                                 wire:click="$set('viewMode', 'list')"
-                                class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'list' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                                </svg>
-                            </button>
-                        </div>
+                                variant="{{ $viewMode === 'list' ? 'filled' : 'outline' }}"
+                                icon="bars-3"
+                                size="sm"
+                                square
+                            />
+                        </flux:button.group>
                     </div>
                     
-                    <div x-show="activeTab === 'trending'">
+                    @if($activeTab === 'trending')
                         @if($viewMode === 'grid')
                             <x-card-grid>
                                 @foreach($trendingPrompts as $prompt)
@@ -115,9 +182,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                                 @endforeach
                             </div>
                         @endif
-                    </div>
-
-                    <div x-show="activeTab === 'newest'">
+                    @elseif($activeTab === 'newest')
                         @if($viewMode === 'grid')
                             <x-card-grid>
                                 @foreach($newestPrompts as $prompt)
@@ -131,9 +196,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                                 @endforeach
                             </div>
                         @endif
-                    </div>
-
-                    <div x-show="activeTab === 'popular'">
+                    @elseif($activeTab === 'popular')
                         @if($viewMode === 'grid')
                             <x-card-grid>
                                 @foreach($popularPrompts as $prompt)
@@ -147,7 +210,7 @@ new #[Layout('components.layouts.web')] class extends Component {
                                 @endforeach
                             </div>
                         @endif
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>

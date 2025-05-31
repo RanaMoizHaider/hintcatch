@@ -4,7 +4,9 @@ use App\Models\Category;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.web')] class extends Component {
+new
+#[Layout('components.layouts.web')]
+class extends Component {
     public $search = '';
     public $sortBy = 'popular'; // popular, newest, name
 
@@ -59,24 +61,21 @@ new #[Layout('components.layouts.web')] class extends Component {
         <div class="mb-8">
             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 <div class="relative flex-1 max-w-md">
-                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input 
+                    <flux:input 
                         type="text" 
                         wire:model.live.debounce.300ms="search"
                         placeholder="Search categories..." 
-                        class="w-full pl-10 pr-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:border-transparent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
-                    >
+                        icon="magnifying-glass"
+                    />
                 </div>
                 
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-zinc-700 dark:text-zinc-400">Sort by:</span>
-                    <select wire:model.live="sortBy" class="px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100">
-                        <option value="popular">Popular</option>
-                        <option value="newest">Newest</option>
-                        <option value="name">Name</option>
-                    </select>
+                    <flux:select wire:model.live="sortBy" size="sm">
+                        <flux:select.option value="popular">Popular</flux:select.option>
+                        <flux:select.option value="newest">Newest</flux:select.option>
+                        <flux:select.option value="name">Name</flux:select.option>
+                    </flux:select>
                 </div>
             </div>
         </div>
@@ -84,48 +83,46 @@ new #[Layout('components.layouts.web')] class extends Component {
         <!-- Categories Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($this->categories as $category)
-                <a href="{{ route('categories.show', $category->slug) }}" class="block group h-full" wire:key="category-{{ $category->id }}">
-                    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-all duration-200 group-hover:border-zinc-400 dark:group-hover:border-zinc-500 h-full flex flex-col">
-                        <div class="flex items-start justify-between mb-3">
-                            <h2 class="text-xl font-medium text-zinc-900 dark:text-white group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
+                <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 hover:shadow-md transition-all duration-200 hover:border-zinc-400 dark:hover:border-zinc-500 h-full flex flex-col" wire:key="category-{{ $category->id }}">
+                    <div class="flex items-start justify-between mb-3">
+                        <h2 class="text-xl font-medium text-zinc-900 dark:text-white transition-colors">
+                            <flux:link href="{{ route('categories.show', $category->slug) }}" variant="ghost" class="hover:text-zinc-700 dark:hover:text-zinc-300">
                                 {{ $category->name }}
-                            </h2>
-                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 ml-2 shrink-0">
-                                {{ $category->prompts_count }}
-                            </span>
-                        </div>
-                        
-                        @if($category->description)
-                            <p class="text-sm text-zinc-700 dark:text-zinc-400 mb-4 line-clamp-3 flex-1">
-                                {{ $category->description }}
-                            </p>
-                        @endif
-
-                        @if($category->children->count() > 0)
-                            <div class="space-y-2 mt-auto">
-                                <h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Subcategories:</h3>
-                                <div class="flex flex-wrap gap-1">
-                                    @foreach($category->children->take(3) as $child)
-                                        <livewire:components.badge 
-                                            variant="primary" 
-                                            size="xs" 
-                                            text="{{ $child->name }}" 
-                                            wire:key="subcategory-{{ $category->id }}-{{ $child->id }}"
-                                        />
-                                    @endforeach
-                                    @if($category->children->count() > 3)
-                                        <livewire:components.badge 
-                                            variant="secondary" 
-                                            size="xs" 
-                                            text="+{{ $category->children->count() - 3 }} more" 
-                                            wire:key="subcategory-more-{{ $category->id }}"
-                                        />
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
+                            </flux:link>
+                        </h2>
+                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 ml-2 shrink-0">
+                            {{ $category->prompts_count }}
+                        </span>
                     </div>
-                </a>
+                        
+                    @if($category->description)
+                        <p class="text-sm text-zinc-700 dark:text-zinc-400 mb-4 line-clamp-3 flex-1">
+                            {{ $category->description }}
+                        </p>
+                    @endif
+
+                    @if($category->children->count() > 0)
+                        <div class="space-y-2 mt-auto">
+                            <h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Subcategories:</h3>
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($category->children->take(3) as $child)
+                                    <flux:badge 
+                                        color="blue" 
+                                        size="sm" 
+                                        wire:key="subcategory-{{ $category->id }}-{{ $child->id }}"
+                                    >{{ $child->name }}</flux:badge>
+                                @endforeach
+                                @if($category->children->count() > 3)
+                                    <flux:badge 
+                                        color="zinc" 
+                                        size="sm" 
+                                        wire:key="subcategory-more-{{ $category->id }}"
+                                    >+{{ $category->children->count() - 3 }} more</flux:badge>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+                </div>
             @empty
                 <x-empty-state 
                     icon="tag"

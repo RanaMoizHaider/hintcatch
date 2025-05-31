@@ -6,7 +6,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 
-new #[Layout('components.layouts.web')] class extends Component {
+new
+#[Layout('components.layouts.web')]
+class extends Component {
     use WithPagination;
 
     public Category $category;
@@ -45,18 +47,13 @@ new #[Layout('components.layouts.web')] class extends Component {
     <div class="container mx-auto px-4 py-8">
         <!-- Breadcrumb -->
         <nav class="mb-6">
-            <a href="{{ route('categories.index') }}" class="inline-flex items-center text-sm text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Back to Categories
-            </a>
-            @if($category->parent)
-                <span class="mx-2 text-zinc-400">/</span>
-                <a href="{{ route('categories.show', $category->parent->slug) }}" class="text-sm text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                    {{ $category->parent->name }}
-                </a>
-            @endif
+            <flux:breadcrumbs>
+                <flux:breadcrumbs.item href="{{ route('categories.index') }}">Categories</flux:breadcrumbs.item>
+                @if($category->parent)
+                    <flux:breadcrumbs.item href="{{ route('categories.show', $category->parent->slug) }}">{{ $category->parent->name }}</flux:breadcrumbs.item>
+                @endif
+                <flux:breadcrumbs.item>{{ $category->name }}</flux:breadcrumbs.item>
+            </flux:breadcrumbs>
         </nav>
 
         <!-- Category Header -->
@@ -81,11 +78,12 @@ new #[Layout('components.layouts.web')] class extends Component {
                 <h2 class="text-lg font-medium mb-4">Subcategories</h2>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                     @foreach($category->children as $subcategory)
-                        <a href="{{ route('categories.show', $subcategory->slug) }}" 
-                           class="px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-center text-zinc-700 dark:text-zinc-300">
-                            <div class="font-medium">{{ $subcategory->name }}</div>
+                        <div class="px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-center">
+                            <flux:link href="{{ route('categories.show', $subcategory->slug) }}" variant="ghost" class="font-medium text-zinc-700 dark:text-zinc-300 hover:underline">
+                                {{ $subcategory->name }}
+                            </flux:link>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{{ $subcategory->prompts()->count() }}</div>
-                        </a>
+                        </div>
                     @endforeach
                 </div>
             </div>
@@ -99,39 +97,45 @@ new #[Layout('components.layouts.web')] class extends Component {
 
             <!-- Tab Navigation -->
             <div class="flex items-center justify-between mb-6">
-                <div class="flex space-x-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg">
-                    <button 
+                <flux:button.group>
+                    <flux:button 
                         wire:click="setActiveTab('trending')"
-                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-zinc-700 dark:text-zinc-300 {{ $activeTab === 'trending' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}">
+                        variant="{{ $activeTab === 'trending' ? 'filled' : 'subtle' }}"
+                        size="sm"
+                    >
                         Trending
-                    </button>
-                    <button 
+                    </flux:button>
+                    <flux:button 
                         wire:click="setActiveTab('newest')"
-                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-zinc-700 dark:text-zinc-300 {{ $activeTab === 'newest' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}">
+                        variant="{{ $activeTab === 'newest' ? 'filled' : 'subtle' }}"
+                        size="sm"
+                    >
                         Newest
-                    </button>
-                    <button 
+                    </flux:button>
+                    <flux:button 
                         wire:click="setActiveTab('popular')"
-                        class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors text-zinc-700 dark:text-zinc-300 {{ $activeTab === 'popular' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700' }}">
+                        variant="{{ $activeTab === 'popular' ? 'filled' : 'subtle' }}"
+                        size="sm"
+                    >
                         Popular
-                    </button>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button 
+                    </flux:button>
+                </flux:button.group>
+                <flux:button.group>
+                    <flux:button 
                         wire:click="$set('viewMode', 'grid')"
-                        class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'grid' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                        </svg>
-                    </button>
-                    <button 
+                        variant="{{ $viewMode === 'grid' ? 'filled' : 'outline' }}"
+                        icon="squares-2x2"
+                        size="sm"
+                        square
+                    />
+                    <flux:button 
                         wire:click="$set('viewMode', 'list')"
-                        class="p-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors {{ $viewMode === 'list' ? 'bg-white dark:bg-zinc-700' : '' }} text-zinc-700 dark:text-zinc-300">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+                        variant="{{ $viewMode === 'list' ? 'filled' : 'outline' }}"
+                        icon="bars-3"
+                        size="sm"
+                        square
+                    />
+                </flux:button.group>
             </div>
             
             <!-- Prompts Grid/List -->
