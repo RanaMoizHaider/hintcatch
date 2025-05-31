@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasSlug;
 use CyrildeWit\EloquentViewable\Contracts\Viewable;
 use CyrildeWit\EloquentViewable\InteractsWithViews;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -16,14 +17,13 @@ use Spatie\Tags\HasTags;
 class Prompt extends Model implements Viewable
 {
     /** @use HasFactory<\Database\Factories\PromptFactory> */
-    use HasFactory, InteractsWithViews, HasTags;
+    use HasFactory, InteractsWithViews, HasTags, HasSlug;
 
     protected $guarded = [];
 
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
+    // Slug configuration
+    protected $slugSource = 'title';
+    protected $slugColumn = 'slug';
 
     public function user(): BelongsTo
     {

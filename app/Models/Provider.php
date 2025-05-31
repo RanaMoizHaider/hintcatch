@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class Provider extends Model
 {
     /** @use HasFactory<\Database\Factories\ProviderFactory> */
-    use HasFactory;
+    use HasFactory, HasSlug;
 
     protected $fillable = [
         'name',
@@ -25,16 +26,15 @@ class Provider extends Model
         'is_active',
     ];
 
+    // Slug configuration
+    protected $slugSource = 'name';
+    protected $slugColumn = 'slug';
+
     protected $casts = [
         'supported_features' => 'array',
         'pricing_model' => 'array',
         'is_active' => 'boolean',
     ];
-
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
 
     public function aiModels(): HasMany
     {
