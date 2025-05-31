@@ -53,7 +53,14 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(function () {
     // User Dashboard
     Volt::route('/dashboard', 'user.dashboard')->name('dashboard');
+
+    // User Prompts Management
+    Volt::route('/prompts', 'user.prompts.index')->name('prompts.index');
+    Volt::route('/prompts/create', 'user.prompts.create')->name('prompts.create');
+    Volt::route('/prompts/{prompt}/edit', 'user.prompts.edit')->name('prompts.edit');
 });
+
+// Settings routes
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 

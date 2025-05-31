@@ -4,7 +4,9 @@ use App\Models\Prompt;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.app')] class extends Component {
+new
+#[Layout('components.layouts.app')]
+class extends Component {
     public $totalPrompts;
     public $publicPrompts;
     public $favoritePrompts;
@@ -81,8 +83,7 @@ new #[Layout('components.layouts.app')] class extends Component {
     description="Here's what's happening with your prompts"
 >
     <x-slot name="actions">
-        <flux:button wire:navigate href="{{ route('user.prompts.create') }}" variant="primary">
-            <flux:icon.plus class="size-4" />
+        <flux:button wire:navigate href="{{ route('user.prompts.create') }}" variant="primary" icon="plus">
             Create Prompt
         </flux:button>
     </x-slot>
@@ -176,8 +177,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                         <flux:heading size="lg" class="mt-2">No prompts yet</flux:heading>
                         <flux:text size="sm" class="mt-1 text-zinc-500 dark:text-zinc-400">Get started by creating your first prompt.</flux:text>
                         <div class="mt-6">
-                            <flux:button wire:navigate href="{{ route('user.prompts.create') }}" variant="primary" size="sm">
-                                <flux:icon.plus class="size-4" />
+                            <flux:button wire:navigate href="{{ route('user.prompts.create') }}" variant="primary" size="sm" icon="plus">
                                 Create Prompt
                             </flux:button>
                         </div>
