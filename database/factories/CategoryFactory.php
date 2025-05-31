@@ -24,7 +24,7 @@ class CategoryFactory extends Factory
             'description' => $this->faker->sentence(),
             'image' => $this->faker->imageUrl(400, 300, 'tech'),
             'color' => $this->faker->hexColor(),
-            'icon' => 'heroicon-o-'.$this->faker->randomElement(['code-bracket', 'cpu-chip', 'cog', 'light-bulb', 'academic-cap']),
+            'icon' => 'heroicon-o-'.$this->faker->randomElement(['code-bracket', 'cpu-chip', 'cog-6-tooth', 'light-bulb', 'academic-cap']),
             'parent_id' => null,
         ];
     }

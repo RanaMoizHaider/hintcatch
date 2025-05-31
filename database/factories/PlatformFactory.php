@@ -22,9 +22,9 @@ class PlatformFactory extends Factory
             'name' => $name,
             'slug' => \Str::slug($name),
             'description' => $this->faker->sentence(),
-            'image' => $this->faker->imageUrl(400, 300, 'tech'),
-            'color' => $this->faker->hexColor(),
-            'icon' => 'heroicon-o-'.$this->faker->randomElement(['cpu-chip', 'bolt', 'sparkles', 'beaker']),
+            'website' => $this->faker->url(),
+            'logo' => $this->faker->imageUrl(400, 300, 'tech'),
+            'open_in_format' => $this->faker->randomElement(['_blank', '_self']),
             'features' => $this->faker->sentences(rand(1, 5)),
             'best_practices' => $this->faker->sentences(rand(1, 5)),
         ];
