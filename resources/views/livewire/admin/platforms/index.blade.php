@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Provider;
+use App\Models\Platform;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
@@ -32,58 +32,58 @@ class extends Component {
 
     public function delete($id): void
     {
-        $provider = Provider::find($id);
-        if ($provider && $provider->aiModels()->count() === 0) {
-            $provider->delete();
-            session()->flash('success', 'Provider deleted successfully.');
+        $platform = Platform::find($id);
+        if ($platform && $platform->prompts()->count() === 0) {
+            $platform->delete();
+            session()->flash('success', 'Platform deleted successfully.');
         } else {
-            session()->flash('error', 'Cannot delete provider with associated AI models.');
+            session()->flash('error', 'Cannot delete platform with associated prompts.');
         }
     }
 
     public function with(): array
     {
-        $providers = Provider::query()
+        $platforms = Platform::query()
             ->when($this->search, function($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                       ->orWhere('description', 'like', '%' . $this->search . '%');
             })
-            ->withCount('aiModels')
+            ->withCount('prompts')
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(15);
 
         return [
-            'providers' => $providers,
-            'title' => 'Providers Management'
+            'platforms' => $platforms,
+            'title' => 'Platforms Management'
         ];
     }
 }; ?>
 
 <div class="space-y-6">
     <x-page-heading 
-        title="Providers" 
-        description="Manage AI providers and their information"
+        title="Platforms" 
+        description="Manage AI platforms and their information"
     >
         <x-slot name="actions">
-            <flux:button href="{{ route('admin.providers.create') }}" variant="primary" icon="plus" wire:navigate>
-                Add Provider
+            <flux:button href="{{ route('admin.platforms.create') }}" variant="primary" icon="plus" wire:navigate>
+                Add Platform
             </flux:button>
         </x-slot>
     </x-page-heading>
 
     <!-- Search and Filters -->
     <x-admin-search-filters 
-        search-placeholder="Search providers..."
+        search-placeholder="Search platforms..."
     />
 
-    <!-- Providers Table -->
+    <!-- Platforms Table -->
     <x-admin-table 
-        :items="$providers"
-        empty-icon="building-office"
-        empty-title="No providers"
-        empty-description="Get started by creating a new provider."
-        :create-route="route('admin.providers.create')"
-        create-text="Add Provider"
+        :items="$platforms"
+        empty-icon="device-tablet"
+        empty-title="No platforms"
+        empty-description="Get started by creating a new platform."
+        :create-route="route('admin.platforms.create')"
+        create-text="Add Platform"
     >
         <x-slot name="header">
             <tr>
@@ -93,8 +93,8 @@ class extends Component {
                 <x-admin-table-header>
                     Description
                 </x-admin-table-header>
-                <x-admin-table-header sortable field="ai_models_count" :sort-by="$sortBy" :sort-direction="$sortDirection">
-                    AI Models
+                <x-admin-table-header sortable field="prompts_count" :sort-by="$sortBy" :sort-direction="$sortDirection">
+                    Prompts
                 </x-admin-table-header>
                 <x-admin-table-header sortable field="created_at" :sort-by="$sortBy" :sort-direction="$sortDirection">
                     Created
@@ -105,26 +105,26 @@ class extends Component {
             </tr>
         </x-slot>
 
-        @foreach($providers as $provider)
+        @foreach($platforms as $platform)
             <x-admin-table-row>
                 <td class="px-6 py-4">
-                    <div class="font-medium text-zinc-900 dark:text-white">{{ $provider->name }}</div>
+                    <div class="font-medium text-zinc-900 dark:text-white">{{ $platform->name }}</div>
                 </td>
                 <td class="px-6 py-4">
                     <div class="text-sm text-zinc-600 dark:text-zinc-400">
-                        {{ Str::limit($provider->description, 100) }}
+                        {{ Str::limit($platform->description, 100) }}
                     </div>
                 </td>
                 <td class="px-6 py-4">
-                    <flux:badge variant="outline">{{ $provider->ai_models_count }}</flux:badge>
+                    <flux:badge variant="outline">{{ $platform->prompts_count }}</flux:badge>
                 </td>
                 <td class="px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">
-                    {{ $provider->created_at->format('M j, Y') }}
+                    {{ $platform->created_at->format('M j, Y') }}
                 </td>
                 <x-admin-table-actions 
-                    :edit-route="route('admin.providers.edit', $provider)"
-                    :delete-action="'delete(' . $provider->id . ')'"
-                    delete-confirm="Are you sure you want to delete this provider?"
+                    :edit-route="route('admin.platforms.edit', $platform)"
+                    :delete-action="'delete(' . $platform->id . ')'"
+                    delete-confirm="Are you sure you want to delete this platform?"
                 />
             </x-admin-table-row>
         @endforeach

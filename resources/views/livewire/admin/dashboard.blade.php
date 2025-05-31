@@ -4,7 +4,9 @@ use App\Models\{AiModel, Category, Platform, Prompt, Provider, User};
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.app')] class extends Component {
+new
+#[Layout('components.layouts.app')]
+class extends Component {
     public $totalPrompts;
     public $totalUsers;
     public $publicPrompts;

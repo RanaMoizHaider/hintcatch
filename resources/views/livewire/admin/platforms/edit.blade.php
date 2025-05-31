@@ -2,68 +2,80 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
-use App\Models\AiModel;
-use App\Models\Provider;
+use App\Models\Platform;
 use Illuminate\Support\Str;
 
 new
 #[Layout('components.layouts.app')]
 class extends Component {
+    public Platform $platform;
     public $name = '';
     public $description = '';
-    public $provider_id = '';
+    public $website = '';
     public $image = '';
     public $color = '';
     public $icon = '';
-    public $release_date = '';
     public $features = [];
+    public $best_practices = [];
 
-    protected $rules = [
-        'name' => 'required|string|max:255|unique:ai_models,name',
-        'description' => 'nullable|string|max:1000',
-        'provider_id' => 'required|exists:providers,id',
-        'image' => 'nullable|url|max:255',
-        'color' => 'nullable|string|max:7',
-        'icon' => 'nullable|string|max:255',
-        'release_date' => 'nullable|date',
-    ];
+    public function mount(Platform $platform)
+    {
+        $this->platform = $platform;
+        $this->name = $platform->name;
+        $this->description = $platform->description;
+        $this->website = $platform->website;
+        $this->image = $platform->image;
+        $this->color = $platform->color;
+        $this->icon = $platform->icon;
+        $this->features = $platform->features ?? [];
+        $this->best_practices = $platform->best_practices ?? [];
+    }
+
+    protected function rules()
+    {
+        return [
+            'name' => 'required|string|max:255|unique:platforms,name,' . $this->platform->id,
+            'description' => 'nullable|string|max:1000',
+            'website' => 'nullable|url|max:255',
+            'image' => 'nullable|url|max:255',
+            'color' => 'nullable|string|max:7',
+            'icon' => 'nullable|string|max:255',
+        ];
+    }
 
     public function save()
     {
         $this->validate();
 
-        AiModel::create([
+        $this->platform->update([
             'name' => $this->name,
             'slug' => Str::slug($this->name),
             'description' => $this->description,
-            'provider_id' => $this->provider_id,
+            'website' => $this->website,
             'image' => $this->image,
             'color' => $this->color,
             'icon' => $this->icon,
-            'release_date' => $this->release_date,
             'features' => $this->features,
+            'best_practices' => $this->best_practices,
         ]);
 
-        session()->flash('success', 'AI Model created successfully.');
-        return redirect()->route('admin.ai-models.index');
+        session()->flash('success', 'Platform updated successfully.');
+        return redirect()->route('admin.platforms.index');
     }
 
     public function with(): array
     {
-        $providers = Provider::where('is_active', true)->orderBy('name')->get();
-        
         return [
-            'title' => 'Create AI Model',
-            'providers' => $providers
+            'title' => 'Edit Platform'
         ];
     }
 }; ?>
 
 <div class="max-w-2xl mx-auto">
     <x-page-heading 
-        title="Create AI Model" 
-        description="Add a new AI model to the system"
-    />
+    title="Edit Platform" 
+    description="Update platform information"
+/>
 
     <form wire:submit="save" class="space-y-6">
         <div class="bg-white rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 p-6">
@@ -72,28 +84,24 @@ class extends Component {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <flux:field>
-                        <flux:label>Model Name *</flux:label>
-                        <flux:input wire:model="name" placeholder="e.g., GPT-4, Claude 3.5" />
+                        <flux:label>Platform Name *</flux:label>
+                        <flux:input wire:model="name" placeholder="e.g., WordPress, React, Next.js" />
                         <flux:error name="name" />
                     </flux:field>
                 </div>
 
                 <div>
                     <flux:field>
-                        <flux:label>Provider *</flux:label>
-                        <flux:select wire:model="provider_id" placeholder="Select provider">
-                            @foreach($providers as $provider)
-                                <flux:select.option value="{{ $provider->id }}">{{ $provider->name }}</flux:select.option>
-                            @endforeach
-                        </flux:select>
-                        <flux:error name="provider_id" />
+                        <flux:label>Website</flux:label>
+                        <flux:input wire:model="website" type="url" placeholder="https://example.com" />
+                        <flux:error name="website" />
                     </flux:field>
                 </div>
 
                 <div class="md:col-span-2">
                     <flux:field>
                         <flux:label>Description</flux:label>
-                        <flux:textarea wire:model="description" placeholder="Brief description of the AI model" rows="3" />
+                        <flux:textarea wire:model="description" placeholder="Brief description of the platform" rows="3" />
                         <flux:error name="description" />
                     </flux:field>
                 </div>
@@ -114,32 +122,22 @@ class extends Component {
                     </flux:field>
                 </div>
 
-                <div>
+                <div class="md:col-span-2">
                     <flux:field>
                         <flux:label>Icon</flux:label>
-                        <flux:input wire:model="icon" placeholder="e.g., fa-robot, heroicon-cpu" />
+                        <flux:input wire:model="icon" placeholder="e.g., fa-wordpress, heroicon-react" />
                         <flux:error name="icon" />
-                    </flux:field>
-                </div>
-
-                <div>
-                    <flux:field>
-                        <flux:label>Release Date</flux:label>
-                        <flux:input wire:model="release_date" type="date" />
-                        <flux:error name="release_date" />
                     </flux:field>
                 </div>
             </div>
         </div>
 
         <div class="flex justify-end gap-3">
-            <flux:button variant="ghost" href="{{ route('admin.ai-models.index') }}">
+            <flux:button variant="ghost" href="{{ route('admin.platforms.index') }}">
                 Cancel
             </flux:button>
-            <flux:button type="submit" variant="primary" icon="plus">
-                Create AI Model
-            </flux:button>
-        </div>
+            <flux:button type="submit" variant="primary" icon="check">
+                Update Platform
             </flux:button>
         </div>
     </form>

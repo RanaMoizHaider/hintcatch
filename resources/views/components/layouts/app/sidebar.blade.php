@@ -36,7 +36,7 @@
                     </flux:navlist.group>
 
                     <flux:navlist.group :heading="__('My Content')" class="grid">
-                        <flux:navlist.item icon="chat-bubble-left-right" :href="route('user.prompts.index')" :current="request()->routeIs('user.prompts.*')" wire:navigate>{{ __('My Prompts') }}</flux:navlist.item>
+                        <flux:navlist.item icon="chat-bubble-left-right" :href="route('user.prompts.index')" :current="request()->routeIs('user.prompts.index') || request()->routeIs('user.prompts.edit')" wire:navigate>{{ __('My Prompts') }}</flux:navlist.item>
                         <flux:navlist.item icon="plus" :href="route('user.prompts.create')" :current="request()->routeIs('user.prompts.create')" wire:navigate>{{ __('Create Prompt') }}</flux:navlist.item>
                     </flux:navlist.group>
 
