@@ -31,7 +31,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'bio' => fake()->paragraph(),
             'cover' => fake()->imageUrl(800, 300, 'nature'),
-            'location' => fake()->city() . ', ' . fake()->country(),
+            'location' => fake()->city().', '.fake()->country(),
             'website' => fake()->url(),
             'social_links' => [
                 'twitter' => fake()->userName(),

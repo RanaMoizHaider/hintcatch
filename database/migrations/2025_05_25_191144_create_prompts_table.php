@@ -41,7 +41,7 @@ return new class extends Migration
             $table->foreignId('ai_model_id')->constrained('ai_models')->cascadeOnDelete();
             $table->foreignId('prompt_id')->constrained('prompts')->cascadeOnDelete();
         });
-        
+
     }
 
     /**

@@ -3,23 +3,35 @@
 namespace App\Livewire\Components;
 
 use Livewire\Component;
-use Illuminate\Support\Str;
 
 class PromptCard extends Component
 {
     public $prompt;
+
     public $showUser = true;
+
     public $showStats = true;
+
     public $showFeaturedBadge = true;
+
     public $showCategory = true;
+
     public $showPlatforms = true;
+
     public $showModels = true;
+
     public $showTags = true;
+
     public $tagLimit = 2;
+
     public $platformLimit = 2;
+
     public $modelLimit = 1;
+
     public $contentLimit = 150;
+
     public $linkable = true;
+
     public $layout = 'card'; // 'card', 'list', 'horizontal'
 
     public function mount(

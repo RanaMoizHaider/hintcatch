@@ -9,7 +9,9 @@ use Livewire\Component;
 class Comments extends Component
 {
     public Model $commentable;
+
     public string $newComment = '';
+
     public $comments;
 
     public function mount(Model $commentable)
@@ -28,21 +30,21 @@ class Comments extends Component
 
     public function addComment()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
         $this->validate([
-            'newComment' => 'required|min:3|max:1000'
+            'newComment' => 'required|min:3|max:1000',
         ]);
 
         $this->commentable->comments()->create([
             'user_id' => Auth::id(),
-            'body' => $this->newComment
+            'body' => $this->newComment,
         ]);
 
         $this->newComment = '';
-        
+
         // Reload just the comments instead of refreshing the entire model
         $this->loadComments();
 

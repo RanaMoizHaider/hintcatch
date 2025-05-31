@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\{Prompt, Category, AiModel, Platform, User};
+use App\Models\Prompt;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -31,6 +32,7 @@ Route::get('/dashboard', function () {
     if (auth()->user()->is_admin) {
         return redirect()->route('admin.dashboard');
     }
+
     return redirect()->route('user.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 

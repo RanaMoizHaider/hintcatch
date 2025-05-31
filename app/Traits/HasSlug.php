@@ -31,10 +31,10 @@ trait HasSlug
     {
         $sourceText = $this->getSlugSource();
         $baseSlug = Str::slug($sourceText);
-        
+
         // If the base slug is empty, use a fallback
         if (empty($baseSlug)) {
-            $baseSlug = 'item-' . time();
+            $baseSlug = 'item-'.time();
         }
 
         $slug = $baseSlug;
@@ -42,7 +42,7 @@ trait HasSlug
 
         // Keep checking until we find a unique slug
         while ($this->slugExists($slug)) {
-            $slug = $baseSlug . '-' . $counter;
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -55,7 +55,7 @@ trait HasSlug
     protected function slugExists(string $slug): bool
     {
         $query = static::where($this->getSlugColumn(), $slug);
-        
+
         // If updating an existing model, exclude the current model from the check
         if ($this->exists) {
             $query->where($this->getKeyName(), '!=', $this->getKey());
@@ -78,6 +78,7 @@ trait HasSlug
     public function getSlugSource(): string
     {
         $sourceField = property_exists($this, 'slugSource') ? $this->slugSource : 'title';
+
         return $this->{$sourceField} ?? '';
     }
 
@@ -88,6 +89,7 @@ trait HasSlug
     {
         // Only regenerate if the source field has changed and slug is empty
         $sourceField = $this->getSlugSource();
+
         return $this->isDirty($this->getSlugSource()) && empty($this->getOriginal($this->getSlugColumn()));
     }
 

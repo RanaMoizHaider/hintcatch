@@ -16,6 +16,7 @@ class Platform extends Model
 
     // Slug configuration
     protected $slugSource = 'name';
+
     protected $slugColumn = 'slug';
 
     protected $casts = [

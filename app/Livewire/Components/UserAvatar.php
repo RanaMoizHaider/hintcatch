@@ -7,12 +7,19 @@ use Livewire\Component;
 class UserAvatar extends Component
 {
     public $user;
+
     public $size = 'md'; // 'xs', 'sm', 'md', 'lg', 'xl'
+
     public $showName = false;
+
     public $showOnline = false;
+
     public $online = false;
+
     public $linkable = false;
+
     public $avatarSize = '';
+
     public $avatarSrc = '';
 
     public function mount(
@@ -36,12 +43,12 @@ class UserAvatar extends Component
     {
         $sizeClasses = [
             'xs' => 'w-4 h-4',
-            'sm' => 'w-6 h-6', 
+            'sm' => 'w-6 h-6',
             'md' => 'w-8 h-8',
             'lg' => 'w-10 h-10',
-            'xl' => 'w-12 h-12'
+            'xl' => 'w-12 h-12',
         ];
-        
+
         return $sizeClasses[$this->size];
     }
 

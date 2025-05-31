@@ -17,12 +17,13 @@ use Spatie\Tags\HasTags;
 class Prompt extends Model implements Viewable
 {
     /** @use HasFactory<\Database\Factories\PromptFactory> */
-    use HasFactory, InteractsWithViews, HasTags, HasSlug;
+    use HasFactory, HasSlug, HasTags, InteractsWithViews;
 
     protected $guarded = [];
 
     // Slug configuration
     protected $slugSource = 'title';
+
     protected $slugColumn = 'slug';
 
     public function user(): BelongsTo
@@ -64,8 +65,8 @@ class Prompt extends Model implements Viewable
     protected function published(Builder $query): void
     {
         $query->where('status', 'published')
-              ->whereNotNull('published_at')
-              ->where('published_at', '<=', now());
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     #[Scope]

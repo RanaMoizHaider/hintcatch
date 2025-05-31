@@ -42,10 +42,10 @@ class DummyDataSeeder extends Seeder
 
         // Create categories
         $categories = Category::factory(10)->create();
-        
+
         // Create subcategories
         Category::factory(5)->create([
-            'parent_id' => fn() => $categories->random()->id,
+            'parent_id' => fn () => $categories->random()->id,
         ]);
 
         // Create platforms
@@ -64,7 +64,7 @@ class DummyDataSeeder extends Seeder
                 'slug' => $providerData['slug'],
                 'description' => 'Leading AI provider offering cutting-edge machine learning models and services.',
                 'website' => $providerData['website'],
-                'api_endpoint' => $providerData['website'] . '/api/v1',
+                'api_endpoint' => $providerData['website'].'/api/v1',
                 'logo' => null,
                 'color' => $providerData['color'],
                 'supported_features' => ['text', 'image', 'code'],
@@ -85,6 +85,7 @@ class DummyDataSeeder extends Seeder
             ['name' => 'Copilot', 'provider' => 'Microsoft'],
         ])->map(function ($modelData) use ($providers) {
             $provider = $providers->firstWhere('name', $modelData['provider']);
+
             return AiModel::create([
                 'name' => $modelData['name'],
                 'slug' => \Str::slug($modelData['name']),
@@ -100,8 +101,8 @@ class DummyDataSeeder extends Seeder
 
         // Create prompts
         $prompts = Prompt::factory(100)->create([
-            'user_id' => fn() => $allUsers->random()->id,
-            'category_id' => fn() => Category::all()->random()->id,
+            'user_id' => fn () => $allUsers->random()->id,
+            'category_id' => fn () => Category::all()->random()->id,
         ]);
 
         // Attach platforms and AI models to prompts
@@ -119,9 +120,9 @@ class DummyDataSeeder extends Seeder
             // Add some tags
             $tags = collect([
                 'productivity', 'creative', 'coding', 'writing', 'analysis',
-                'marketing', 'education', 'business', 'research', 'automation'
+                'marketing', 'education', 'business', 'research', 'automation',
             ])->random(rand(1, 4));
-            
+
             $prompt->attachTags($tags);
         });
 
@@ -131,8 +132,8 @@ class DummyDataSeeder extends Seeder
             $userId = $allUsers->random()->id;
             $promptId = $prompts->random()->id;
             $combination = "{$userId}-{$promptId}";
-            
-            if (!$likeCombinations->contains($combination)) {
+
+            if (! $likeCombinations->contains($combination)) {
                 $likeCombinations->push($combination);
                 Like::create([
                     'user_id' => $userId,
@@ -144,16 +145,16 @@ class DummyDataSeeder extends Seeder
 
         // Create comments
         $comments = Comment::factory(200)->create([
-            'user_id' => fn() => $allUsers->random()->id,
-            'commentable_id' => fn() => $prompts->random()->id,
+            'user_id' => fn () => $allUsers->random()->id,
+            'commentable_id' => fn () => $prompts->random()->id,
             'commentable_type' => Prompt::class,
         ]);
 
         // Create reply comments
         Comment::factory(50)->create([
-            'user_id' => fn() => $allUsers->random()->id,
-            'parent_id' => fn() => $comments->random()->id,
-            'commentable_id' => fn() => $prompts->random()->id,
+            'user_id' => fn () => $allUsers->random()->id,
+            'parent_id' => fn () => $comments->random()->id,
+            'commentable_id' => fn () => $prompts->random()->id,
             'commentable_type' => Prompt::class,
         ]);
 
@@ -161,10 +162,10 @@ class DummyDataSeeder extends Seeder
         $allUsers->each(function ($user) use ($allUsers) {
             $followersCount = rand(0, 10);
             $potentialFollowers = $allUsers->where('id', '!=', $user->id);
-            
+
             if ($potentialFollowers->count() > 0) {
                 $followers = $potentialFollowers->random(min($followersCount, $potentialFollowers->count()));
-                
+
                 foreach ($followers as $follower) {
                     DB::table('followers')->insertOrIgnore([
                         'user_id' => $user->id,
@@ -177,7 +178,7 @@ class DummyDataSeeder extends Seeder
         });
 
         // Add some views to prompts
-        $prompts->each(function ($prompt) use ($allUsers) {
+        $prompts->each(function ($prompt) {
             $viewsCount = rand(0, 50);
             for ($i = 0; $i < $viewsCount; $i++) {
                 views($prompt)->record();
@@ -185,13 +186,13 @@ class DummyDataSeeder extends Seeder
         });
 
         $this->command->info('Dummy data seeded successfully!');
-        $this->command->info("Created:");
-        $this->command->info("- " . User::count() . " users");
-        $this->command->info("- " . Category::count() . " categories");
-        $this->command->info("- " . Platform::count() . " platforms");
-        $this->command->info("- " . AiModel::count() . " AI models");
-        $this->command->info("- " . Prompt::count() . " prompts");
-        $this->command->info("- " . Like::count() . " likes");
-        $this->command->info("- " . Comment::count() . " comments");
+        $this->command->info('Created:');
+        $this->command->info('- '.User::count().' users');
+        $this->command->info('- '.Category::count().' categories');
+        $this->command->info('- '.Platform::count().' platforms');
+        $this->command->info('- '.AiModel::count().' AI models');
+        $this->command->info('- '.Prompt::count().' prompts');
+        $this->command->info('- '.Like::count().' likes');
+        $this->command->info('- '.Comment::count().' comments');
     }
 }

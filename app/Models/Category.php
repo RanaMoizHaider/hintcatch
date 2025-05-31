@@ -17,6 +17,7 @@ class Category extends Model
 
     // Slug configuration
     protected $slugSource = 'name';
+
     protected $slugColumn = 'slug';
 
     public function parent(): BelongsTo
