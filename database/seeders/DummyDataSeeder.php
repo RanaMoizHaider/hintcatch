@@ -31,7 +31,7 @@ class DummyDataSeeder extends Seeder
 
         $testUser = User::factory()->create([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test@hintcatch.com',
             'username' => 'testuser',
             'bio' => 'Test user for development purposes',
         ]);
