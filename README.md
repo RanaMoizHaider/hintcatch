@@ -41,7 +41,7 @@ A modern prompt sharing platform built with Laravel, Livewire, and Flux componen
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url> hintcatch
+   git clone https://github.com/RanaMoizHaider/hintcatch.git
    cd hintcatch
    ```
 
