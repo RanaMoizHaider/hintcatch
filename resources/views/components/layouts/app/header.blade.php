@@ -7,9 +7,9 @@
         <flux:header container class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
-            <a href="{{ route('home') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0" wire:navigate>
+            <flux:link href="{{ route('home') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0" wire:navigate>
                 <x-app-logo />
-            </a>
+            </flux:link>
 
             <flux:navbar class="-mb-px max-lg:hidden">
                 <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
@@ -33,18 +33,16 @@
                     />
                 </flux:tooltip>
                 <flux:tooltip :content="__('Toggle dark mode')" position="bottom">
-                    <button 
+                    <flux:button 
                         x-data 
                         @click="$flux.appearance = $flux.appearance === 'dark' ? 'light' : 'dark'"
-                        class="flex items-center justify-center h-10 w-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-700 dark:text-zinc-200"
+                        variant="ghost"
+                        square
+                        class="h-10 w-10"
                     >
-                        <svg x-show="$flux.appearance === 'light'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                        </svg>
-                        <svg x-show="$flux.appearance === 'dark'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                    </button>
+                        <flux:icon.moon x-show="$flux.appearance === 'light'" class="size-5" />
+                        <flux:icon.sun x-show="$flux.appearance === 'dark'" class="size-5" />
+                    </flux:button>
                 </flux:tooltip>
             </flux:navbar>
 
@@ -52,7 +50,7 @@
             <flux:dropdown position="top" align="end">
                 <flux:profile
                     class="cursor-pointer"
-                    :avatar="auth()->user()->gravatar"
+                    :avatar="auth()->user()->avatar"
                 />
 
                 <flux:menu>
@@ -60,7 +58,7 @@
                         <div class="p-0 text-sm font-normal">
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <img src="{{ auth()->user()->gravatar }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover rounded-lg" />
+                                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover rounded-lg" />
                                 </span>
 
                                 <div class="grid flex-1 text-start text-sm leading-tight">
@@ -93,9 +91,9 @@
         <flux:sidebar stashable sticky class="lg:hidden border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-            <a href="{{ route('dashboard') }}" class="ms-1 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+            <flux:link href="{{ route('dashboard') }}" class="ms-1 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
                 <x-app-logo />
-            </a>
+            </flux:link>
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')">
@@ -118,18 +116,17 @@
 
                 <div class="flex items-center justify-between px-3 py-2">
                     <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">{{ __('Dark Mode') }}</span>
-                    <button 
+                    <flux:button 
                         x-data 
                         @click="$flux.appearance = $flux.appearance === 'dark' ? 'light' : 'dark'"
-                        class="flex items-center justify-center h-8 w-8 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-700 dark:text-zinc-200"
+                        variant="ghost"
+                        square
+                        size="sm"
+                        class="h-8 w-8"
                     >
-                        <svg x-show="$flux.appearance === 'light'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                        </svg>
-                        <svg x-show="$flux.appearance === 'dark'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                    </button>
+                        <flux:icon.moon x-show="$flux.appearance === 'light'" class="size-4" />
+                        <flux:icon.sun x-show="$flux.appearance === 'dark'" class="size-4" />
+                    </flux:button>
                 </div>
             </flux:navlist>
         </flux:sidebar>

@@ -20,8 +20,10 @@
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800 flex flex-col">
         <x-header />
-        <main>
-            {{ $slot }}
+        <main class="flex-1">
+            <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {{ $slot }}
+            </div>
         </main>
         <x-footer />
         @livewireScripts

@@ -7,9 +7,9 @@
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-            <a href="{{ route('home') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+            <flux:link href="{{ route('home') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
                 <x-app-logo />
-            </a>
+            </flux:link>
 
             <flux:navlist variant="outline">
                 @if(auth()->user()->is_admin)
@@ -62,7 +62,7 @@
             <flux:dropdown position="bottom" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
-                    :avatar="auth()->user()->gravatar"
+                    :avatar="auth()->user()->avatar"
                     icon-trailing="chevrons-up-down"
                 />
 
@@ -71,7 +71,7 @@
                         <div class="p-0 text-sm font-normal">
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <img src="{{ auth()->user()->gravatar }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover rounded-lg" />
+                                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover rounded-lg" />
                                 </span>
 
                                 <div class="grid flex-1 text-start text-sm leading-tight">
@@ -108,7 +108,7 @@
 
             <flux:dropdown position="top" align="end">
                 <flux:profile
-                    :avatar="auth()->user()->gravatar"
+                    :avatar="auth()->user()->avatar"
                     icon-trailing="chevron-down"
                 />
 
@@ -117,7 +117,7 @@
                         <div class="p-0 text-sm font-normal">
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <img src="{{ auth()->user()->gravatar }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover rounded-lg" />
+                                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover rounded-lg" />
                                 </span>
 
                                 <div class="grid flex-1 text-start text-sm leading-tight">
