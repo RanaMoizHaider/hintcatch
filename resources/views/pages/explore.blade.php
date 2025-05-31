@@ -223,18 +223,24 @@ class extends Component {
     <div class="container mx-auto px-4 py-8">
         <section class="mb-8">
             <h1 class="text-3xl font-bold mb-4">Explore Prompts</h1>
-            <p class="text-zinc-700 dark:text-gray-400 max-w-2xl mb-6">
+            <p class="text-zinc-700 dark:text-zinc-400 max-w-2xl mb-6">
                 Discover and filter through thousands of high-quality prompts for various AI platforms and models.
             </p>
-            <div class="relative max-w-md">
-                <flux:input 
-                    type="text" 
-                    wire:model.live.debounce.300ms="search"
-                    placeholder="Search for prompts..." 
-                    icon="magnifying-glass"
-                />
-            </div>
         </section>
+
+        <!-- Search and Filters/Sort -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                <div class="relative flex-1 max-w-md">
+                    <flux:input 
+                        type="text" 
+                        wire:model.live.debounce.300ms="search"
+                        placeholder="Search prompts..." 
+                        icon="magnifying-glass"
+                    />
+                </div>
+            </div>
+        </div>
 
         @if(count($this->appliedFilters) > 0)
             <div class="mb-6">
