@@ -106,14 +106,14 @@ class extends Component {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
                     <flux:field>
-                        <flux:label>Title *</flux:label>
+                        <flux:label badge="Required">Title</flux:label>
                         <flux:input wire:model="title" placeholder="Enter prompt title" />
                         <flux:error name="title" />
                     </flux:field>
                 </div>
 
                 <flux:field>
-                    <flux:label>Category *</flux:label>
+                    <flux:label badge="Required">Category</flux:label>
                     <flux:select wire:model="category_id" placeholder="Select category">
                         @foreach($categories as $category)
                             <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>
@@ -123,7 +123,7 @@ class extends Component {
                 </flux:field>
 
                 <flux:field>
-                    <flux:label>Author *</flux:label>
+                    <flux:label badge="Required">Author</flux:label>
                     <flux:select wire:model="user_id" placeholder="Select author">
                         @foreach($users as $user)
                             <flux:select.option value="{{ $user->id }}">{{ $user->name }}</flux:select.option>
@@ -133,25 +133,23 @@ class extends Component {
                 </flux:field>
 
                 <flux:field>
-                    <flux:label>Visibility</flux:label>
-                    <flux:select wire:model="visibility">
-                        <flux:select.option value="public">Public</flux:select.option>
-                        <flux:select.option value="private">Private</flux:select.option>
-                        <flux:select.option value="unlisted">Unlisted</flux:select.option>
-                    </flux:select>
+                    <flux:radio.group wire:model="visibility" label="Visibility">
+                        <flux:radio value="public" label="Public" description="Everyone can see this prompt" />
+                        <flux:radio value="private" label="Private" description="Only you can see this prompt" />
+                        <flux:radio value="unlisted" label="Unlisted" description="Only accessible with direct link" />
+                    </flux:radio.group>
                 </flux:field>
 
                 <flux:field>
-                    <flux:label>Status</flux:label>
-                    <flux:select wire:model="status">
-                        <flux:select.option value="draft">Draft</flux:select.option>
-                        <flux:select.option value="published">Published</flux:select.option>
-                    </flux:select>
+                    <flux:radio.group wire:model="status" label="Status">
+                        <flux:radio value="draft" label="Draft" description="Work in progress, not yet published" />
+                        <flux:radio value="published" label="Published" description="Ready for public viewing" />
+                    </flux:radio.group>
                 </flux:field>
 
                 <div class="md:col-span-2">
                     <flux:field>
-                        <flux:label>Description</flux:label>
+                        <flux:label badge="Optional">Description</flux:label>
                         <flux:textarea wire:model="description" placeholder="Brief description of the prompt" rows="3" />
                         <flux:error name="description" />
                     </flux:field>
@@ -159,7 +157,7 @@ class extends Component {
 
                 <div class="md:col-span-2">
                     <flux:field>
-                        <flux:label>Content *</flux:label>
+                        <flux:label badge="Required">Content</flux:label>
                         <flux:textarea wire:model="content" placeholder="Enter the prompt content" rows="8" />
                         <flux:error name="content" />
                     </flux:field>

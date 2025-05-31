@@ -89,7 +89,7 @@ class extends Component {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <flux:field>
-                        <flux:label>Model Name *</flux:label>
+                        <flux:label badge="Required">Model Name</flux:label>
                         <flux:input wire:model="name" placeholder="e.g., GPT-4, Claude 3.5" />
                         <flux:error name="name" />
                     </flux:field>
@@ -97,7 +97,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Provider *</flux:label>
+                        <flux:label badge="Required">Provider</flux:label>
                         <flux:select wire:model="provider_id" placeholder="Select provider">
                             @foreach($providers as $provider)
                                 <flux:select.option value="{{ $provider->id }}">{{ $provider->name }}</flux:select.option>
@@ -109,7 +109,7 @@ class extends Component {
 
                 <div class="md:col-span-2">
                     <flux:field>
-                        <flux:label>Description</flux:label>
+                        <flux:label badge="Optional">Description</flux:label>
                         <flux:textarea wire:model="description" placeholder="Brief description of the AI model" rows="3" />
                         <flux:error name="description" />
                     </flux:field>
@@ -117,7 +117,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Image URL</flux:label>
+                        <flux:label badge="Optional">Image URL</flux:label>
                         <flux:input wire:model="image" type="url" placeholder="https://example.com/image.png" />
                         <flux:error name="image" />
                     </flux:field>
@@ -125,7 +125,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Brand Color</flux:label>
+                        <flux:label badge="Optional">Brand Color</flux:label>
                         <flux:input wire:model="color" type="color" />
                         <flux:error name="color" />
                     </flux:field>
@@ -133,7 +133,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Icon</flux:label>
+                        <flux:label badge="Optional">Icon</flux:label>
                         <flux:input wire:model="icon" placeholder="e.g., fa-robot, heroicon-cpu" />
                         <flux:error name="icon" />
                     </flux:field>
@@ -141,7 +141,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Release Date</flux:label>
+                        <flux:label badge="Optional">Release Date</flux:label>
                         <flux:input wire:model="release_date" type="date" />
                         <flux:error name="release_date" />
                     </flux:field>

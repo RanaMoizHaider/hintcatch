@@ -88,7 +88,7 @@ class extends Component {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <flux:field>
-                        <flux:label>Provider Name *</flux:label>
+                        <flux:label badge="Required">Provider Name</flux:label>
                         <flux:input wire:model="name" placeholder="e.g., OpenAI, Anthropic" />
                         <flux:error name="name" />
                     </flux:field>
@@ -96,7 +96,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Website</flux:label>
+                        <flux:label badge="Optional">Website</flux:label>
                         <flux:input wire:model="website" type="url" placeholder="https://example.com" />
                         <flux:error name="website" />
                     </flux:field>
@@ -104,7 +104,7 @@ class extends Component {
 
                 <div class="md:col-span-2">
                     <flux:field>
-                        <flux:label>Description</flux:label>
+                        <flux:label badge="Optional">Description</flux:label>
                         <flux:textarea wire:model="description" placeholder="Brief description of the provider" rows="3" />
                         <flux:error name="description" />
                     </flux:field>
@@ -112,7 +112,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>API Endpoint</flux:label>
+                        <flux:label badge="Optional">API Endpoint</flux:label>
                         <flux:input wire:model="api_endpoint" type="url" placeholder="https://api.example.com" />
                         <flux:error name="api_endpoint" />
                     </flux:field>
@@ -120,7 +120,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Logo URL</flux:label>
+                        <flux:label badge="Optional">Logo URL</flux:label>
                         <flux:input wire:model="logo" type="url" placeholder="https://example.com/logo.png" />
                         <flux:error name="logo" />
                     </flux:field>
@@ -128,7 +128,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Brand Color</flux:label>
+                        <flux:label badge="Optional">Brand Color</flux:label>
                         <flux:input wire:model="color" type="color" />
                         <flux:error name="color" />
                     </flux:field>

@@ -58,9 +58,10 @@ class extends Component {
     description="Update category information"
 >
     <x-slot name="actions">
-        <flux:button wire:navigate href="{{ route('admin.categories.index') }}" variant="ghost" icon="arrow-left">
-            Back to Categories
-        </flux:button>
+        <flux:breadcrumbs>
+            <flux:breadcrumbs.item href="{{ route('admin.categories.index') }}">Categories</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item>Edit</flux:breadcrumbs.item>
+        </flux:breadcrumbs>
     </x-slot>
 </x-page-heading>
 
@@ -70,7 +71,7 @@ class extends Component {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Name -->
                 <flux:field>
-                    <flux:label>Category Name</flux:label>
+                    <flux:label badge="Required">Category Name</flux:label>
                     <flux:input 
                         wire:model.live="name" 
                         placeholder="Enter category name"
@@ -81,7 +82,7 @@ class extends Component {
 
                 <!-- Parent Category -->
                 <flux:field>
-                    <flux:label>Parent Category (optional)</flux:label>
+                    <flux:label badge="Optional">Parent Category</flux:label>
                     <flux:select wire:model="parent_id">
                         <option value="">No Parent Category</option>
                         @foreach($parentCategories as $parent)
@@ -94,7 +95,7 @@ class extends Component {
 
             <!-- Description -->
             <flux:field>
-                <flux:label>Description (optional)</flux:label>
+                <flux:label badge="Optional">Description</flux:label>
                 <flux:textarea 
                     wire:model="description" 
                     rows="3"

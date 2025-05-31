@@ -84,7 +84,7 @@ class extends Component {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <flux:field>
-                        <flux:label>Platform Name *</flux:label>
+                        <flux:label badge="Required">Platform Name</flux:label>
                         <flux:input wire:model="name" placeholder="e.g., WordPress, React, Next.js" />
                         <flux:error name="name" />
                     </flux:field>
@@ -92,7 +92,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Website</flux:label>
+                        <flux:label badge="Optional">Website</flux:label>
                         <flux:input wire:model="website" type="url" placeholder="https://example.com" />
                         <flux:error name="website" />
                     </flux:field>
@@ -100,7 +100,7 @@ class extends Component {
 
                 <div class="md:col-span-2">
                     <flux:field>
-                        <flux:label>Description</flux:label>
+                        <flux:label badge="Optional">Description</flux:label>
                         <flux:textarea wire:model="description" placeholder="Brief description of the platform" rows="3" />
                         <flux:error name="description" />
                     </flux:field>
@@ -108,7 +108,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Image URL</flux:label>
+                        <flux:label badge="Optional">Image URL</flux:label>
                         <flux:input wire:model="image" type="url" placeholder="https://example.com/image.png" />
                         <flux:error name="image" />
                     </flux:field>
@@ -116,7 +116,7 @@ class extends Component {
 
                 <div>
                     <flux:field>
-                        <flux:label>Brand Color</flux:label>
+                        <flux:label badge="Optional">Brand Color</flux:label>
                         <flux:input wire:model="color" type="color" />
                         <flux:error name="color" />
                     </flux:field>
@@ -124,7 +124,7 @@ class extends Component {
 
                 <div class="md:col-span-2">
                     <flux:field>
-                        <flux:label>Icon</flux:label>
+                        <flux:label badge="Optional">Icon</flux:label>
                         <flux:input wire:model="icon" placeholder="e.g., fa-wordpress, heroicon-react" />
                         <flux:error name="icon" />
                     </flux:field>
