@@ -99,9 +99,10 @@ class extends Component {
         description="Share your prompt with the community"
     >
         <x-slot name="actions">
-            <flux:button wire:navigate href="{{ route('user.prompts.index') }}" variant="ghost" icon="arrow-left">
-                Back to Prompts
-            </flux:button>
+            <flux:breadcrumbs>
+                <flux:breadcrumbs.item href="{{ route('user.prompts.index') }}">My Prompts</flux:breadcrumbs.item>
+                <flux:breadcrumbs.item>Create</flux:breadcrumbs.item>
+            </flux:breadcrumbs>
         </x-slot>
     </x-page-heading>
 
@@ -109,32 +110,32 @@ class extends Component {
     <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 p-6">
         <form wire:submit="save" class="space-y-6">
             <!-- Title -->
-            <div>
-                <flux:label for="title">Prompt Title</flux:label>
+            <flux:field>
+                <flux:label for="title" badge="Required">Prompt Title</flux:label>
                 <flux:input 
                     wire:model="title" 
                     id="title" 
                     placeholder="Enter a descriptive title for your prompt"
                     required
                 />
-                @error('title') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-            </div>
+                <flux:error name="title" />
+            </flux:field>
 
             <!-- Description -->
-            <div>
-                <flux:label for="description">Description (Optional)</flux:label>
+            <flux:field>
+                <flux:label for="description" badge="Optional">Description</flux:label>
                 <flux:textarea 
                     wire:model="description" 
                     id="description" 
                     rows="3"
                     placeholder="Brief description of what this prompt does..."
                 />
-                @error('description') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-            </div>
+                <flux:error name="description" />
+            </flux:field>
 
             <!-- Content -->
-            <div>
-                <flux:label for="content">Prompt Content</flux:label>
+            <flux:field>
+                <flux:label for="content" badge="Required">Prompt Content</flux:label>
                 <flux:textarea 
                     wire:model="content" 
                     id="content" 
@@ -142,25 +143,25 @@ class extends Component {
                     placeholder="Enter your prompt content here..."
                     required
                 />
-                @error('content') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-            </div>
+                <flux:error name="content" />
+            </flux:field>
 
             <!-- Category -->
-            <div>
-                <flux:label for="category_id">Category</flux:label>
+            <flux:field>
+                <flux:label for="category_id" badge="Required">Category</flux:label>
                 <flux:select wire:model="category_id" id="category_id" required>
                     <option value="">Select a category</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
                 </flux:select>
-                @error('category_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-            </div>
+                <flux:error name="category_id" />
+            </flux:field>
 
             <!-- AI Models -->
-            <div>
-                <flux:label>Compatible AI Models</flux:label>
-                <flux:text size="sm" class="text-zinc-600 dark:text-zinc-400 mb-3">Select which AI models work well with this prompt</flux:text>
+            <flux:field>
+                <flux:label badge="Optional">Compatible AI Models</flux:label>
+                <flux:description>Select which AI models work well with this prompt</flux:description>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     @foreach($aiModels as $model)
                         <label class="flex items-center space-x-2 p-3 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer">
@@ -175,12 +176,12 @@ class extends Component {
                         </label>
                     @endforeach
                 </div>
-            </div>
+            </flux:field>
 
             <!-- Platforms -->
-            <div>
-                <flux:label>Compatible Platforms</flux:label>
-                <flux:text size="sm" class="text-zinc-600 dark:text-zinc-400 mb-3">Select which platforms this prompt works on</flux:text>
+            <flux:field>
+                <flux:label badge="Optional">Compatible Platforms</flux:label>
+                <flux:description>Select which platforms this prompt works on</flux:description>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     @foreach($platforms as $platform)
                         <label class="flex items-center space-x-2 p-3 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer">
@@ -197,44 +198,34 @@ class extends Component {
                         </label>
                     @endforeach
                 </div>
-            </div>
+            </flux:field>
 
             <!-- Visibility and Status -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Visibility -->
-                <div>
-                    <flux:label for="visibility">Visibility</flux:label>
-                    <flux:select wire:model="visibility" id="visibility" required>
-                        <option value="public">Public - Everyone can see</option>
-                        <option value="unlisted">Unlisted - Only with direct link</option>
-                        <option value="private">Private - Only you can see</option>
-                    </flux:select>
-                    @error('visibility') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                </div>
+                <flux:field>
+                    <flux:radio.group wire:model="visibility" label="Visibility">
+                        <flux:radio value="public" label="Public" description="Everyone can see this prompt" />
+                        <flux:radio value="unlisted" label="Unlisted" description="Only accessible with direct link" />
+                        <flux:radio value="private" label="Private" description="Only you can see this prompt" />
+                    </flux:radio.group>
+                    <flux:error name="visibility" />
+                </flux:field>
 
                 <!-- Status -->
-                <div>
-                    <flux:label for="status">Status</flux:label>
-                    <flux:select wire:model="status" id="status" required>
-                        <option value="draft">Draft - Work in progress</option>
-                        <option value="published">Published - Ready to share</option>
-                    </flux:select>
-                    @error('status') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                </div>
+                <flux:field>
+                    <flux:radio.group wire:model="status" label="Status">
+                        <flux:radio value="draft" label="Draft" description="Work in progress, not published yet" />
+                        <flux:radio value="published" label="Published" description="Ready to share with others" />
+                    </flux:radio.group>
+                    <flux:error name="status" />
+                </flux:field>
             </div>
 
             <!-- Tags -->
-            <div>
-                <flux:label>Tags (Optional)</flux:label>
-                <flux:text size="sm" class="text-zinc-600 dark:text-zinc-400 mb-2">Add tags to help others discover your prompt</flux:text>
-                <div class="flex flex-wrap gap-2 mb-3">
-                    @foreach($tags as $index => $tag)
-                        <flux:badge color="zinc">
-                            {{ $tag }}
-                            <flux:badge.close wire:click="removeTag({{ $index }})" />
-                        </flux:badge>
-                    @endforeach
-                </div>
+            <flux:field>
+                <flux:label badge="Optional">Tags</flux:label>
+                <flux:description>Add tags to help others discover your prompt</flux:description>
                 <div class="flex space-x-2">
                     <flux:input 
                         wire:model="newTag"
@@ -246,10 +237,18 @@ class extends Component {
                         Add Tag
                     </flux:button>
                 </div>
-            </div>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    @foreach($tags as $index => $tag)
+                        <flux:badge color="zinc">
+                            {{ $tag }}
+                            <flux:badge.close wire:click="removeTag({{ $index }})" />
+                        </flux:badge>
+                    @endforeach
+                </div>
+            </flux:field>
 
             <!-- Submit -->
-            <div class="flex items-center justify-end space-x-3 border-t border-zinc-200 pt-6">
+            <div class="flex items-center justify-end space-x-3">
                 <flux:button wire:navigate href="{{ route('user.prompts.index') }}" variant="ghost">
                     Cancel
                 </flux:button>

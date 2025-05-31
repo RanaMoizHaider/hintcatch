@@ -70,21 +70,6 @@ class extends Component {
         }
     }
 
-    public function duplicate(int $id): void
-    {
-        $prompt = Prompt::where('user_id', auth()->id())->find($id);
-        if ($prompt) {
-            $newPrompt = $prompt->replicate();
-            $newPrompt->title = $prompt->title . ' (Copy)';
-            $newPrompt->slug = null; // Let the HasSlug trait generate a new slug
-            $newPrompt->status = 'draft';
-            $newPrompt->save();
-            
-            session()->flash('success', 'Prompt duplicated successfully.');
-            $this->redirect(route('user.prompts.edit', $newPrompt));
-        }
-    }
-
     public function clearFilters(): void
     {
         $this->search = '';
@@ -213,9 +198,9 @@ class extends Component {
                 <div class="mb-4 flex items-start justify-between">
                     <div class="flex-1">
                         <flux:heading size="sm" class="font-semibold">
-                            <a href="{{ route('prompts.show', $prompt) }}" wire:navigate class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                            <flux:link href="{{ route('prompts.show', $prompt) }}" wire:navigate variant="ghost" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                 {{ Str::limit($prompt->title, 30) }}
-                            </a>
+                            </flux:link>
                         </flux:heading>
                         <flux:text size="sm" class="mt-1 text-zinc-600 dark:text-zinc-400">
                             {{ Str::limit($prompt->content, 100) }}
@@ -283,13 +268,6 @@ class extends Component {
                     </div>
                     <div class="flex items-center space-x-1">
                         <flux:button wire:navigate href="{{ route('user.prompts.edit', $prompt) }}" variant="ghost" size="sm" icon="pencil" />
-                        <flux:button 
-                            wire:click="duplicate({{ $prompt->id }})"
-                            variant="ghost" 
-                            size="sm"
-                            title="Duplicate prompt"
-                            icon="document-duplicate"
-                        />
                         <flux:button 
                             wire:click="delete({{ $prompt->id }})"
                             wire:confirm="Are you sure you want to delete this prompt?"

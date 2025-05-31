@@ -17,8 +17,8 @@ class extends Component {
     public $category_id;
     public $ai_model_id;
     public $platform_id;
-    public $is_public = false;
-    public $is_favorite = false;
+    public $visibility = 'private';
+    public $status = 'draft';
     public $tags = '';
 
     public function mount(Prompt $prompt)
@@ -34,8 +34,8 @@ class extends Component {
         $this->category_id = $prompt->category_id;
         $this->ai_model_id = $prompt->ai_model_id;
         $this->platform_id = $prompt->platform_id;
-        $this->is_public = $prompt->is_public;
-        $this->is_favorite = $prompt->is_favorite;
+        $this->visibility = $prompt->visibility;
+        $this->status = $prompt->status;
         $this->tags = $prompt->tags->pluck('name')->implode(', ');
     }
 
@@ -47,8 +47,8 @@ class extends Component {
             'category_id' => 'required|exists:categories,id',
             'ai_model_id' => 'required|exists:ai_models,id',
             'platform_id' => 'required|exists:platforms,id',
-            'is_public' => 'boolean',
-            'is_favorite' => 'boolean',
+            'visibility' => 'required|in:public,private,unlisted',
+            'status' => 'required|in:draft,published',
             'tags' => 'nullable|string|max:500',
         ];
     }
@@ -63,8 +63,8 @@ class extends Component {
             'category_id' => $this->category_id,
             'ai_model_id' => $this->ai_model_id,
             'platform_id' => $this->platform_id,
-            'is_public' => $this->is_public,
-            'is_favorite' => $this->is_favorite,
+            'visibility' => $this->visibility,
+            'status' => $this->status,
         ]);
 
         // Handle tags
@@ -78,23 +78,6 @@ class extends Component {
 
         session()->flash('message', 'Prompt updated successfully!');
         return redirect()->route('user.prompts.index');
-    }
-
-    public function duplicate()
-    {
-        $duplicatedPrompt = $this->prompt->replicate();
-        $duplicatedPrompt->title = $this->prompt->title . ' (Copy)';
-        $duplicatedPrompt->user_id = Auth::id();
-        $duplicatedPrompt->save();
-
-        // Copy tags
-        $tagNames = $this->prompt->tags->pluck('name')->toArray();
-        if (!empty($tagNames)) {
-            $duplicatedPrompt->syncTagsWithType($tagNames, 'default');
-        }
-
-        session()->flash('message', 'Prompt duplicated successfully!');
-        return redirect()->route('user.prompts.edit', $duplicatedPrompt);
     }
 
     public function with()
@@ -119,12 +102,10 @@ class extends Component {
     >
         <x-slot name="actions">
             <div class="flex items-center space-x-3">
-                <flux:button wire:click="duplicate" variant="ghost" icon="document-duplicate">
-                    Duplicate
-                </flux:button>
-                <flux:button wire:navigate href="{{ route('user.prompts.index') }}" variant="ghost" icon="arrow-left">
-                    Back to Prompts
-                </flux:button>
+                <flux:breadcrumbs>
+                    <flux:breadcrumbs.item href="{{ route('user.prompts.index') }}">My Prompts</flux:breadcrumbs.item>
+                    <flux:breadcrumbs.item>Edit</flux:breadcrumbs.item>
+                </flux:breadcrumbs>
             </div>
         </x-slot>
     </x-page-heading>
@@ -133,20 +114,20 @@ class extends Component {
     <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 p-6">
         <form wire:submit="save" class="space-y-6">
             <!-- Title -->
-            <div>
-                <flux:label for="title">Prompt Title</flux:label>
+            <flux:field>
+                <flux:label for="title" badge="Required">Prompt Title</flux:label>
                 <flux:input 
                     wire:model="title" 
                     id="title" 
                     placeholder="Enter a descriptive title for your prompt"
                     required
                 />
-                @error('title') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-            </div>
+                <flux:error name="title" />
+            </flux:field>
 
             <!-- Content -->
-            <div>
-                <flux:label for="content">Prompt Content</flux:label>
+            <flux:field>
+                <flux:label for="content" badge="Required">Prompt Content</flux:label>
                 <flux:textarea 
                     wire:model="content" 
                     id="content" 
@@ -154,27 +135,27 @@ class extends Component {
                     placeholder="Enter your prompt content here..."
                     required
                 />
-                @error('content') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                <flux:text size="sm" class="mt-1 text-zinc-500 dark:text-zinc-400">
+                <flux:error name="content" />
+                <flux:description>
                     Write clear, specific instructions for the AI model.
-                </flux:text>
-            </div>
+                </flux:description>
+            </flux:field>
 
             <!-- Category, AI Model, Platform -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <flux:label for="category_id">Category</flux:label>
+                <flux:field>
+                    <flux:label for="category_id" badge="Required">Category</flux:label>
                     <flux:select wire:model="category_id" id="category_id" required>
                         <option value="">Select a category</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                         @endforeach
                     </flux:select>
-                    @error('category_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                </div>
+                    <flux:error name="category_id" />
+                </flux:field>
 
-                <div>
-                    <flux:label for="ai_model_id">AI Model</flux:label>
+                <flux:field>
+                    <flux:label for="ai_model_id" badge="Required">AI Model</flux:label>
                     <flux:select wire:model="ai_model_id" id="ai_model_id" required>
                         <option value="">Select an AI model</option>
                         @foreach($aiModels as $aiModel)
@@ -183,54 +164,55 @@ class extends Component {
                             </option>
                         @endforeach
                     </flux:select>
-                    @error('ai_model_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                </div>
+                    <flux:error name="ai_model_id" />
+                </flux:field>
 
-                <div>
-                    <flux:label for="platform_id">Platform</flux:label>
+                <flux:field>
+                    <flux:label for="platform_id" badge="Required">Platform</flux:label>
                     <flux:select wire:model="platform_id" id="platform_id" required>
                         <option value="">Select a platform</option>
                         @foreach($platforms as $platform)
                             <option value="{{ $platform->id }}">{{ $platform->name }}</option>
                         @endforeach
                     </flux:select>
-                    @error('platform_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                </div>
+                    <flux:error name="platform_id" />
+                </flux:field>
             </div>
 
             <!-- Tags -->
-            <div>
-                <flux:label for="tags">Tags (optional)</flux:label>
+            <flux:field>
+                <flux:label for="tags" badge="Optional">Tags</flux:label>
                 <flux:input 
                     wire:model="tags" 
                     id="tags" 
                     placeholder="Enter tags separated by commas (e.g., creative, marketing, technical)"
                 />
-                @error('tags') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                <flux:text size="sm" class="mt-1 text-zinc-500 dark:text-zinc-400">
+                <flux:error name="tags" />
+                <flux:description>
                     Separate tags with commas to help organize and find your prompts.
-                </flux:text>
-            </div>
+                </flux:description>
+            </flux:field>
 
-            <!-- Settings -->
-            <div class="space-y-4 rounded-lg border border-zinc-200 dark:border-zinc-700 p-4">
-                <flux:heading size="sm" class="text-zinc-900 dark:text-zinc-100">Prompt Settings</flux:heading>
-                
-                <div class="flex items-center space-x-2">
-                    <flux:checkbox wire:model="is_public" id="is_public" />
-                    <flux:label for="is_public">Make this prompt public</flux:label>
-                </div>
-                <flux:text size="sm" class="text-zinc-500 dark:text-zinc-400">
-                    Public prompts can be discovered and used by other users.
-                </flux:text>
+            <!-- Visibility & Status Settings -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Visibility -->
+                <flux:field>
+                    <flux:radio.group wire:model="visibility" label="Visibility">
+                        <flux:radio value="public" label="Public" description="Everyone can see and use this prompt" />
+                        <flux:radio value="private" label="Private" description="Only you can see this prompt" />
+                        <flux:radio value="unlisted" label="Unlisted" description="Only accessible with direct link" />
+                    </flux:radio.group>
+                    <flux:error name="visibility" />
+                </flux:field>
 
-                <div class="flex items-center space-x-2">
-                    <flux:checkbox wire:model="is_favorite" id="is_favorite" />
-                    <flux:label for="is_favorite">Mark as favorite</flux:label>
-                </div>
-                <flux:text size="sm" class="text-zinc-500 dark:text-zinc-400">
-                    Favorite prompts are easier to find in your collection.
-                </p>
+                <!-- Status -->
+                <flux:field>
+                    <flux:radio.group wire:model="status" label="Status">
+                        <flux:radio value="draft" label="Draft" description="Work in progress, not ready for sharing" />
+                        <flux:radio value="published" label="Published" description="Ready for viewing and sharing" />
+                    </flux:radio.group>
+                    <flux:error name="status" />
+                </flux:field>
             </div>
 
             <!-- Actions -->
@@ -253,13 +235,18 @@ class extends Component {
                 <div class="mb-3 flex items-center justify-between">
                     <flux:heading size="lg" class="text-zinc-900 dark:text-zinc-100">{{ $title }}</flux:heading>
                     <div class="flex items-center space-x-2">
-                        @if($is_favorite)
-                            <flux:icon name="heart" class="w-4 h-4 text-yellow-500" />
-                        @endif
-                        @if($is_public)
+                        @if($visibility === 'public')
                             <flux:badge variant="success">Public</flux:badge>
+                        @elseif($visibility === 'unlisted')
+                            <flux:badge variant="warning">Unlisted</flux:badge>
                         @else
                             <flux:badge variant="outline">Private</flux:badge>
+                        @endif
+                        
+                        @if($status === 'published')
+                            <flux:badge variant="primary">Published</flux:badge>
+                        @else
+                            <flux:badge variant="neutral">Draft</flux:badge>
                         @endif
                     </div>
                 </div>
