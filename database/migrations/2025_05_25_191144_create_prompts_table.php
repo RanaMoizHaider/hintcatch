@@ -50,5 +50,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('prompts');
+        Schema::dropIfExists('platform_prompts');
+        Schema::dropIfExists('ai_model_prompts');
     }
 };
