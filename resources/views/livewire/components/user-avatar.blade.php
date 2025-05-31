@@ -1,10 +1,10 @@
 <div>
     @if($linkable)
-        <a href="{{ route('profile.show', $user) }}" class="hover:opacity-80 transition-opacity">
+        <flux:link href="{{ route('profile.show', $user) }}" variant="ghost" class="hover:opacity-80 transition-opacity">
             <div class="flex items-center gap-2">
                 <div class="relative">
                     <img 
-                        src="{{ $user->gravatar }}" 
+                        src="{{ $user->avatar }}" 
                         alt="{{ $user->name }}" 
                         class="{{ $avatarSize }} rounded-full object-cover"
                     >
@@ -17,12 +17,12 @@
                     <span class="text-sm text-zinc-600 dark:text-zinc-400 font-medium">{{ $user->name }}</span>
                 @endif
             </div>
-        </a>
+        </flux:link>
     @else
         <div class="flex items-center gap-2">
             <div class="relative">
                 <img 
-                    src="{{ $user->gravatar }}" 
+                    src="{{ $user->avatar }}" 
                     alt="{{ $user->name }}" 
                     class="{{ $avatarSize }} rounded-full object-cover"
                 >

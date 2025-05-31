@@ -7,15 +7,15 @@
                     <div class="flex items-start justify-between mb-3">
                         <h3 class="font-semibold text-lg leading-tight flex-1 mr-2">
                             @if($linkable)
-                                <a href="{{ route('prompts.show', $prompt) }}" class="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors">
+                                <flux:link href="{{ route('prompts.show', $prompt) }}" variant="ghost" class="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors">
                                     {{ $prompt->title }}
-                                </a>
+                                </flux:link>
                             @else
                                 {{ $prompt->title }}
                             @endif
                         </h3>
                         @if($showFeaturedBadge && $prompt->featured)
-                            <livewire:components.badge variant="success" size="sm" text="Featured" class="flex-shrink-0" />
+                            <flux:badge color="green" size="sm" class="flex-shrink-0">Featured</flux:badge>
                         @endif
                     </div>
                     
@@ -38,24 +38,24 @@
                     @if($showCategory || $showPlatforms || $showModels || $showTags)
                         <div class="flex flex-wrap gap-2 mb-4">
                             @if($showCategory && $prompt->category)
-                                <livewire:components.badge variant="secondary" size="sm" :text="$prompt->category->name" />
+                                <flux:badge color="zinc" size="sm">{{ $prompt->category->name }}</flux:badge>
                             @endif
                             
                             @if($showPlatforms)
                                 @foreach($prompt->platforms->take($platformLimit) as $platform)
-                                    <livewire:components.badge variant="primary" size="sm" :text="$platform->name" />
+                                    <flux:badge color="blue" size="sm">{{ $platform->name }}</flux:badge>
                                 @endforeach
                             @endif
                             
                             @if($showModels)
                                 @foreach($prompt->aiModels->take($modelLimit) as $model)
-                                    <livewire:components.badge variant="success" size="sm" :text="$model->name" />
+                                    <flux:badge color="green" size="sm">{{ $model->name }}</flux:badge>
                                 @endforeach
                             @endif
                             
                             @if($showTags)
                                 @foreach($prompt->tags->take($tagLimit) as $tag)
-                                    <livewire:components.badge variant="default" size="sm" :text="$tag->name" />
+                                    <flux:badge color="zinc" size="sm">{{ $tag->name }}</flux:badge>
                                 @endforeach
                             @endif
                         </div>
@@ -67,16 +67,11 @@
                     <div class="flex flex-col items-end justify-between min-w-0 text-sm text-zinc-500 dark:text-zinc-400">
                         <div class="flex items-center space-x-4 mb-2">
                             <span class="flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                </svg>
+                                <flux:icon.heart class="size-4" />
                                 {{ $prompt->likes->count() ?? 0 }}
                             </span>
                             <span class="flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
+                                <flux:icon.eye class="size-4" />
                                 {{ views($prompt)->count() }}
                             </span>
                         </div>
@@ -95,15 +90,15 @@
                     <div class="flex items-center gap-2 mb-2">
                         <h3 class="font-semibold text-base leading-tight truncate">
                             @if($linkable)
-                                <a href="{{ route('prompts.show', $prompt) }}" class="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors">
+                                <flux:link href="{{ route('prompts.show', $prompt) }}" variant="ghost" class="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors">
                                     {{ $prompt->title }}
-                                </a>
+                                </flux:link>
                             @else
                                 {{ $prompt->title }}
                             @endif
                         </h3>
                         @if($showFeaturedBadge && $prompt->featured)
-                            <livewire:components.badge variant="success" size="sm" text="Featured" class="flex-shrink-0" />
+                            <flux:badge color="green" size="sm" class="flex-shrink-0">Featured</flux:badge>
                         @endif
                     </div>
                     
@@ -115,24 +110,24 @@
                     @if($showCategory || $showPlatforms || $showModels || $showTags)
                         <div class="flex flex-wrap gap-1">
                             @if($showCategory && $prompt->category)
-                                <livewire:components.badge variant="secondary" size="xs" :text="$prompt->category->name" />
+                                <flux:badge color="zinc" size="sm">{{ $prompt->category->name }}</flux:badge>
                             @endif
                             
                             @if($showPlatforms)
                                 @foreach($prompt->platforms->take($platformLimit) as $platform)
-                                    <livewire:components.badge variant="primary" size="xs" :text="$platform->name" />
+                                    <flux:badge color="blue" size="sm">{{ $platform->name }}</flux:badge>
                                 @endforeach
                             @endif
                             
                             @if($showModels)
                                 @foreach($prompt->aiModels->take($modelLimit) as $model)
-                                    <livewire:components.badge variant="success" size="xs" :text="$model->name" />
+                                    <flux:badge color="green" size="sm">{{ $model->name }}</flux:badge>
                                 @endforeach
                             @endif
                             
                             @if($showTags)
                                 @foreach($prompt->tags->take($tagLimit) as $tag)
-                                    <livewire:components.badge variant="default" size="xs" :text="$tag->name" />
+                                    <flux:badge color="zinc" size="sm">{{ $tag->name }}</flux:badge>
                                 @endforeach
                             @endif
                         </div>
@@ -143,16 +138,11 @@
                     <!-- Compact stats -->
                     <div class="flex items-center space-x-3 text-sm text-zinc-500 dark:text-zinc-400">
                         <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
+                            <flux:icon.heart class="size-4" />
                             {{ $prompt->likes->count() ?? 0 }}
                         </span>
                         <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
+                            <flux:icon.eye class="size-4" />
                             {{ views($prompt)->count() }}
                         </span>
                         <span class="text-xs">{{ $prompt->created_at->diffForHumans() }}</span>
@@ -166,15 +156,15 @@
             <div class="flex items-start justify-between mb-3">
                 <h3 class="font-semibold text-lg leading-tight flex-1 mr-2">
                     @if($linkable)
-                        <a href="{{ route('prompts.show', $prompt) }}" class="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors" wire:navigate>
+                        <flux:link href="{{ route('prompts.show', $prompt) }}" variant="ghost" class="hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors" wire:navigate>
                             {{ $prompt->title }}
-                        </a>
+                        </flux:link>
                     @else
                         {{ $prompt->title }}
                     @endif
                 </h3>
                 @if($showFeaturedBadge && $prompt->featured)
-                    <livewire:components.badge variant="success" size="sm" text="Featured" class="flex-shrink-0" wire:key="featured-{{ $prompt->id }}" />
+                    <flux:badge color="green" size="sm" class="flex-shrink-0" wire:key="featured-{{ $prompt->id }}">Featured</flux:badge>
                 @endif
             </div>
             
@@ -198,14 +188,14 @@
                 <div class="flex flex-wrap gap-2 mb-4">
                     @if($showCategory && $prompt->category)
                     <div>
-                        <livewire:components.badge variant="secondary" size="sm" :text="$prompt->category->name" wire:key="category-{{ $prompt->id }}-{{ $prompt->user->id }}" />
+                        <flux:badge color="zinc" size="sm" wire:key="category-{{ $prompt->id }}-{{ $prompt->user->id }}">{{ $prompt->category->name }}</flux:badge>
                     </div>
                     @endif
 
                     @if($showPlatforms)
                         @foreach($prompt->platforms->take($platformLimit) as $platform)
                         <div>
-                            <livewire:components.badge variant="primary" size="sm" :text="$platform->name" wire:key="platform-{{ $prompt->id }}-{{ $platform->id }}" />
+                            <flux:badge color="blue" size="sm" wire:key="platform-{{ $prompt->id }}-{{ $platform->id }}">{{ $platform->name }}</flux:badge>
                         </div>
                         @endforeach
                     @endif
@@ -213,7 +203,7 @@
                     @if($showModels)
                         @foreach($prompt->aiModels->take($modelLimit) as $model)
                         <div>
-                            <livewire:components.badge variant="success" size="sm" :text="$model->name" wire:key="model-{{ $prompt->id }}-{{ $model->id }}" />
+                            <flux:badge color="green" size="sm" wire:key="model-{{ $prompt->id }}-{{ $model->id }}">{{ $model->name }}</flux:badge>
                         </div>
                         @endforeach
                     @endif
@@ -221,7 +211,7 @@
                     @if($showTags)
                         @foreach($prompt->tags->take($tagLimit) as $tag)
                         <div>
-                            <livewire:components.badge variant="default" size="sm" :text="$tag->name" wire:key="tag-{{ $prompt->id }}-{{ $tag->id }}" />
+                            <flux:badge color="zinc" size="sm" wire:key="tag-{{ $prompt->id }}-{{ $tag->id }}">{{ $tag->name }}</flux:badge>
                         </div>
                         @endforeach
                     @endif
@@ -233,16 +223,11 @@
                 <div class="flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400 mt-auto">
                     <div class="flex items-center space-x-4">
                         <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
+                            <flux:icon.heart class="size-4" />
                             {{ $prompt->likes->count() ?? 0 }}
                         </span>
                         <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
+                            <flux:icon.eye class="size-4" />
                             {{ views($prompt)->count() }}
                         </span>
                     </div>
