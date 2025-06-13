@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Prompt;
-use App\Models\Category;
+use App\Models\AiModel;
 use App\Models\User;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -17,7 +17,7 @@ class extends Component {
     public $activeTab = 'trending';
     
     public $totalPrompts;
-    public $totalCategories;
+    public $totalAiModels;
     public $totalUsers;
 
     public function mount()
@@ -49,7 +49,7 @@ class extends Component {
             
         // Get real statistics
         $this->totalPrompts = Prompt::count();
-        $this->totalCategories = Category::count();
+        $this->totalAiModels = AiModel::count();
         $this->totalUsers = User::count();
     }
 }; ?>
@@ -61,16 +61,13 @@ class extends Component {
     <section class="py-16 md:py-24">
         <div class="text-center max-w-4xl mx-auto">
             <!-- Main Heading -->
-            <flux:heading size="4xl" level="1" class="md:text-5xl lg:text-6xl tracking-tight mb-6">
-                Discover the Best 
-                <span class="text-zinc-600 dark:text-zinc-400">AI Prompts</span>
+            <flux:heading size="xl" class="md:text-5xl lg:text-6xl tracking-tight mb-6">
+                Share Your Genius Prompts with the World
             </flux:heading>
             
             <!-- Subtitle -->
             <flux:subheading size="lg" class="md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed">
-                <span class="font-semibold text-zinc-800 dark:text-zinc-200">All you need is a hint to catch your pace</span><br>
-                Find, share, and use high-quality prompts for ChatGPT, Claude, Gemini, and other AI platforms. 
-                Boost your productivity with proven templates from our community.
+                Join our community of creators—curate your favorite AI prompts, inspire others, and get recognition for your best ideas.
             </flux:subheading>
             
             <!-- CTA Buttons -->
@@ -110,18 +107,18 @@ class extends Component {
             </div>
             
             <!-- Stats -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div class="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div class="text-center">
                     <flux:heading size="xl" class="text-zinc-900 dark:text-zinc-100 mb-2">{{ number_format($totalPrompts) }}</flux:heading>
-                    <flux:text class="text-zinc-600 dark:text-zinc-400">Curated Prompts</flux:text>
+                    <flux:text class="text-zinc-600 dark:text-zinc-400">Prompts Shared</flux:text>
                 </div>
                 <div class="text-center">
-                    <flux:heading size="xl" class="text-zinc-900 dark:text-zinc-100 mb-2">{{ number_format($totalCategories) }}</flux:heading>
-                    <flux:text class="text-zinc-600 dark:text-zinc-400">Categories</flux:text>
+                    <flux:heading size="xl" class="text-zinc-900 dark:text-zinc-100 mb-2">{{ number_format($totalAiModels) }}</flux:heading>
+                    <flux:text class="text-zinc-600 dark:text-zinc-400">AI Models</flux:text>
                 </div>
                 <div class="text-center">
                     <flux:heading size="xl" class="text-zinc-900 dark:text-zinc-100 mb-2">{{ number_format($totalUsers) }}</flux:heading>
-                    <flux:text class="text-zinc-600 dark:text-zinc-400">Community Members</flux:text>
+                    <flux:text class="text-zinc-600 dark:text-zinc-400">Active Contributors</flux:text>
                 </div>
             </div>
         </div>
