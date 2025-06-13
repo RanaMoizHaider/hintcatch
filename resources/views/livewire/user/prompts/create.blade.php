@@ -269,26 +269,30 @@ class extends Component {
                         </label>
                     @endforeach
                 </div>
-                <div class="flex flex-col space-y-2 mt-2 p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg">
-                    <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Don't see the model you're looking for?</div>
-                    <flux:description>You can suggest a new AI model below.</flux:description>
-                    <div class="flex space-x-2 pt-2">
-                        <flux:input wire:model="newAiModel" placeholder="Suggest a new AI Model" class="flex-1" />
-                        <flux:select wire:model.live="newAiModelProviderId" class="flex-1">
-                            <option value="">Select a Provider</option>
-                            @foreach($providers as $provider)
-                                <option value="{{ $provider->id }}">{{ $provider->name }}</option>
-                            @endforeach
-                            <option value="new">New Provider</option>
-                        </flux:select>
-                    </div>
-                    @if($showNewProviderInput)
-                    <div class="flex space-x-2">
-                        <flux:input wire:model="newProvider" placeholder="Enter new provider name" class="flex-1" required />
-                    </div>
-                    @endif
-                    <div class="flex justify-end pt-2">
-                        <flux:button type="button" wire:click="suggestAiModel" variant="outline">Suggest Model</flux:button>
+                <div class="mt-2 p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg">
+                    <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">Don't see the model you're looking for?</div>
+                    <flux:description class="mb-3">You can suggest a new AI model below.</flux:description>
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <div class="flex-1">
+                            <flux:input wire:model="newAiModel" placeholder="Suggest a new AI Model" class="w-full" />
+                        </div>
+                        <div class="flex-1">
+                            <flux:select wire:model.live="newAiModelProviderId" class="w-full">
+                                <option value="">Select a Provider</option>
+                                @foreach($providers as $provider)
+                                    <option value="{{ $provider->id }}">{{ $provider->name }}</option>
+                                @endforeach
+                                <option value="new">New Provider</option>
+                            </flux:select>
+                        </div>
+                        <div class="flex-1 {{ !$showNewProviderInput ? 'hidden' : '' }}">
+                            <flux:input wire:model="newProvider" placeholder="Enter new provider name" class="w-full" required />
+                        </div>
+                        <div class="flex-shrink-0">
+                            <flux:button type="button" wire:click="suggestAiModel" variant="outline" class="w-full md:w-auto">
+                                Suggest Model
+                            </flux:button>
+                        </div>
                     </div>
                 </div>
                 <flux:error name="newAiModel" />
