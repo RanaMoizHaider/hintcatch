@@ -65,6 +65,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Volt::route('/prompts', 'admin.prompts.index')->name('prompts.index');
     Volt::route('/prompts/create', 'admin.prompts.create')->name('prompts.create');
     Volt::route('/prompts/{prompt}/edit', 'admin.prompts.edit')->name('prompts.edit');
+
+    // Approval Queue
+    Volt::route('/approval-queue', 'admin.approval-queue')->name('approval-queue');
 });
 
 // User routes

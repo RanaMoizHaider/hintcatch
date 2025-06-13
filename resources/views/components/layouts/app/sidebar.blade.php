@@ -24,6 +24,7 @@
                         <flux:navlist.item icon="cpu-chip" :href="route('admin.ai-models.index')" :current="request()->routeIs('admin.ai-models.*')" wire:navigate>{{ __('AI Models') }}</flux:navlist.item>
                         <flux:navlist.item icon="device-tablet" :href="route('admin.platforms.index')" :current="request()->routeIs('admin.platforms.*')" wire:navigate>{{ __('Platforms') }}</flux:navlist.item>
                         <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.prompts.index')" :current="request()->routeIs('admin.prompts.*')" wire:navigate>{{ __('Prompts') }}</flux:navlist.item>
+                        <flux:navlist.item icon="check-badge" :href="route('admin.approval-queue')" :current="request()->routeIs('admin.approval-queue')" wire:navigate>{{ __('Approval Queue') }}</flux:navlist.item>
                     </flux:navlist.group>
 
                     <flux:navlist.group :heading="__('Public Site')" class="grid">

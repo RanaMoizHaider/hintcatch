@@ -4,6 +4,7 @@ use App\Models\Prompt;
 use App\Models\Category;
 use App\Models\AiModel;
 use App\Models\Platform;
+use App\Models\Provider;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Illuminate\Support\Str;
@@ -11,27 +12,41 @@ use Illuminate\Support\Str;
 new
 #[Layout('components.layouts.app')]
 class extends Component {
-    public $title = '';
-    public $description = '';
-    public $content = '';
-    public $category_id = '';
-    public $visibility = 'public';
-    public $status = 'draft';
-    public $selectedAiModels = [];
-    public $selectedPlatforms = [];
-    public $tags = [];
-    public $newTag = '';
+    public string $title = '';
+    public string $description = '';
+    public string $content = '';
+    public ?int $category_id = null;
+    public string $visibility = 'public';
+    public string $status = 'draft';
+    public array $selectedAiModels = [];
+    public array $selectedPlatforms = [];
+    public array $tags = [];
+    public string $newTag = '';
 
-    protected $rules = [
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string|max:1000',
-        'content' => 'required|string',
-        'category_id' => 'required|exists:categories,id',
-        'visibility' => 'required|in:public,private,unlisted',
-        'status' => 'required|in:draft,published',
-    ];
+    // Suggestion properties
+    public string $newCategory = '';
+    public string $newPlatform = '';
+    public string $newAiModel = '';
+    public $newAiModelProviderId = null;
+    public string $newProvider = '';
+    public bool $showNewProviderInput = false;
 
-    public function addTag()
+    protected function rules(): array
+    {
+        return [
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'content' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
+            'visibility' => 'required|in:public,private,unlisted',
+            'status' => 'required|in:draft,published',
+            'selectedAiModels' => 'nullable|array',
+            'selectedPlatforms' => 'nullable|array',
+            'tags' => 'nullable|array',
+        ];
+    }
+
+    public function addTag(): void
     {
         if ($this->newTag && !in_array($this->newTag, $this->tags)) {
             $this->tags[] = $this->newTag;
@@ -39,13 +54,85 @@ class extends Component {
         }
     }
 
-    public function removeTag($index)
+    public function removeTag(int $index): void
     {
         unset($this->tags[$index]);
         $this->tags = array_values($this->tags);
     }
 
-    public function save()
+    public function suggestCategory(): void
+    {
+        $this->validate(['newCategory' => 'required|string|max:255|unique:categories,name']);
+        $category = Category::create([
+            'name' => $this->newCategory,
+            'is_approved' => false,
+            'user_id' => auth()->id(),
+        ]);
+        $this->category_id = $category->id;
+        $this->newCategory = '';
+        session()->flash('success', 'Category suggested and selected.');
+    }
+
+    public function updatedNewAiModelProviderId($value): void
+    {
+        $this->showNewProviderInput = ($value === 'new');
+        if ($this->showNewProviderInput) {
+            $this->newAiModelProviderId = null;
+        }
+    }
+
+    public function suggestAiModel(): void
+    {
+        $this->validate([
+            'newAiModel' => 'required|string|max:255|unique:ai_models,name',
+            'newAiModelProviderId' => 'required_if:showNewProviderInput,false|nullable|exists:providers,id',
+            'newProvider' => 'required_if:showNewProviderInput,true|string|max:255|unique:providers,name',
+        ]);
+
+        $providerId = $this->newAiModelProviderId;
+
+        if ($this->showNewProviderInput) {
+            $provider = Provider::create([
+                'name' => $this->newProvider,
+                'is_approved' => false,
+                'user_id' => auth()->id()
+            ]);
+            $providerId = $provider->id;
+        }
+
+        $aiModel = AiModel::create([
+            'name' => $this->newAiModel,
+            'provider_id' => $providerId,
+            'is_approved' => false,
+            'user_id' => auth()->id(),
+        ]);
+
+        if (!in_array($aiModel->id, $this->selectedAiModels)) {
+            $this->selectedAiModels[] = $aiModel->id;
+        }
+        
+        $this->newAiModel = '';
+        $this->newAiModelProviderId = null;
+        $this->newProvider = '';
+        session()->flash('success', 'AI Model suggested and selected.');
+    }
+
+    public function suggestPlatform(): void
+    {
+        $this->validate(['newPlatform' => 'required|string|max:255|unique:platforms,name']);
+        $platform = Platform::create([
+            'name' => $this->newPlatform,
+            'is_approved' => false,
+            'user_id' => auth()->id(),
+        ]);
+        if (!in_array($platform->id, $this->selectedPlatforms)) {
+            $this->selectedPlatforms[] = $platform->id;
+        }
+        $this->newPlatform = '';
+        session()->flash('success', 'Platform suggested and selected.');
+    }
+
+    public function save(): void
     {
         $this->validate();
 
@@ -60,35 +147,36 @@ class extends Component {
             'status' => $this->status,
         ]);
 
-        // Attach AI models and platforms
-        if (!empty($this->selectedAiModels)) {
-            $prompt->aiModels()->attach($this->selectedAiModels);
-        }
-        
-        if (!empty($this->selectedPlatforms)) {
-            $prompt->platforms()->attach($this->selectedPlatforms);
-        }
-
-        // Add tags
-        if (!empty($this->tags)) {
-            $prompt->attachTags($this->tags);
-        }
+        $prompt->aiModels()->attach($this->selectedAiModels);
+        $prompt->platforms()->attach($this->selectedPlatforms);
+        $prompt->attachTags($this->tags);
 
         session()->flash('success', 'Prompt created successfully.');
-        return redirect()->route('user.prompts.index');
+        $this->redirect(route('user.prompts.index'), navigate: true);
     }
 
-    public function with()
+    public function with(): array
     {
-        $categories = Category::orderBy('name')->get();
-        $aiModels = AiModel::with('provider')->orderBy('name')->get();
-        $platforms = Platform::orderBy('name')->get();
-
         return [
             'title' => 'Create Prompt',
-            'categories' => $categories,
-            'aiModels' => $aiModels,
-            'platforms' => $platforms,
+            'categories' => Category::where(function ($query) {
+                    $query->where('is_approved', true)
+                          ->orWhere('user_id', auth()->id());
+                })->orderBy('name')->get(),
+            'aiModels' => AiModel::with('provider')
+                ->where(function ($query) {
+                    $query->where('is_approved', true)
+                          ->orWhere('user_id', auth()->id());
+                })
+                ->orderBy('name')->get(),
+            'platforms' => Platform::where(function ($query) {
+                    $query->where('is_approved', true)
+                          ->orWhere('user_id', auth()->id());
+                })->orderBy('name')->get(),
+            'providers' => Provider::where(function ($query) {
+                    $query->where('is_approved', true)
+                          ->orWhere('user_id', auth()->id());
+                })->orderBy('name')->get(),
         ];
     }
 }; ?>
@@ -149,13 +237,18 @@ class extends Component {
             <!-- Category -->
             <flux:field>
                 <flux:label for="category_id" badge="Required">Category</flux:label>
-                <flux:select wire:model="category_id" id="category_id" required>
+                <flux:select wire:model.live="category_id" id="category_id" required>
                     <option value="">Select a category</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
                 </flux:select>
+                <div class="flex space-x-2 mt-2">
+                    <flux:input wire:model="newCategory" wire:keydown.enter.prevent="suggestCategory" placeholder="Or suggest a new one" class="flex-1" />
+                    <flux:button type="button" wire:click="suggestCategory" variant="outline">Suggest</flux:button>
+                </div>
                 <flux:error name="category_id" />
+                <flux:error name="newCategory" />
             </flux:field>
 
             <!-- AI Models -->
@@ -176,6 +269,31 @@ class extends Component {
                         </label>
                     @endforeach
                 </div>
+                <div class="flex flex-col space-y-2 mt-2 p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg">
+                    <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Don't see the model you're looking for?</div>
+                    <flux:description>You can suggest a new AI model below.</flux:description>
+                    <div class="flex space-x-2 pt-2">
+                        <flux:input wire:model="newAiModel" placeholder="Suggest a new AI Model" class="flex-1" />
+                        <flux:select wire:model.live="newAiModelProviderId" class="flex-1">
+                            <option value="">Select a Provider</option>
+                            @foreach($providers as $provider)
+                                <option value="{{ $provider->id }}">{{ $provider->name }}</option>
+                            @endforeach
+                            <option value="new">New Provider</option>
+                        </flux:select>
+                    </div>
+                    @if($showNewProviderInput)
+                    <div class="flex space-x-2">
+                        <flux:input wire:model="newProvider" placeholder="Enter new provider name" class="flex-1" required />
+                    </div>
+                    @endif
+                    <div class="flex justify-end pt-2">
+                        <flux:button type="button" wire:click="suggestAiModel" variant="outline">Suggest Model</flux:button>
+                    </div>
+                </div>
+                <flux:error name="newAiModel" />
+                <flux:error name="newAiModelProviderId" />
+                <flux:error name="newProvider" />
             </flux:field>
 
             <!-- Platforms -->
@@ -191,13 +309,15 @@ class extends Component {
                             />
                             <div class="flex-1">
                                 <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ $platform->name }}</div>
-                                @if($platform->description)
-                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $platform->description }}</div>
-                                @endif
                             </div>
                         </label>
                     @endforeach
                 </div>
+                <div class="flex space-x-2 mt-2">
+                    <flux:input wire:model="newPlatform" wire:keydown.enter.prevent="suggestPlatform" placeholder="Or suggest a new one" class="flex-1" />
+                    <flux:button type="button" wire:click="suggestPlatform" variant="outline">Suggest</flux:button>
+                </div>
+                <flux:error name="newPlatform" />
             </flux:field>
 
             <!-- Visibility and Status -->
@@ -237,7 +357,7 @@ class extends Component {
                         Add Tag
                     </flux:button>
                 </div>
-                <div class="flex flex-wrap gap-2 mb-3">
+                <div class="flex flex-wrap gap-2 mt-3">
                     @foreach($tags as $index => $tag)
                         <flux:badge color="zinc">
                             {{ $tag }}
@@ -248,11 +368,13 @@ class extends Component {
             </flux:field>
 
             <!-- Submit -->
-            <div class="flex items-center justify-end space-x-3">
+            <div class="flex items-center justify-end space-x-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
                 <flux:button wire:navigate href="{{ route('user.prompts.index') }}" variant="ghost">
                     Cancel
                 </flux:button>
-                <flux:button type="submit" variant="primary" icon="check">Create Prompt</flux:button>
+                <flux:button type="submit">
+                    Create Prompt
+                </flux:button>
             </div>
         </form>
     </div>

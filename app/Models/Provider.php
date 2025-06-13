@@ -24,6 +24,8 @@ class Provider extends Model
         'supported_features',
         'pricing_model',
         'is_active',
+        'is_approved',
+        'user_id',
     ];
 
     // Slug configuration
@@ -35,11 +37,17 @@ class Provider extends Model
         'supported_features' => 'array',
         'pricing_model' => 'array',
         'is_active' => 'boolean',
+        'is_approved' => 'boolean',
     ];
 
     public function aiModels(): HasMany
     {
         return $this->hasMany(AiModel::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function prompts(): HasManyThrough

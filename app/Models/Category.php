@@ -13,7 +13,14 @@ class Category extends Model
     /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory, HasSlug;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'parent_id',
+        'is_approved',
+        'user_id',
+    ];
 
     // Slug configuration
     protected $slugSource = 'name';
@@ -38,5 +45,10 @@ class Category extends Model
     public function countPrompts(): int
     {
         return $this->prompts()->count();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

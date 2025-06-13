@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,25 +11,35 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class AiModel extends Model
 {
     /** @use HasFactory<\Database\Factories\AiModelFactory> */
-    use HasFactory;
+    use HasFactory, HasSlug;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'provider_id',
+        'image',
+        'color',
+        'icon',
+        'features',
+        'release_date',
+        'is_approved',
+        'user_id',
+    ];
 
     protected function casts(): array
     {
         return [
-            'release_date' => 'datetime:Y-m-d',
+            'release_date' => 'date:Y-m-d',
+            'features' => 'array',
+            'is_approved' => 'boolean',
         ];
     }
 
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
+    // Slug configuration
+    protected $slugSource = 'name';
 
-    protected $casts = [
-        'features' => 'array',
-    ];
+    protected $slugColumn = 'slug';
 
     public function provider(): BelongsTo
     {
@@ -38,5 +49,10 @@ class AiModel extends Model
     public function prompts(): BelongsToMany
     {
         return $this->belongsToMany(Prompt::class, 'ai_model_prompts')->published()->visible();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
