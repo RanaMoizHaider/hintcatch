@@ -19,7 +19,24 @@ class Prompt extends Model implements Viewable
     /** @use HasFactory<\Database\Factories\PromptFactory> */
     use HasFactory, HasSlug, HasTags, InteractsWithViews;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'title',
+        'slug',
+        'description',
+        'content',
+        'user_id',
+        'category_id',
+        'visibility',
+        'status',
+        'featured',
+        'published_at',
+        'source',
+    ];
+
+    protected $casts = [
+        'featured' => 'boolean',
+        'published_at' => 'datetime',
+    ];
 
     // Slug configuration
     protected $slugSource = 'title';

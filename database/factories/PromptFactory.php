@@ -29,6 +29,7 @@ class PromptFactory extends Factory
             'status' => $this->faker->randomElement(['draft', 'published']),
             'featured' => $this->faker->boolean(),
             'published_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'source' => $this->faker->url(),
         ];
     }
 }
