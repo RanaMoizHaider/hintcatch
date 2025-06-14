@@ -40,65 +40,6 @@ class DummyDataSeeder extends Seeder
         $users = User::factory(18)->create();
         $allUsers = collect([$adminUser, $testUser])->merge($users);
 
-        // Create categories
-        $categories = Category::factory(10)->create();
-
-        // Create subcategories
-        Category::factory(5)->create([
-            'parent_id' => fn () => $categories->random()->id,
-        ]);
-
-        // Create platforms
-        $platforms = Platform::factory(5)->create();
-
-        // Create specific AI providers first
-        $providers = collect([
-            ['name' => 'OpenAI', 'slug' => 'openai', 'website' => 'https://openai.com', 'color' => '#412991'],
-            ['name' => 'Anthropic', 'slug' => 'anthropic', 'website' => 'https://anthropic.com', 'color' => '#CA8A04'],
-            ['name' => 'Google', 'slug' => 'google', 'website' => 'https://ai.google', 'color' => '#4285F4'],
-            ['name' => 'Microsoft', 'slug' => 'microsoft', 'website' => 'https://azure.microsoft.com', 'color' => '#0078D4'],
-            ['name' => 'Meta', 'slug' => 'meta', 'website' => 'https://ai.meta.com', 'color' => '#1877F2'],
-        ])->map(function ($providerData) {
-            return Provider::create([
-                'name' => $providerData['name'],
-                'slug' => $providerData['slug'],
-                'description' => 'Leading AI provider offering cutting-edge machine learning models and services.',
-                'website' => $providerData['website'],
-                'api_endpoint' => $providerData['website'].'/api/v1',
-                'logo' => null,
-                'color' => $providerData['color'],
-                'supported_features' => ['text', 'image', 'code'],
-                'pricing_model' => ['type' => 'pay-per-use', 'currency' => 'USD'],
-                'is_active' => true,
-            ]);
-        });
-
-        // Create AI models with specific providers
-        $aiModels = collect([
-            ['name' => 'GPT-4', 'provider' => 'OpenAI'],
-            ['name' => 'GPT-4o', 'provider' => 'OpenAI'],
-            ['name' => 'Claude-3.5 Sonnet', 'provider' => 'Anthropic'],
-            ['name' => 'Claude-3 Opus', 'provider' => 'Anthropic'],
-            ['name' => 'Gemini Pro', 'provider' => 'Google'],
-            ['name' => 'Gemini Ultra', 'provider' => 'Google'],
-            ['name' => 'Llama 3', 'provider' => 'Meta'],
-            ['name' => 'Copilot', 'provider' => 'Microsoft'],
-        ])->map(function ($modelData) use ($providers) {
-            $provider = $providers->firstWhere('name', $modelData['provider']);
-
-            return AiModel::create([
-                'name' => $modelData['name'],
-                'slug' => \Str::slug($modelData['name']),
-                'provider_id' => $provider->id,
-                'description' => 'Advanced AI model for various tasks including text generation, analysis, and creative writing.',
-                'image' => null,
-                'color' => $provider->color,
-                'icon' => 'heroicon-o-cpu-chip',
-                'features' => ['Text Generation', 'Code Assistance', 'Creative Writing', 'Analysis'],
-                'release_date' => now()->subMonths(rand(1, 24)),
-            ]);
-        });
-
         // Create prompts
         $prompts = Prompt::factory(100)->create([
             'user_id' => fn () => $allUsers->random()->id,
@@ -106,15 +47,15 @@ class DummyDataSeeder extends Seeder
         ]);
 
         // Attach platforms and AI models to prompts
-        $prompts->each(function ($prompt) use ($platforms, $aiModels) {
+        $prompts->each(function ($prompt) {
             // Attach 1-3 platforms to each prompt
             $prompt->platforms()->attach(
-                $platforms->random(rand(1, 3))->pluck('id')
+                Platform::all()->random()->id
             );
 
             // Attach 1-2 AI models to each prompt
             $prompt->aiModels()->attach(
-                $aiModels->random(rand(1, 2))->pluck('id')
+                AiModel::all()->random()->id
             );
 
             // Add some tags
