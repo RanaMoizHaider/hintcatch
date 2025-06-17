@@ -6,8 +6,8 @@ use App\Models\Prompt;
 use App\Models\Category;
 use App\Models\AiModel;
 use App\Models\Platform;
-use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 new
 #[Layout('components.layouts.app')]
@@ -18,7 +18,6 @@ class extends Component {
     public $category_id = '';
     public $visibility = 'public';
     public $status = 'published';
-    public $user_id = '';
     public $selectedAiModels = [];
     public $selectedPlatforms = [];
     public $tags = [];
@@ -29,7 +28,6 @@ class extends Component {
         'description' => 'nullable|string|max:1000',
         'content' => 'required|string',
         'category_id' => 'required|exists:categories,id',
-        'user_id' => 'required|exists:users,id',
         'visibility' => 'required|in:public,private,unlisted',
         'status' => 'required|in:draft,published',
     ];
@@ -58,11 +56,15 @@ class extends Component {
             'description' => $this->description,
             'content' => $this->content,
             'category_id' => $this->category_id,
-            'user_id' => $this->user_id,
+            'user_id' => Auth::id(),
             'visibility' => $this->visibility,
             'status' => $this->status,
-            'tags' => $this->tags,
         ]);
+
+        // Attach tags using Spatie Tags
+        if (!empty($this->tags)) {
+            $prompt->attachTags($this->tags);
+        }
 
         if (!empty($this->selectedAiModels)) {
             $prompt->aiModels()->attach($this->selectedAiModels);
@@ -81,14 +83,12 @@ class extends Component {
         $categories = Category::orderBy('name')->get();
         $aiModels = AiModel::with('provider')->orderBy('name')->get();
         $platforms = Platform::orderBy('name')->get();
-        $users = User::orderBy('name')->get();
 
         return [
             'title' => 'Create Prompt',
             'categories' => $categories,
             'aiModels' => $aiModels,
             'platforms' => $platforms,
-            'users' => $users
         ];
     }
 }; ?>
@@ -104,13 +104,11 @@ class extends Component {
             <flux:heading size="lg" class="mb-4">Basic Information</flux:heading>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="md:col-span-2">
-                    <flux:field>
-                        <flux:label badge="Required">Title</flux:label>
-                        <flux:input wire:model="title" placeholder="Enter prompt title" />
-                        <flux:error name="title" />
-                    </flux:field>
-                </div>
+                <flux:field>
+                    <flux:label badge="Required">Title</flux:label>
+                    <flux:input wire:model="title" placeholder="Enter prompt title" />
+                    <flux:error name="title" />
+                </flux:field>
 
                 <flux:field>
                     <flux:label badge="Required">Category</flux:label>
@@ -122,34 +120,9 @@ class extends Component {
                     <flux:error name="category_id" />
                 </flux:field>
 
-                <flux:field>
-                    <flux:label badge="Required">Author</flux:label>
-                    <flux:select wire:model="user_id" placeholder="Select author">
-                        @foreach($users as $user)
-                            <flux:select.option value="{{ $user->id }}">{{ $user->name }}</flux:select.option>
-                        @endforeach
-                    </flux:select>
-                    <flux:error name="user_id" />
-                </flux:field>
-
-                <flux:field>
-                    <flux:radio.group wire:model="visibility" label="Visibility">
-                        <flux:radio value="public" label="Public" description="Everyone can see this prompt" />
-                        <flux:radio value="private" label="Private" description="Only you can see this prompt" />
-                        <flux:radio value="unlisted" label="Unlisted" description="Only accessible with direct link" />
-                    </flux:radio.group>
-                </flux:field>
-
-                <flux:field>
-                    <flux:radio.group wire:model="status" label="Status">
-                        <flux:radio value="draft" label="Draft" description="Work in progress, not yet published" />
-                        <flux:radio value="published" label="Published" description="Ready for public viewing" />
-                    </flux:radio.group>
-                </flux:field>
-
                 <div class="md:col-span-2">
                     <flux:field>
-                        <flux:label badge="Optional">Description</flux:label>
+                        <flux:label>Description</flux:label>
                         <flux:textarea wire:model="description" placeholder="Brief description of the prompt" rows="3" />
                         <flux:error name="description" />
                     </flux:field>
@@ -215,6 +188,27 @@ class extends Component {
                             </label>
                         @endforeach
                     </div>
+                </flux:field>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+            <flux:heading size="lg" class="mb-4">Visibility & Status</flux:heading>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <flux:field>
+                    <flux:radio.group wire:model="visibility" label="Visibility">
+                        <flux:radio value="public" label="Public" description="Everyone can see this prompt" />
+                        <flux:radio value="private" label="Private" description="Only you can see this prompt" />
+                        <flux:radio value="unlisted" label="Unlisted" description="Only accessible with direct link" />
+                    </flux:radio.group>
+                </flux:field>
+
+                <flux:field>
+                    <flux:radio.group wire:model="status" label="Status">
+                        <flux:radio value="draft" label="Draft" description="Work in progress, not yet published" />
+                        <flux:radio value="published" label="Published" description="Ready for public viewing" />
+                    </flux:radio.group>
                 </flux:field>
             </div>
         </div>
