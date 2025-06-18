@@ -22,6 +22,8 @@ class extends Component {
     public array $selectedPlatforms = [];
     public array $tags = [];
     public string $newTag = '';
+    public string $aiModelSearch = '';
+    public string $platformSearch = '';
 
     // Suggestion properties
     public string $newCategory = '';
@@ -155,29 +157,54 @@ class extends Component {
         $this->redirect(route('user.prompts.index'), navigate: true);
     }
 
-    public function with(): array
+    public function getCategoriesProperty()
     {
-        return [
-            'title' => 'Create Prompt',
-            'categories' => Category::where(function ($query) {
-                    $query->where('is_approved', true)
-                          ->orWhere('user_id', auth()->id());
-                })->orderBy('name')->get(),
-            'aiModels' => AiModel::with('provider')
-                ->where(function ($query) {
-                    $query->where('is_approved', true)
-                          ->orWhere('user_id', auth()->id());
-                })
-                ->orderBy('name')->get(),
-            'platforms' => Platform::where(function ($query) {
-                    $query->where('is_approved', true)
-                          ->orWhere('user_id', auth()->id());
-                })->orderBy('name')->get(),
-            'providers' => Provider::where(function ($query) {
-                    $query->where('is_approved', true)
-                          ->orWhere('user_id', auth()->id());
-                })->orderBy('name')->get(),
-        ];
+        return Category::where(function ($query) {
+            $query->where('is_approved', true)
+                  ->orWhere('user_id', auth()->id());
+        })->orderBy('name')->get();
+    }
+
+    public function getAiModelsProperty()
+    {
+        $query = AiModel::with('provider')
+            ->where(function ($query) {
+                $query->where('is_approved', true)
+                      ->orWhere('user_id', auth()->id());
+            });
+        
+        if ($this->aiModelSearch) {
+            $query->where(function($q) {
+                $q->where('name', 'like', '%' . $this->aiModelSearch . '%')
+                  ->orWhereHas('provider', function($providerQuery) {
+                      $providerQuery->where('name', 'like', '%' . $this->aiModelSearch . '%');
+                  });
+            });
+        }
+        
+        return $query->orderBy('name')->get();
+    }
+
+    public function getPlatformsProperty()
+    {
+        $query = Platform::where(function ($query) {
+            $query->where('is_approved', true)
+                  ->orWhere('user_id', auth()->id());
+        });
+        
+        if ($this->platformSearch) {
+            $query->where('name', 'like', '%' . $this->platformSearch . '%');
+        }
+        
+        return $query->orderBy('name')->get();
+    }
+
+    public function getProvidersProperty()
+    {
+        return Provider::where(function ($query) {
+            $query->where('is_approved', true)
+                  ->orWhere('user_id', auth()->id());
+        })->orderBy('name')->get();
     }
 }; ?>
 
@@ -194,192 +221,233 @@ class extends Component {
         </x-slot>
     </x-page-heading>
 
-    <!-- Form -->
-    <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 p-6">
-        <form wire:submit="save" class="space-y-6">
-            <!-- Title -->
-            <flux:field>
-                <flux:label for="title" badge="Required">Prompt Title</flux:label>
-                <flux:input 
-                    wire:model="title" 
-                    id="title" 
-                    placeholder="Enter a descriptive title for your prompt"
-                    required
-                />
-                <flux:error name="title" />
-            </flux:field>
+    <form wire:submit="save" class="space-y-6">
+        <div class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+            <flux:heading size="lg" class="mb-4">Basic Information</flux:heading>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <flux:field>
+                    <flux:label badge="Required">Title</flux:label>
+                    <flux:input wire:model="title" placeholder="Enter prompt title" />
+                    <flux:error name="title" />
+                </flux:field>
 
-            <!-- Description -->
-            <flux:field>
-                <flux:label for="description" badge="Optional">Description</flux:label>
-                <flux:textarea 
-                    wire:model="description" 
-                    id="description" 
-                    rows="3"
-                    placeholder="Brief description of what this prompt does..."
-                />
-                <flux:error name="description" />
-            </flux:field>
+                <flux:field>
+                    <flux:label badge="Required">Category</flux:label>
+                    <flux:select wire:model="category_id" placeholder="Select category">
+                        @foreach($this->categories as $category)
+                            <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:error name="category_id" />
+                </flux:field>
 
-            <!-- Content -->
-            <flux:field>
-                <flux:label for="content" badge="Required">Prompt Content</flux:label>
-                <flux:textarea 
-                    wire:model="content" 
-                    id="content" 
-                    rows="8"
-                    placeholder="Enter your prompt content here..."
-                    required
-                />
-                <flux:error name="content" />
-            </flux:field>
-
-            <!-- Category -->
-            <flux:field>
-                <flux:label for="category_id" badge="Required">Category</flux:label>
-                <flux:select wire:model.live="category_id" id="category_id" required>
-                    <option value="">Select a category</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </flux:select>
-                <div class="flex space-x-2 mt-2">
-                    <flux:input wire:model="newCategory" wire:keydown.enter.prevent="suggestCategory" placeholder="Or suggest a new one" class="flex-1" />
-                    <flux:button type="button" wire:click="suggestCategory" variant="outline">Suggest</flux:button>
+                <div class="md:col-span-2">
+                    <flux:field>
+                        <flux:label>Description</flux:label>
+                        <flux:textarea wire:model="description" placeholder="Brief description of the prompt" rows="3" />
+                        <flux:error name="description" />
+                    </flux:field>
                 </div>
-                <flux:error name="category_id" />
+
+                <div class="md:col-span-2">
+                    <flux:field>
+                        <flux:label badge="Required">Content</flux:label>
+                        <flux:textarea wire:model="content" placeholder="Enter the prompt content" rows="8" />
+                        <flux:error name="content" />
+                    </flux:field>
+                </div>
+            </div>
+
+            <!-- Category Suggestion -->
+            <div class="mt-4 p-4 bg-zinc-50 dark:bg-zinc-800 rounded-lg">
+                <flux:text size="sm" class="font-medium mb-2">Don't see the category you need?</flux:text>
+                <div class="flex gap-2">
+                    <flux:input 
+                        wire:model="newCategory" 
+                        wire:keydown.enter.prevent="suggestCategory" 
+                        placeholder="Suggest a new category" 
+                        class="flex-1"
+                    />
+                    <flux:button type="button" wire:click="suggestCategory" variant="outline" icon="plus">
+                        Suggest
+                    </flux:button>
+                </div>
                 <flux:error name="newCategory" />
-            </flux:field>
+            </div>
+        </div>
 
-            <!-- AI Models -->
-            <flux:field>
-                <flux:label badge="Optional">Compatible AI Models</flux:label>
-                <flux:description>Select which AI models work well with this prompt</flux:description>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    @foreach($aiModels as $model)
-                        <label class="flex items-center space-x-2 p-3 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer">
-                            <flux:checkbox 
-                                wire:model="selectedAiModels" 
-                                value="{{ $model->id }}"
-                            />
-                            <div class="flex-1">
-                                <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ $model->name }}</div>
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $model->provider->name }}</div>
-                            </div>
-                        </label>
-                    @endforeach
+        <div class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+            <flux:heading size="lg" class="mb-4">Tags</flux:heading>
+            
+            <div class="space-y-4">
+                <div class="flex gap-2">
+                    <flux:input wire:model="newTag" placeholder="Add a tag" wire:keydown.enter.prevent="addTag" />
+                    <flux:button type="button" wire:click="addTag" variant="outline" icon="plus">
+                        Add
+                    </flux:button>
                 </div>
-                <div class="mt-2 p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg">
-                    <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">Don't see the model you're looking for?</div>
-                    <flux:description class="mb-3">You can suggest a new AI model below.</flux:description>
-                    <div class="flex flex-col md:flex-row gap-3">
-                        <div class="flex-1">
-                            <flux:input wire:model="newAiModel" placeholder="Suggest a new AI Model" class="w-full" />
-                        </div>
-                        <div class="flex-1">
-                            <flux:select wire:model.live="newAiModelProviderId" class="w-full">
-                                <option value="">Select a Provider</option>
-                                @foreach($providers as $provider)
-                                    <option value="{{ $provider->id }}">{{ $provider->name }}</option>
-                                @endforeach
-                                <option value="new">New Provider</option>
-                            </flux:select>
-                        </div>
-                        <div class="flex-1 {{ !$showNewProviderInput ? 'hidden' : '' }}">
-                            <flux:input wire:model="newProvider" placeholder="Enter new provider name" class="w-full" required />
-                        </div>
-                        <div class="flex-shrink-0">
-                            <flux:button type="button" wire:click="suggestAiModel" variant="outline" class="w-full md:w-auto">
-                                Suggest Model
-                            </flux:button>
+
+                @if(count($tags) > 0)
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($tags as $index => $tag)
+                            <flux:badge variant="subtle" class="bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                {{ $tag }}
+                                <flux:badge.close wire:click="removeTag({{ $index }})" />
+                            </flux:badge>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+            <flux:heading size="lg" class="mb-4">AI Models & Platforms</flux:heading>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <flux:field>
+                    <flux:label>Compatible AI Models</flux:label>
+                    <div class="space-y-3">
+                        <flux:input 
+                            wire:model.live="aiModelSearch" 
+                            placeholder="Search AI models..." 
+                            icon="magnifying-glass"
+                        />
+                        <div class="space-y-2 max-h-48 overflow-y-auto border border-zinc-200 rounded-lg p-3 dark:border-zinc-700">
+                            @forelse($this->aiModels as $model)
+                                <label class="flex items-center hover:bg-zinc-50 dark:hover:bg-zinc-800 p-2 rounded">
+                                    <flux:checkbox wire:model="selectedAiModels" value="{{ $model->id }}" class="mr-3" />
+                                    <flux:text size="sm">{{ $model->name }} ({{ $model->provider->name }})</flux:text>
+                                </label>
+                            @empty
+                                <flux:text size="sm" class="text-zinc-500 dark:text-zinc-400 p-2">
+                                    @if($aiModelSearch)
+                                        No AI models found matching "{{ $aiModelSearch }}"
+                                    @else
+                                        No AI models available
+                                    @endif
+                                </flux:text>
+                            @endforelse
                         </div>
                     </div>
-                </div>
-                <flux:error name="newAiModel" />
-                <flux:error name="newAiModelProviderId" />
-                <flux:error name="newProvider" />
-            </flux:field>
+                </flux:field>
 
-            <!-- Platforms -->
-            <flux:field>
-                <flux:label badge="Optional">Compatible Platforms</flux:label>
-                <flux:description>Select which platforms this prompt works on</flux:description>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    @foreach($platforms as $platform)
-                        <label class="flex items-center space-x-2 p-3 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer">
-                            <flux:checkbox 
-                                wire:model="selectedPlatforms" 
-                                value="{{ $platform->id }}"
-                            />
-                            <div class="flex-1">
-                                <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ $platform->name }}</div>
-                            </div>
-                        </label>
-                    @endforeach
-                </div>
-                <div class="flex space-x-2 mt-2">
-                    <flux:input wire:model="newPlatform" wire:keydown.enter.prevent="suggestPlatform" placeholder="Or suggest a new one" class="flex-1" />
-                    <flux:button type="button" wire:click="suggestPlatform" variant="outline">Suggest</flux:button>
-                </div>
-                <flux:error name="newPlatform" />
-            </flux:field>
+                <flux:field>
+                    <flux:label>Target Platforms</flux:label>
+                    <div class="space-y-3">
+                        <flux:input 
+                            wire:model.live="platformSearch" 
+                            placeholder="Search platforms..." 
+                            icon="magnifying-glass"
+                        />
+                        <div class="space-y-2 max-h-48 overflow-y-auto border border-zinc-200 rounded-lg p-3 dark:border-zinc-700">
+                            @forelse($this->platforms as $platform)
+                                <label class="flex items-center hover:bg-zinc-50 dark:hover:bg-zinc-800 p-2 rounded">
+                                    <flux:checkbox wire:model="selectedPlatforms" value="{{ $platform->id }}" class="mr-3" />
+                                    <flux:text size="sm">{{ $platform->name }}</flux:text>
+                                </label>
+                            @empty
+                                <flux:text size="sm" class="text-zinc-500 dark:text-zinc-400 p-2">
+                                    @if($platformSearch)
+                                        No platforms found matching "{{ $platformSearch }}"
+                                    @else
+                                        No platforms available
+                                    @endif
+                                </flux:text>
+                            @endforelse
+                        </div>
+                    </div>
+                </flux:field>
+            </div>
+        </div>
 
-            <!-- Visibility and Status -->
+        <!-- Suggestions Section -->
+        <div class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+            <flux:heading size="lg" class="mb-4">Can't Find What You Need?</flux:heading>
+            <flux:description class="mb-6">Suggest new AI models or platforms to help expand our database.</flux:description>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Visibility -->
+                <!-- AI Model Suggestion -->
+                <div class="space-y-4">
+                    <flux:heading size="md" class="text-zinc-700 dark:text-zinc-300">Suggest AI Model</flux:heading>
+                    <flux:field>
+                        <flux:label>Model Name</flux:label>
+                        <flux:input wire:model="newAiModel" placeholder="e.g., GPT-4 Turbo" />
+                        <flux:error name="newAiModel" />
+                    </flux:field>
+                    
+                    <flux:field>
+                        <flux:label>Provider</flux:label>
+                        <flux:select wire:model.live="newAiModelProviderId" placeholder="Select or add provider">
+                            @foreach($this->providers as $provider)
+                                <flux:select.option value="{{ $provider->id }}">{{ $provider->name }}</flux:select.option>
+                            @endforeach
+                            <flux:select.option value="new">+ Add New Provider</flux:select.option>
+                        </flux:select>
+                        <flux:error name="newAiModelProviderId" />
+                    </flux:field>
+                    
+                    @if($showNewProviderInput)
+                        <flux:field>
+                            <flux:label>New Provider Name</flux:label>
+                            <flux:input wire:model="newProvider" placeholder="e.g., OpenAI" />
+                            <flux:error name="newProvider" />
+                        </flux:field>
+                    @endif
+                    
+                    <flux:button type="button" wire:click="suggestAiModel" variant="outline" icon="plus" class="w-full">
+                        Suggest AI Model
+                    </flux:button>
+                </div>
+
+                <!-- Platform Suggestion -->
+                <div class="space-y-4">
+                    <flux:heading size="md" class="text-zinc-700 dark:text-zinc-300">Suggest Platform</flux:heading>
+                    <flux:field>
+                        <flux:label>Platform Name</flux:label>
+                        <flux:input 
+                            wire:model="newPlatform" 
+                            wire:keydown.enter.prevent="suggestPlatform" 
+                            placeholder="e.g., Claude Console" 
+                        />
+                        <flux:error name="newPlatform" />
+                    </flux:field>
+                    
+                    <flux:button type="button" wire:click="suggestPlatform" variant="outline" icon="plus" class="w-full">
+                        Suggest Platform
+                    </flux:button>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+            <flux:heading size="lg" class="mb-4">Visibility & Status</flux:heading>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <flux:field>
                     <flux:radio.group wire:model="visibility" label="Visibility">
                         <flux:radio value="public" label="Public" description="Everyone can see this prompt" />
-                        <flux:radio value="unlisted" label="Unlisted" description="Only accessible with direct link" />
                         <flux:radio value="private" label="Private" description="Only you can see this prompt" />
+                        <flux:radio value="unlisted" label="Unlisted" description="Only accessible with direct link" />
                     </flux:radio.group>
-                    <flux:error name="visibility" />
                 </flux:field>
 
-                <!-- Status -->
                 <flux:field>
                     <flux:radio.group wire:model="status" label="Status">
-                        <flux:radio value="draft" label="Draft" description="Work in progress, not published yet" />
-                        <flux:radio value="published" label="Published" description="Ready to share with others" />
+                        <flux:radio value="published" label="Published" description="Ready for public viewing" />
+                        <flux:radio value="draft" label="Draft" description="Work in progress, not yet published" />
                     </flux:radio.group>
-                    <flux:error name="status" />
                 </flux:field>
             </div>
+        </div>
 
-            <!-- Tags -->
-            <flux:field>
-                <flux:label badge="Optional">Tags</flux:label>
-                <flux:description>Add tags to help others discover your prompt</flux:description>
-                <div class="flex space-x-2">
-                    <flux:input 
-                        wire:model="newTag"
-                        wire:keydown.enter.prevent="addTag"
-                        placeholder="Enter a tag and press Enter"
-                        class="flex-1"
-                    />
-                    <flux:button type="button" wire:click="addTag" variant="outline">
-                        Add Tag
-                    </flux:button>
-                </div>
-                <div class="flex flex-wrap gap-2 mt-3">
-                    @foreach($tags as $index => $tag)
-                        <flux:badge color="zinc">
-                            {{ $tag }}
-                            <flux:badge.close wire:click="removeTag({{ $index }})" />
-                        </flux:badge>
-                    @endforeach
-                </div>
-            </flux:field>
-
-            <!-- Submit -->
-            <div class="flex items-center justify-end space-x-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
-                <flux:button wire:navigate href="{{ route('user.prompts.index') }}" variant="ghost">
-                    Cancel
-                </flux:button>
-                <flux:button type="submit">
-                    Create Prompt
-                </flux:button>
-            </div>
-        </form>
-    </div>
+        <div class="flex justify-end gap-3">
+            <flux:button variant="outline" href="{{ route('user.prompts.index') }}">
+                Cancel
+            </flux:button>
+            <flux:button type="submit" variant="primary" icon="plus">
+                Create Prompt
+            </flux:button>
+        </div>
+    </form>
 </div>
