@@ -158,7 +158,7 @@ class AiModelsSeeder extends Seeder
         ];
 
         foreach ($models as $model) {
-            AiModel::create($model);
+            AiModel::create(array_merge($model, ['is_approved' => true]));
         }
     }
 }

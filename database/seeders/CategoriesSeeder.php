@@ -73,7 +73,7 @@ class CategoriesSeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            Category::create($cat);
+            Category::create(array_merge($cat, ['is_approved' => true]));
         }
     }
 }

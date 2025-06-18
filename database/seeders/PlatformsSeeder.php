@@ -130,7 +130,7 @@ class PlatformsSeeder extends Seeder
         ];
 
         foreach ($platforms as $platform) {
-            Platform::create($platform);
+            Platform::create(array_merge($platform, ['is_approved' => true]));
         }
     }
 }

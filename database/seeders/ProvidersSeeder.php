@@ -77,7 +77,7 @@ class ProvidersSeeder extends Seeder
         ];
 
         foreach ($providers as $provider) {
-            Provider::create($provider);
+            Provider::create(array_merge($provider, ['is_approved' => true]));
         }
     }
 }
