@@ -107,14 +107,23 @@ class extends Component {
                     <h1 class="text-3xl font-bold mb-4">{{ $prompt->title }}</h1>
 
                     <div class="flex items-center gap-4 mb-6">
-                        <flux:link href="{{ route('profile.show', $prompt->user) }}" variant="ghost" class="flex items-center gap-2">
-                        <livewire:components.user-avatar 
-                                :user="$prompt->user" 
-                                size="md" 
-                                :show-name="true"
-                                wire:key="avatar-{{ $prompt->id }}-{{ $prompt->user->id }}"
-                            />
-                        </flux:link>
+                        @if($prompt->user)
+                            <flux:link href="{{ route('profile.show', $prompt->user) }}" variant="ghost" class="flex items-center gap-2">
+                                <livewire:components.user-avatar 
+                                    :user="$prompt->user" 
+                                    size="md" 
+                                    :show-name="true"
+                                    wire:key="avatar-{{ $prompt->id }}-{{ $prompt->user->id }}"
+                                />
+                            </flux:link>
+                        @else
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 bg-zinc-200 dark:bg-zinc-700 rounded-full flex items-center justify-center">
+                                    <flux:icon.user class="w-5 h-5 text-zinc-500" />
+                                </div>
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400 font-medium">Unknown User</span>
+                            </div>
+                        @endif
 
                         <div class="flex items-center text-sm text-zinc-600 dark:text-zinc-400">
                             <flux:icon.calendar class="size-4 mr-1" />
@@ -276,7 +285,7 @@ class extends Component {
                                 <flux:link href="{{ route('prompts.show', $relatedPrompt) }}" variant="ghost" class="block">
                                     <div class="p-4 border border-zinc-200 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
                                         <h3 class="font-medium">{{ $relatedPrompt->title }}</h3>
-                                        <p class="text-sm text-zinc-600 dark:text-zinc-400">By {{ $relatedPrompt->user->name }}</p>
+                                        <p class="text-sm text-zinc-600 dark:text-zinc-400">By {{ $relatedPrompt->user ? $relatedPrompt->user->name : 'Unknown User' }}</p>
                                     </div>
                                 </flux:link>
                             @empty
