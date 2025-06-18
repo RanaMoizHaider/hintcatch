@@ -7,6 +7,9 @@
                 <flux:text size="sm" class="text-zinc-600 dark:text-zinc-400 mb-4">
                     Discover and share the best AI prompts for your creative and professional needs.
                 </flux:text>
+                <flux:link href="https://github.com/RanaMoizHaider/hintcatch" target="_blank" class="inline-flex items-center text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">
+                    <flux:icon.github size="lg" />
+                </flux:link>
             </div>
 
             <!-- Quick Links -->
