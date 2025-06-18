@@ -26,6 +26,7 @@ class extends Component {
     public string $newTag = '';
     public string $aiModelSearch = '';
     public string $platformSearch = '';
+    public string $source = '';
 
     // Suggestion properties
     public string $newCategory = '';
@@ -49,6 +50,7 @@ class extends Component {
         $this->category_id = $prompt->category_id;
         $this->visibility = $prompt->visibility;
         $this->status = $prompt->status;
+        $this->source = $prompt->source ?? '';
         $this->selectedAiModels = $prompt->aiModels->pluck('id')->toArray();
         $this->selectedPlatforms = $prompt->platforms->pluck('id')->toArray();
         $this->tags = $prompt->tags->pluck('name')->toArray();
@@ -66,6 +68,7 @@ class extends Component {
             'selectedAiModels' => 'nullable|array',
             'selectedPlatforms' => 'nullable|array',
             'tags' => 'nullable|array',
+            'source' => 'nullable|url|max:500',
         ];
     }
 
@@ -167,6 +170,7 @@ class extends Component {
             'category_id' => $this->category_id,
             'visibility' => $this->visibility,
             'status' => $this->status,
+            'source' => $this->source,
         ]);
 
         $this->prompt->aiModels()->sync($this->selectedAiModels);
@@ -275,6 +279,15 @@ class extends Component {
                         <flux:label badge="Required">Content</flux:label>
                         <flux:textarea wire:model="content" placeholder="Enter the prompt content" rows="8" />
                         <flux:error name="content" />
+                    </flux:field>
+                </div>
+
+                <div class="md:col-span-2">
+                    <flux:field>
+                        <flux:label>Source URL</flux:label>
+                        <flux:input wire:model="source" placeholder="Optional: Link to original source (e.g., GitHub, article)" />
+                        <flux:error name="source" />
+                        <flux:description>If this prompt is from another source, you can provide the original link here.</flux:description>
                     </flux:field>
                 </div>
             </div>

@@ -23,6 +23,7 @@ class extends Component {
     public $selectedPlatforms = [];
     public $tags = [];
     public $newTag = '';
+    public $source = '';
 
     public function mount(Prompt $prompt)
     {
@@ -33,6 +34,7 @@ class extends Component {
         $this->category_id = $prompt->category_id;
         $this->visibility = $prompt->visibility;
         $this->status = $prompt->status;
+        $this->source = $prompt->source ?? '';
         $this->tags = $prompt->tags->pluck('name')->toArray();
         $this->selectedAiModels = $prompt->aiModels->pluck('id')->toArray();
         $this->selectedPlatforms = $prompt->platforms->pluck('id')->toArray();
@@ -47,6 +49,7 @@ class extends Component {
             'category_id' => 'required|exists:categories,id',
             'visibility' => 'required|in:public,private,unlisted',
             'status' => 'required|in:draft,published',
+            'source' => 'nullable|url|max:500',
         ];
     }
 
@@ -77,6 +80,7 @@ class extends Component {
             'user_id' => Auth::id(),
             'visibility' => $this->visibility,
             'status' => $this->status,
+            'source' => $this->source,
         ]);
 
         // Sync tags using Spatie Tags
@@ -144,6 +148,15 @@ class extends Component {
                         <flux:label badge="Required">Content</flux:label>
                         <flux:textarea wire:model="content" placeholder="Enter the prompt content" rows="8" />
                         <flux:error name="content" />
+                    </flux:field>
+                </div>
+
+                <div class="md:col-span-2">
+                    <flux:field>
+                        <flux:label>Source URL</flux:label>
+                        <flux:input wire:model="source" placeholder="Optional: Link to original source (e.g., GitHub, article)" />
+                        <flux:error name="source" />
+                        <flux:description>If this prompt is from another source, you can provide the original link here.</flux:description>
                     </flux:field>
                 </div>
             </div>

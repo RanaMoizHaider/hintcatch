@@ -181,6 +181,24 @@ class extends Component {
                 <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 mb-8">
                     <h2 class="font-medium text-lg mb-4">Prompt</h2>
                     <pre class="whitespace-pre-wrap text-sm font-mono bg-zinc-50 dark:bg-zinc-900 p-4 rounded-md overflow-auto">{{ $prompt->content }}</pre>
+                    
+                    @if($prompt->source)
+                        <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                            <div class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                <flux:icon.link class="size-4" />
+                                <span>Original source:</span>
+                                <flux:link 
+                                    href="{{ $prompt->source }}" 
+                                    variant="ghost"
+                                    target="_blank" 
+                                    class="text-blue-600 dark:text-blue-400"
+                                >
+                                    {{ parse_url($prompt->source, PHP_URL_HOST) ?? $prompt->source }}
+                                    <flux:icon.arrow-up-right class="size-3 inline ml-1" />
+                                </flux:link>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="flex items-center gap-3 mb-8">

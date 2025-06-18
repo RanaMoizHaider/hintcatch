@@ -24,6 +24,7 @@ class extends Component {
     public string $newTag = '';
     public string $aiModelSearch = '';
     public string $platformSearch = '';
+    public string $source = '';
 
     // Suggestion properties
     public string $newCategory = '';
@@ -45,6 +46,7 @@ class extends Component {
             'selectedAiModels' => 'nullable|array',
             'selectedPlatforms' => 'nullable|array',
             'tags' => 'nullable|array',
+            'source' => 'nullable|url|max:500',
         ];
     }
 
@@ -147,6 +149,7 @@ class extends Component {
             'user_id' => auth()->id(),
             'visibility' => $this->visibility,
             'status' => $this->status,
+            'source' => $this->source,
         ]);
 
         $prompt->aiModels()->attach($this->selectedAiModels);
@@ -255,6 +258,15 @@ class extends Component {
                         <flux:label badge="Required">Content</flux:label>
                         <flux:textarea wire:model="content" placeholder="Enter the prompt content" rows="8" />
                         <flux:error name="content" />
+                    </flux:field>
+                </div>
+
+                <div class="md:col-span-2">
+                    <flux:field>
+                        <flux:label>Source URL</flux:label>
+                        <flux:input wire:model="source" placeholder="Optional: Link to original source (e.g., GitHub, article)" />
+                        <flux:error name="source" />
+                        <flux:description>If this prompt is from another source, you can provide the original link here.</flux:description>
                     </flux:field>
                 </div>
             </div>
