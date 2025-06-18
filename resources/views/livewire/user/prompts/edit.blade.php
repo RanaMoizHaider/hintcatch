@@ -257,7 +257,7 @@ class extends Component {
                 </flux:field>
 
                 <flux:field>
-                    <flux:label badge="Required">Category</flux:label>
+                    <flux:label>Category</flux:label>
                     <flux:select wire:model="category_id" placeholder="Select category">
                         @foreach($this->categories as $category)
                             <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>

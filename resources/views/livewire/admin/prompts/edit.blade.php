@@ -13,27 +13,29 @@ new
 #[Layout('components.layouts.app')]
 class extends Component {
     public Prompt $prompt;
-    public $title = '';
-    public $description = '';
-    public $content = '';
-    public $category_id = '';
-    public $visibility = 'public';
-    public $status = 'published';
-    public $selectedAiModels = [];
-    public $selectedPlatforms = [];
-    public $tags = [];
-    public $newTag = '';
-    public $source = '';
+    public string $title = '';
+    public string $description = '';
+    public string $content = '';
+    public ?int $category_id = null;
+    public string $visibility = 'public';
+    public string $status = 'published';
+    public bool $featured = false;
+    public array $selectedAiModels = [];
+    public array $selectedPlatforms = [];
+    public array $tags = [];
+    public string $newTag = '';
+    public string $source = '';
 
     public function mount(Prompt $prompt)
     {
         $this->prompt = $prompt;
         $this->title = $prompt->title;
-        $this->description = $prompt->description;
+        $this->description = $prompt->description ?? '';
         $this->content = $prompt->content;
         $this->category_id = $prompt->category_id;
         $this->visibility = $prompt->visibility;
         $this->status = $prompt->status;
+        $this->featured = $prompt->featured;
         $this->source = $prompt->source ?? '';
         $this->tags = $prompt->tags->pluck('name')->toArray();
         $this->selectedAiModels = $prompt->aiModels->pluck('id')->toArray();
@@ -49,6 +51,7 @@ class extends Component {
             'category_id' => 'nullable|exists:categories,id',
             'visibility' => 'required|in:public,private,unlisted',
             'status' => 'required|in:draft,published',
+            'featured' => 'boolean',
             'source' => 'nullable|url|max:500',
         ];
     }
@@ -80,6 +83,7 @@ class extends Component {
             'user_id' => Auth::id(),
             'visibility' => $this->visibility,
             'status' => $this->status,
+            'featured' => $this->featured,
             'source' => $this->source,
         ]);
 
@@ -234,6 +238,12 @@ class extends Component {
                         <flux:radio value="draft" label="Draft" description="Work in progress, not yet published" />
                     </flux:radio.group>
                 </flux:field>
+
+                <div class="md:col-span-2">
+                    <flux:field>
+                        <flux:checkbox wire:model="featured" label="Featured" description="Mark this prompt as featured" />
+                    </flux:field>
+                </div>
             </div>
         </div>
 

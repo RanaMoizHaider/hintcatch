@@ -12,19 +12,20 @@ use Illuminate\Support\Facades\Auth;
 new
 #[Layout('components.layouts.app')]
 class extends Component {
-    public $title = '';
-    public $description = '';
-    public $content = '';
-    public $category_id = '';
-    public $visibility = 'public';
-    public $status = 'published';
-    public $selectedAiModels = [];
-    public $selectedPlatforms = [];
-    public $tags = [];
-    public $newTag = '';
-    public $aiModelSearch = '';
-    public $platformSearch = '';
-    public $source = '';
+    public string $title = '';
+    public string $description = '';
+    public string $content = '';
+    public ?int $category_id = null;
+    public string $visibility = 'public';
+    public string $status = 'published';
+    public bool $featured = false;
+    public array $selectedAiModels = [];
+    public array $selectedPlatforms = [];
+    public array $tags = [];
+    public string $newTag = '';
+    public string $aiModelSearch = '';
+    public string $platformSearch = '';
+    public string $source = '';
 
     protected $rules = [
         'title' => 'required|string|max:255',
@@ -33,6 +34,7 @@ class extends Component {
         'category_id' => 'nullable|exists:categories,id',
         'visibility' => 'required|in:public,private,unlisted',
         'status' => 'required|in:draft,published',
+        'featured' => 'boolean',
         'source' => 'nullable|url|max:500',
     ];
 
@@ -63,6 +65,7 @@ class extends Component {
             'user_id' => Auth::id(),
             'visibility' => $this->visibility,
             'status' => $this->status,
+            'featured' => $this->featured,
             'source' => $this->source,
         ]);
 
@@ -263,6 +266,12 @@ class extends Component {
                         <flux:radio value="draft" label="Draft" description="Work in progress, not yet published" />
                     </flux:radio.group>
                 </flux:field>
+
+                <div class="md:col-span-2">
+                    <flux:field>
+                        <flux:checkbox wire:model="featured" label="Featured" description="Mark this prompt as featured" />
+                    </flux:field>
+                </div>
             </div>
         </div>
 
