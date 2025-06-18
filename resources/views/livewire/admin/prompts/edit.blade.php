@@ -155,7 +155,7 @@ class extends Component {
             <div class="space-y-4">
                 <div class="flex gap-2">
                     <flux:input wire:model="newTag" placeholder="Add a tag" wire:keydown.enter.prevent="addTag" />
-                    <flux:button type="button" wire:click="addTag" variant="ghost" icon="plus">
+                    <flux:button type="button" wire:click="addTag" variant="outline" icon="plus">
                         Add
                     </flux:button>
                 </div>
@@ -217,15 +217,15 @@ class extends Component {
 
                 <flux:field>
                     <flux:radio.group wire:model="status" label="Status">
-                        <flux:radio value="draft" label="Draft" description="Work in progress, not yet published" />
                         <flux:radio value="published" label="Published" description="Ready for public viewing" />
+                        <flux:radio value="draft" label="Draft" description="Work in progress, not yet published" />
                     </flux:radio.group>
                 </flux:field>
             </div>
         </div>
 
         <div class="flex justify-end gap-3">
-            <flux:button variant="ghost" href="{{ route('admin.prompts.index') }}">
+            <flux:button variant="outline" href="{{ route('admin.prompts.index') }}">
                 Cancel
             </flux:button>
             <flux:button type="submit" variant="primary" icon="check">
