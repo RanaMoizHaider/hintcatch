@@ -22,6 +22,8 @@ class extends Component {
     public $selectedPlatforms = [];
     public $tags = [];
     public $newTag = '';
+    public $aiModelSearch = '';
+    public $platformSearch = '';
 
     protected $rules = [
         'title' => 'required|string|max:255',
@@ -81,8 +83,25 @@ class extends Component {
     public function with(): array
     {
         $categories = Category::orderBy('name')->get();
-        $aiModels = AiModel::with('provider')->orderBy('name')->get();
-        $platforms = Platform::orderBy('name')->get();
+        
+        // Filter AI Models based on search
+        $aiModelsQuery = AiModel::with('provider')->orderBy('name');
+        if ($this->aiModelSearch) {
+            $aiModelsQuery->where(function($query) {
+                $query->where('name', 'like', '%' . $this->aiModelSearch . '%')
+                      ->orWhereHas('provider', function($q) {
+                          $q->where('name', 'like', '%' . $this->aiModelSearch . '%');
+                      });
+            });
+        }
+        $aiModels = $aiModelsQuery->get();
+
+        // Filter Platforms based on search
+        $platformsQuery = Platform::orderBy('name');
+        if ($this->platformSearch) {
+            $platformsQuery->where('name', 'like', '%' . $this->platformSearch . '%');
+        }
+        $platforms = $platformsQuery->get();
 
         return [
             'title' => 'Create Prompt',
@@ -168,25 +187,47 @@ class extends Component {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <flux:field>
                     <flux:label>Compatible AI Models</flux:label>
-                    <div class="space-y-2 max-h-48 overflow-y-auto border border-zinc-200 rounded-lg p-3 dark:border-zinc-700">
-                        @foreach($aiModels as $model)
-                            <label class="flex items-center hover:bg-zinc-50 dark:hover:bg-zinc-800 p-2 rounded">
-                                <flux:checkbox wire:model="selectedAiModels" value="{{ $model->id }}" class="mr-3" />
-                                <flux:text size="sm">{{ $model->name }} ({{ $model->provider->name }})</flux:text>
-                            </label>
-                        @endforeach
+                    <div class="space-y-3">
+                        <flux:input 
+                            wire:model.live="aiModelSearch" 
+                            placeholder="Search AI models..." 
+                            icon="magnifying-glass"
+                        />
+                        <div class="space-y-2 max-h-48 overflow-y-auto border border-zinc-200 rounded-lg p-3 dark:border-zinc-700">
+                            @forelse($aiModels as $model)
+                                <label class="flex items-center hover:bg-zinc-50 dark:hover:bg-zinc-800 p-2 rounded">
+                                    <flux:checkbox wire:model="selectedAiModels" value="{{ $model->id }}" class="mr-3" />
+                                    <flux:text size="sm">{{ $model->name }} ({{ $model->provider->name }})</flux:text>
+                                </label>
+                            @empty
+                                <flux:text size="sm" class="text-zinc-500 dark:text-zinc-400 p-2">
+                                    No AI models found matching "{{ $aiModelSearch }}"
+                                </flux:text>
+                            @endforelse
+                        </div>
                     </div>
                 </flux:field>
 
                 <flux:field>
                     <flux:label>Target Platforms</flux:label>
-                    <div class="space-y-2 max-h-48 overflow-y-auto border border-zinc-200 rounded-lg p-3 dark:border-zinc-700">
-                        @foreach($platforms as $platform)
-                            <label class="flex items-center hover:bg-zinc-50 dark:hover:bg-zinc-800 p-2 rounded">
-                                <flux:checkbox wire:model="selectedPlatforms" value="{{ $platform->id }}" class="mr-3" />
-                                <flux:text size="sm">{{ $platform->name }}</flux:text>
-                            </label>
-                        @endforeach
+                    <div class="space-y-3">
+                        <flux:input 
+                            wire:model.live="platformSearch" 
+                            placeholder="Search platforms..." 
+                            icon="magnifying-glass"
+                        />
+                        <div class="space-y-2 max-h-48 overflow-y-auto border border-zinc-200 rounded-lg p-3 dark:border-zinc-700">
+                            @forelse($platforms as $platform)
+                                <label class="flex items-center hover:bg-zinc-50 dark:hover:bg-zinc-800 p-2 rounded">
+                                    <flux:checkbox wire:model="selectedPlatforms" value="{{ $platform->id }}" class="mr-3" />
+                                    <flux:text size="sm">{{ $platform->name }}</flux:text>
+                                </label>
+                            @empty
+                                <flux:text size="sm" class="text-zinc-500 dark:text-zinc-400 p-2">
+                                    No platforms found matching "{{ $platformSearch }}"
+                                </flux:text>
+                            @endforelse
+                        </div>
                     </div>
                 </flux:field>
             </div>
