@@ -285,6 +285,7 @@ This project is open-sourced software licensed under the [MIT license](LICENSE).
 - Styled with [Tailwind CSS](https://tailwindcss.com/)
 - Development environment by [Laravel Herd](https://herd.laravel.com/)
 - **Created with AI**: Developed using GitHub Copilot, Claude Sonnet 4, and other AI development tools
+- **Icon**: Based on "Background success ideas" by [Freepik](https://www.freepik.com/free-vector/background-success-ideas_1048531.htm)
 
 ---
 
