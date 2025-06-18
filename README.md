@@ -2,7 +2,8 @@
 
 A modern prompt sharing platform built with Laravel, Livewire, and Flux components. Hint Catch allows users to create, share, and discover AI prompts optimized for various AI models and platforms.
 
-🌐 **Live Website**: [hintcatch.com](https://hintcatch.com)
+🌐 **Live Website**: [hintcatch.com](https://hintcatch.com)  
+🚀 **Open Source & Free**: This project is completely open source and free to use. Developers can use it as-is, modify it, or create their own versions.
 
 > **Built with AI**: This project was created using AI development tools, primarily GitHub Copilot in VS Code with Claude Sonnet 4, along with various other AI assistants. It's a testament to the power of AI-assisted development!
 
@@ -279,6 +280,21 @@ npm run build
 ## License
 
 This project is open-sourced software licensed under the [MIT license](LICENSE).
+
+### Open Source & Free to Use
+
+Hint Catch is completely **free and open source**. You can:
+
+- ✅ Use it for personal projects
+- ✅ Use it for commercial projects  
+- ✅ Modify and customize it
+- ✅ Create your own versions
+- ✅ Distribute your modifications
+- ✅ Fork it and build something new
+
+The only requirement is to include the original MIT license notice in any copies or substantial portions of the software.
+
+**Want to build your own prompt sharing platform?** Feel free to use this project as your starting point!
 
 ## Acknowledgments
 
