@@ -40,7 +40,7 @@ class extends Component {
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'content' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
             'visibility' => 'required|in:public,private,unlisted',
             'status' => 'required|in:draft,published',
             'selectedAiModels' => 'nullable|array',
@@ -236,7 +236,7 @@ class extends Component {
                 </flux:field>
 
                 <flux:field>
-                    <flux:label badge="Required">Category</flux:label>
+                    <flux:label>Category</flux:label>
                     <flux:select wire:model="category_id" placeholder="Select category">
                         @foreach($this->categories as $category)
                             <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>

@@ -62,7 +62,7 @@ class extends Component {
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'content' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
             'visibility' => 'required|in:public,private,unlisted',
             'status' => 'required|in:draft,published',
             'selectedAiModels' => 'nullable|array',
