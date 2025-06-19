@@ -53,10 +53,10 @@ new class extends Component {
                 Rule::unique(User::class)->ignore($user->id)
             ],
             'username' => [
-                'nullable',
+                'required',
                 'string',
                 'max:255',
-                'regex:/^[a-zA-Z0-9_]+$/',
+                'alpha_dash',
                 Rule::unique(User::class)->ignore($user->id)
             ],
             'bio' => ['nullable', 'string', 'max:500'],
@@ -107,16 +107,16 @@ new class extends Component {
             <div class="space-y-4">
                 <flux:subheading class="text-base font-medium">Basic Information</flux:subheading>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <flux:field>
-                        <flux:input wire:model="name" label="Full Name" type="text" required autofocus autocomplete="name" />
-                        <flux:error name="name" />
-                    </flux:field>
-                    <flux:field>
-                        <flux:input wire:model="username" label="Username" type="text" autocomplete="username" placeholder="Optional username" />
-                        <flux:error name="username" />
-                    </flux:field>
-                </div>
+                <flux:field>
+                    <flux:input wire:model="name" label="Full Name" type="text" required autofocus autocomplete="name" />
+                    <flux:error name="name" />
+                </flux:field>
+
+                <flux:field>
+                    <flux:input wire:model="username" label="Username" type="text" required autocomplete="username" placeholder="Choose a unique username" />
+                    <flux:error name="username" />
+                    <flux:description>Letters, numbers, dashes, and underscores only</flux:description>
+                </flux:field>
 
                 <flux:field>
                     <flux:input wire:model="email" label="Email" type="email" required autocomplete="email" />

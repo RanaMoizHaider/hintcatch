@@ -108,14 +108,27 @@ class extends Component {
 
                     <div class="flex items-center gap-4 mb-6">
                         @if($prompt->user)
-                            <flux:link href="{{ route('profile.show', $prompt->user) }}" variant="ghost" class="flex items-center gap-2">
-                                <livewire:components.user-avatar 
-                                    :user="$prompt->user" 
-                                    size="md" 
-                                    :show-name="true"
-                                    wire:key="avatar-{{ $prompt->id }}-{{ $prompt->user->id }}"
-                                />
-                            </flux:link>
+                            @if($prompt->user->username)
+                                <flux:link href="{{ route('profile.show', $prompt->user->username) }}" variant="ghost" class="flex items-center gap-2">
+                                    <livewire:components.user-avatar 
+                                        :user="$prompt->user" 
+                                        size="md" 
+                                        :show-name="true"
+                                        :linkable="false"
+                                        wire:key="avatar-{{ $prompt->id }}-{{ $prompt->user->id }}"
+                                    />
+                                </flux:link>
+                            @else
+                                <div class="flex items-center gap-2">
+                                    <livewire:components.user-avatar 
+                                        :user="$prompt->user" 
+                                        size="md" 
+                                        :show-name="true"
+                                        :linkable="false"
+                                        wire:key="avatar-{{ $prompt->id }}-{{ $prompt->user->id }}"
+                                    />
+                                </div>
+                            @endif
                         @else
                             <div class="flex items-center gap-2">
                                 <div class="w-10 h-10 bg-zinc-200 dark:bg-zinc-700 rounded-full flex items-center justify-center">

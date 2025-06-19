@@ -12,6 +12,7 @@ new
 #[Layout('components.layouts.auth')]
 class extends Component {
     public string $name = '';
+    public string $username = '';
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
@@ -23,6 +24,7 @@ class extends Component {
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username', 'alpha_dash'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -53,6 +55,16 @@ class extends Component {
             autofocus
             autocomplete="name"
             :placeholder="__('Full name')"
+        />
+
+        <!-- Username -->
+        <flux:input
+            wire:model="username"
+            label="Username"
+            type="text"
+            required
+            autocomplete="username"
+            placeholder="username (letters, numbers, dashes, underscores only)"
         />
 
         <!-- Email Address -->

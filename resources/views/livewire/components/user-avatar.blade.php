@@ -1,7 +1,7 @@
 <div>
     @if($user)
-        @if($linkable)
-            <flux:link href="{{ route('profile.show', $user) }}" variant="ghost" class="hover:opacity-80 transition-opacity">
+        @if($linkable && $user->username)
+            <flux:link href="{{ route('profile.show', $user->username) }}" variant="ghost" class="hover:opacity-80 transition-opacity">
                 <div class="flex items-center gap-2">
                     <div class="relative">
                         <img 

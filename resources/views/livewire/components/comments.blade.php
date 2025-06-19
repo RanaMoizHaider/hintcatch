@@ -1,16 +1,31 @@
 <div class="space-y-6">
     @foreach($comments as $comment)
         <div class="flex gap-4" wire:key="comment-{{ $comment->id }}">
-            <livewire:components.user-avatar :user="$comment->user" size="sm" :key="'avatar-'.$comment->id" />
-            <div class="flex-1">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="font-medium">{{ $comment->user->name }}</span>
-                    <span class="text-xs text-zinc-600 dark:text-zinc-400">
-                        {{ $comment->created_at->diffForHumans() }}
-                    </span>
+            @if($comment->user)
+                <livewire:components.user-avatar :user="$comment->user" size="sm" :key="'avatar-'.$comment->id" />
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-medium">{{ $comment->user->name }}</span>
+                        <span class="text-xs text-zinc-600 dark:text-zinc-400">
+                            {{ $comment->created_at->diffForHumans() }}
+                        </span>
+                    </div>
+                    <p class="text-sm text-zinc-700 dark:text-zinc-300">{{ $comment->body }}</p>
                 </div>
-                <p class="text-sm text-zinc-700 dark:text-zinc-300">{{ $comment->body }}</p>
-            </div>
+            @else
+                <div class="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded-full flex items-center justify-center">
+                    <flux:icon.user class="w-4 h-4 text-zinc-500" />
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-medium text-zinc-500">Unknown User</span>
+                        <span class="text-xs text-zinc-600 dark:text-zinc-400">
+                            {{ $comment->created_at->diffForHumans() }}
+                        </span>
+                    </div>
+                    <p class="text-sm text-zinc-700 dark:text-zinc-300">{{ $comment->body }}</p>
+                </div>
+            @endif
         </div>
     @endforeach
 
