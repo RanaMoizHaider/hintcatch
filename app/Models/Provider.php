@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\ApprovedScope;
 use App\Traits\HasSlug;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
@@ -12,6 +16,14 @@ class Provider extends Model
 {
     /** @use HasFactory<\Database\Factories\ProviderFactory> */
     use HasFactory, HasSlug;
+
+    /**
+     * Boot the model and add global scope
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ApprovedScope);
+    }
 
     protected $fillable = [
         'name',
@@ -57,6 +69,37 @@ class Provider extends Model
             AiModel::class,
             'provider_id',
             'ai_model_id'
-        )->published()->visible();
+        );
+    }
+
+    /**
+     * Scope to include only approved providers
+     * Note: Global scope already filters for approved, so this is mainly for explicit calls
+     */
+    #[Scope]
+    protected function approved(Builder $query): void
+    {
+        // Global scope already applies is_approved = true, so this is mainly for clarity
+        $query->where('is_approved', true);
+    }
+
+    /**
+     * Scope to include only unapproved providers
+     * Removes global scope first to avoid conflicts
+     */
+    #[Scope]
+    protected function unapproved(Builder $query): void
+    {
+        $query->withoutGlobalScope(ApprovedScope::class)
+              ->where('is_approved', false);
+    }
+
+    /**
+     * Scope to include unapproved providers in query results
+     */
+    #[Scope]
+    protected function withUnapproved(Builder $query): void
+    {
+        $query->withoutGlobalScope(ApprovedScope::class);
     }
 }

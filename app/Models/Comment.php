@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\ApprovedScope;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,9 +21,7 @@ class Comment extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope('visible', function (Builder $builder) {
-            $builder->where('approved', true);
-        });
+        static::addGlobalScope(new ApprovedScope);
     }
 
     public function user(): BelongsTo
@@ -45,9 +44,34 @@ class Comment extends Model
         return $this->morphTo();
     }
 
+    /**
+     * Scope to include only approved comments
+     * Note: Global scope already filters for approved, so this is mainly for explicit calls
+     */
+    #[Scope]
+    protected function approved(Builder $query): void
+    {
+        // Global scope already applies is_approved = true, so this is mainly for clarity
+        $query->where('is_approved', true);
+    }
+
+    /**
+     * Scope to include only unapproved comments
+     * Removes global scope first to avoid conflicts
+     */
     #[Scope]
     protected function unapproved(Builder $query): void
     {
-        $query->where('approved', false);
+        $query->withoutGlobalScope(ApprovedScope::class)
+              ->where('is_approved', false);
+    }
+
+    /**
+     * Scope to include unapproved comments (removes ApprovedScope).
+     */
+    #[Scope]
+    protected function withUnapproved(Builder $query): void
+    {
+        $query->withoutGlobalScope(ApprovedScope::class);
     }
 }

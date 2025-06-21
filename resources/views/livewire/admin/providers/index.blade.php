@@ -32,7 +32,8 @@ class extends Component {
 
     public function delete($id): void
     {
-        $provider = Provider::find($id);
+        // Admin can delete any provider including unapproved ones
+        $provider = Provider::withUnapproved()->find($id);
         if ($provider && $provider->aiModels()->count() === 0) {
             $provider->delete();
             session()->flash('success', 'Provider deleted successfully.');
@@ -43,7 +44,8 @@ class extends Component {
 
     public function with(): array
     {
-        $providers = Provider::query()
+        // Admin sees all providers including unapproved
+        $providers = Provider::withUnapproved()
             ->when($this->search, function($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                       ->orWhere('description', 'like', '%' . $this->search . '%');

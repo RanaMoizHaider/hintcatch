@@ -31,7 +31,8 @@ class extends Component {
 
     public function delete(int $id): void
     {
-        $category = Category::find($id);
+        // Admin can delete any category including unapproved ones
+        $category = Category::withUnapproved()->find($id);
         if ($category && $category->prompts()->count() === 0) {
             $category->delete();
             session()->flash('success', 'Category deleted successfully.');
@@ -42,7 +43,8 @@ class extends Component {
 
     public function with(): array
     {
-        $categories = Category::query()
+        // Admin sees all categories including unapproved
+        $categories = Category::withUnapproved()
             ->when($this->search, function($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                       ->orWhere('description', 'like', '%' . $this->search . '%');

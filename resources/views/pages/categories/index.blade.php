@@ -12,6 +12,7 @@ class extends Component {
 
     public function getCategoriesProperty()
     {
+        // Frontend - only get approved categories due to global scope
         $query = Category::query()
             ->withCount('prompts')
             ->whereNull('parent_id'); // Only top-level categories

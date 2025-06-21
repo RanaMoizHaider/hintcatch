@@ -51,7 +51,8 @@ class extends Component {
 
     public function updateStatus($id, $status)
     {
-        $prompt = Prompt::find($id);
+        // Admin can find any prompt regardless of status/visibility
+        $prompt = Prompt::withAll()->find($id);
         if ($prompt) {
             $prompt->update(['status' => $status]);
             session()->flash('success', 'Prompt status updated successfully.');
@@ -60,7 +61,8 @@ class extends Component {
 
     public function updateVisibility($id, $visibility)
     {
-        $prompt = Prompt::find($id);
+        // Admin can find any prompt regardless of status/visibility
+        $prompt = Prompt::withAll()->find($id);
         if ($prompt) {
             $prompt->update(['visibility' => $visibility]);
             session()->flash('success', 'Prompt visibility updated successfully.');
@@ -69,7 +71,8 @@ class extends Component {
 
     public function delete($id)
     {
-        $prompt = Prompt::find($id);
+        // Admin can find any prompt regardless of status/visibility
+        $prompt = Prompt::withAll()->find($id);
         if ($prompt) {
             $prompt->delete();
             session()->flash('success', 'Prompt deleted successfully.');
@@ -78,7 +81,8 @@ class extends Component {
 
     public function with()
     {
-        $prompts = Prompt::query()
+        // Admin sees all prompts regardless of status/visibility
+        $prompts = Prompt::withAll()
             ->with(['user', 'category'])
             ->when($this->search, function($query) {
                 $query->where('title', 'like', '%' . $this->search . '%')
@@ -98,8 +102,9 @@ class extends Component {
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(15);
 
-        $categories = Category::orderBy('name')->get();
-        $users = User::orderBy('name')->get();
+        // Admin sees all categories and users including unapproved
+        $categories = Category::withUnapproved()->orderBy('name')->get();
+        $users = User::orderBy('name')->get(); // User has no global scopes
 
         return [
             'title' => 'Prompts',

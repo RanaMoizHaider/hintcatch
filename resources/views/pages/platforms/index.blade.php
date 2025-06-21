@@ -12,6 +12,7 @@ class extends Component {
 
     public function getPlatformsProperty()
     {
+        // Frontend - only get approved platforms due to global scope
         return Platform::query()
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {

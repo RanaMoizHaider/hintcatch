@@ -38,7 +38,8 @@ class extends Component {
 
     public function delete($id)
     {
-        $aiModel = AiModel::find($id);
+        // Admin can delete any AI model including unapproved ones
+        $aiModel = AiModel::withUnapproved()->find($id);
         if ($aiModel && $aiModel->prompts()->count() === 0) {
             $aiModel->delete();
             session()->flash('success', 'AI Model deleted successfully.');
@@ -49,7 +50,8 @@ class extends Component {
 
     public function with()
     {
-        $aiModels = AiModel::query()
+        // Admin sees all AI models including unapproved
+        $aiModels = AiModel::withUnapproved()
             ->with('provider')
             ->when($this->search, function($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
@@ -62,7 +64,8 @@ class extends Component {
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(15);
 
-        $providers = Provider::orderBy('name')->get();
+        // Admin sees all providers including unapproved
+        $providers = Provider::withUnapproved()->orderBy('name')->get();
 
         return [
             'title' => 'AI Models',

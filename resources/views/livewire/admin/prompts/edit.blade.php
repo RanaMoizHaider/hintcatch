@@ -99,9 +99,10 @@ class extends Component {
 
     public function with(): array
     {
-        $categories = Category::orderBy('name')->get();
-        $aiModels = AiModel::with('provider')->orderBy('name')->get();
-        $platforms = Platform::orderBy('name')->get();
+        // Admin sees all categories, AI models, and platforms including unapproved
+        $categories = Category::withUnapproved()->orderBy('name')->get();
+        $aiModels = AiModel::withUnapproved()->with('provider')->orderBy('name')->get();
+        $platforms = Platform::withUnapproved()->orderBy('name')->get();
 
         return [
             'title' => 'Edit Prompt',

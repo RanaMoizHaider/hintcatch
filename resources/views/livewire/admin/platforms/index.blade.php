@@ -32,7 +32,8 @@ class extends Component {
 
     public function delete($id): void
     {
-        $platform = Platform::find($id);
+        // Admin can delete any platform including unapproved ones
+        $platform = Platform::withUnapproved()->find($id);
         if ($platform && $platform->prompts()->count() === 0) {
             $platform->delete();
             session()->flash('success', 'Platform deleted successfully.');
@@ -43,7 +44,8 @@ class extends Component {
 
     public function with(): array
     {
-        $platforms = Platform::query()
+        // Admin sees all platforms including unapproved
+        $platforms = Platform::withUnapproved()
             ->when($this->search, function($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                       ->orWhere('description', 'like', '%' . $this->search . '%');

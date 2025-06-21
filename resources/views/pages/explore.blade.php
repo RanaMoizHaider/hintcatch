@@ -54,14 +54,17 @@ class extends Component {
 
     public function mount()
     {
+        // Frontend - only get approved categories due to global scope
         $this->availableCategories = Category::with(['children' => function($query) {
             $query->with(['children' => function($subQuery) {
                 $subQuery->withCount('prompts');
             }])->withCount('prompts');
         }])->whereNull('parent_id')->withCount('prompts')->get();
         
+        // Frontend - only get approved platforms due to global scope
         $this->availablePlatforms = Platform::withCount('prompts')->get();
         
+        // Frontend - only get approved providers due to global scope
         $this->availableProviders = Provider::with(['aiModels' => function($query) {
             $query->withCount('prompts');
         }])->get()->map(function($provider) {
@@ -69,6 +72,7 @@ class extends Component {
             return $provider;
         });
         
+        // Frontend - only get approved AI models due to global scope
         $this->availableModels = AiModel::with('provider')->withCount('prompts')->get();
     }
 

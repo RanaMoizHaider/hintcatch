@@ -35,7 +35,8 @@ class extends Component {
 
     public function with()
     {
-        $parentCategories = Category::whereNull('parent_id')->get();
+        // Admin sees all categories including unapproved for parent selection
+        $parentCategories = Category::withUnapproved()->whereNull('parent_id')->get();
         
         return [
             'title' => 'Create Category',

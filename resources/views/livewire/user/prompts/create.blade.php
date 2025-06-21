@@ -162,15 +162,19 @@ class extends Component {
 
     public function getCategoriesProperty()
     {
-        return Category::where(function ($query) {
-            $query->where('is_approved', true)
-                  ->orWhere('user_id', auth()->id());
-        })->orderBy('name')->get();
+        // Author sees approved categories + their own unapproved categories
+        return Category::withUnapproved()
+            ->where(function ($query) {
+                $query->where('is_approved', true)
+                      ->orWhere('user_id', auth()->id());
+            })->orderBy('name')->get();
     }
 
     public function getAiModelsProperty()
     {
-        $query = AiModel::with('provider')
+        // Author sees approved AI models + their own unapproved AI models
+        $query = AiModel::withUnapproved()
+            ->with('provider')
             ->where(function ($query) {
                 $query->where('is_approved', true)
                       ->orWhere('user_id', auth()->id());
@@ -190,10 +194,12 @@ class extends Component {
 
     public function getPlatformsProperty()
     {
-        $query = Platform::where(function ($query) {
-            $query->where('is_approved', true)
-                  ->orWhere('user_id', auth()->id());
-        });
+        // Author sees approved platforms + their own unapproved platforms
+        $query = Platform::withUnapproved()
+            ->where(function ($query) {
+                $query->where('is_approved', true)
+                      ->orWhere('user_id', auth()->id());
+            });
         
         if ($this->platformSearch) {
             $query->where('name', 'like', '%' . $this->platformSearch . '%');
@@ -204,10 +210,12 @@ class extends Component {
 
     public function getProvidersProperty()
     {
-        return Provider::where(function ($query) {
-            $query->where('is_approved', true)
-                  ->orWhere('user_id', auth()->id());
-        })->orderBy('name')->get();
+        // Author sees approved providers + their own unapproved providers
+        return Provider::withUnapproved()
+            ->where(function ($query) {
+                $query->where('is_approved', true)
+                      ->orWhere('user_id', auth()->id());
+            })->orderBy('name')->get();
     }
 }; ?>
 

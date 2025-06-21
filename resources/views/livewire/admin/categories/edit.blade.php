@@ -21,7 +21,9 @@ class extends Component {
         $this->description = $category->description;
         $this->parent_id = $category->parent_id;
         
-        $this->parentCategories = Category::whereNull('parent_id')
+        // Admin sees all categories including unapproved for parent selection
+        $this->parentCategories = Category::withUnapproved()
+            ->whereNull('parent_id')
             ->where('id', '!=', $this->category->id)
             ->get()
             ->toArray();

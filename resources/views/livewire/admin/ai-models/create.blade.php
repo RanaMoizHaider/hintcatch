@@ -50,7 +50,8 @@ class extends Component {
 
     public function with(): array
     {
-        $providers = Provider::where('is_active', true)->orderBy('name')->get();
+        // Admin sees all providers including unapproved
+        $providers = Provider::withUnapproved()->where('is_active', true)->orderBy('name')->get();
         
         return [
             'title' => 'Create AI Model',

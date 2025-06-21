@@ -14,6 +14,7 @@ class extends Component {
 
     public function getProvidersProperty()
     {
+        // Frontend - only get approved providers due to global scope
         return Provider::whereHas('aiModels')
             ->orderBy('name')
             ->get()
@@ -22,6 +23,7 @@ class extends Component {
 
     public function getModelsProperty()
     {
+        // Frontend - only get approved AI models due to global scope
         return AiModel::query()
             ->with('provider')
             ->when($this->search, function ($query) {

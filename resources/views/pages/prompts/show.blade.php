@@ -41,15 +41,11 @@ class extends Component {
             // $this->isSaved = $this->prompt->saves()->where('user_id', Auth::id())->exists();
         }
 
-        // Get related prompts
+        // Get related prompts - uses global scopes automatically (published + public)
         $this->relatedPrompts = Prompt::with(['user', 'category'])
             ->withViewsCount()
             ->where('id', '!=', $this->prompt->id)
             ->where('category_id', $this->prompt->category_id)
-            ->where('status', 'published')
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', now())
-            ->where('visibility', 'public')
             ->take(5)
             ->get();
     }

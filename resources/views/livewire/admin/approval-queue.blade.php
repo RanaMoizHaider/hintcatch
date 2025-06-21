@@ -25,11 +25,12 @@ class extends Component {
 
     private function getModel(string $model, int $id): Model
     {
+        // Admin needs to access unapproved items for approval/denial
         return match ($model) {
-            'Category' => Category::findOrFail($id),
-            'AiModel' => AiModel::findOrFail($id),
-            'Platform' => Platform::findOrFail($id),
-            'Provider' => Provider::findOrFail($id),
+            'Category' => Category::withUnapproved()->findOrFail($id),
+            'AiModel' => AiModel::withUnapproved()->findOrFail($id),
+            'Platform' => Platform::withUnapproved()->findOrFail($id),
+            'Provider' => Provider::withUnapproved()->findOrFail($id),
             default => abort(404),
         };
     }
@@ -46,32 +47,36 @@ class extends Component {
     // Computed properties for paginated results
     public function getCategoriesProperty()
     {
-        return Category::with('user')
-            ->where('is_approved', false)
+        // Admin sees only unapproved categories for the approval queue
+        return Category::unapproved()
+            ->with('user')
             ->latest()
             ->paginate($this->perPage, ['*'], 'categoryPage');
     }
 
     public function getAiModelsProperty()
     {
-        return AiModel::with('user')
-            ->where('is_approved', false)
+        // Admin sees only unapproved AI models for the approval queue
+        return AiModel::unapproved()
+            ->with('user')
             ->latest()
             ->paginate($this->perPage, ['*'], 'aiModelPage');
     }
 
     public function getPlatformsProperty()
     {
-        return Platform::with('user')
-            ->where('is_approved', false)
+        // Admin sees only unapproved platforms for the approval queue
+        return Platform::unapproved()
+            ->with('user')
             ->latest()
             ->paginate($this->perPage, ['*'], 'platformPage');
     }
 
     public function getProvidersProperty()
     {
-        return Provider::with('user')
-            ->where('is_approved', false)
+        // Admin sees only unapproved providers for the approval queue
+        return Provider::unapproved()
+            ->with('user')
             ->latest()
             ->paginate($this->perPage, ['*'], 'providerPage');
     }

@@ -16,12 +16,9 @@ class extends Component {
 
     public function mount(User $user)
     {
+        // Frontend - uses global scopes automatically (published + public only)
         $this->user = $user->load(['prompts' => function($query) {
-            $query->where('status', 'published')
-                  ->where('visibility', 'public')
-                  ->whereNotNull('published_at')
-                  ->where('published_at', '<=', now())
-                  ->latest();
+            $query->latest();
         }]);
     }
 
@@ -38,26 +35,20 @@ class extends Component {
 
     public function getPromptsProperty()
     {
+        // Frontend - uses global scopes automatically (published + public only)
         return $this->user->prompts()
             ->with(['tags', 'category', 'likes', 'user'])
-            ->where('status', 'published')
-            ->where('visibility', 'public')
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', now())
             ->latest()
             ->paginate(12);
     }
 
     public function getLikedPromptsProperty()
     {
+        // Frontend - uses global scopes automatically (published + public only)
         return Prompt::with(['user', 'tags', 'category', 'likes'])
             ->whereHas('likes', function($query) {
                 $query->where('user_id', $this->user->id);
             })
-            ->where('status', 'published')
-            ->where('visibility', 'public')
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', now())
             ->latest()
             ->paginate(12);
     }
@@ -66,25 +57,13 @@ class extends Component {
     {
         return [
             'prompts_count' => $this->user->prompts()
-                ->where('status', 'published')
-                ->where('visibility', 'public')
-                ->whereNotNull('published_at')
-                ->where('published_at', '<=', now())
-                ->count(),
+                ->count(), // Uses global scopes - only public + published
             'likes_received' => $this->user->prompts()
-                ->where('status', 'published')
-                ->where('visibility', 'public')
-                ->whereNotNull('published_at')
-                ->where('published_at', '<=', now())
                 ->withCount('likes')
-                ->get()
+                ->get() // Uses global scopes - only public + published
                 ->sum('likes_count'),
             'total_views' => $this->user->prompts()
-                ->where('status', 'published')
-                ->where('visibility', 'public')
-                ->whereNotNull('published_at')
-                ->where('published_at', '<=', now())
-                ->get()
+                ->get() // Uses global scopes - only public + published
                 ->sum(function($prompt) {
                     return views($prompt)->count();
                 }),

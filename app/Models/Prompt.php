@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\PublishedScope;
+use App\Models\Scopes\VisibilityScope;
 use App\Traits\HasSlug;
 use CyrildeWit\EloquentViewable\Contracts\Viewable;
 use CyrildeWit\EloquentViewable\InteractsWithViews;
@@ -43,6 +45,27 @@ class Prompt extends Model implements Viewable
 
     protected $slugColumn = 'slug';
 
+    /**
+     * Boot the model and add global scopes
+     */
+    protected static function booted(): void
+    {
+        // Add global scopes for published and public visibility
+        static::addGlobalScope(new PublishedScope);
+        static::addGlobalScope(new VisibilityScope);
+
+        // Handle published_at when status changes
+        static::saving(function (Prompt $prompt) {
+            if ($prompt->isDirty('status')) {
+                if ($prompt->status === 'published' && $prompt->published_at === null) {
+                    $prompt->published_at = now();
+                } elseif ($prompt->status !== 'published') {
+                    $prompt->published_at = null;
+                }
+            }
+        });
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -78,6 +101,9 @@ class Prompt extends Model implements Viewable
         return $this->morphMany(Comment::class, 'commentable');
     }
 
+    /**
+     * Scope a query to only include published prompts.
+     */
     #[Scope]
     protected function published(Builder $query): void
     {
@@ -86,15 +112,78 @@ class Prompt extends Model implements Viewable
             ->where('published_at', '<=', now());
     }
 
+    /**
+     * Scope a query to only include draft prompts.
+     */
     #[Scope]
-    protected function visible(Builder $query): void
+    protected function draft(Builder $query): void
+    {
+        $query->where('status', 'draft');
+    }
+
+    /**
+     * Scope a query to only include public prompts.
+     */
+    #[Scope]
+    protected function public(Builder $query): void
     {
         $query->where('visibility', 'public');
     }
 
+    /**
+     * Scope a query to only include private prompts.
+     */
+    #[Scope]
+    protected function private(Builder $query): void
+    {
+        $query->where('visibility', 'private');
+    }
+
+    /**
+     * Scope a query to only include unlisted prompts.
+     */
+    #[Scope]
+    protected function unlisted(Builder $query): void
+    {
+        $query->where('visibility', 'unlisted');
+    }
+
+    /**
+     * Scope a query to only include featured prompts.
+     */
     #[Scope]
     protected function featured(Builder $query): void
     {
         $query->where('featured', true);
+    }
+
+    /**
+     * Scope a query to include draft prompts (removes published global scope only).
+     */
+    #[Scope]
+    protected function withDrafts(Builder $query): void
+    {
+        $query->withoutGlobalScope(PublishedScope::class);
+    }
+
+    /**
+     * Scope a query to include private prompts (removes visibility global scope only).
+     */
+    #[Scope]
+    protected function withPrivate(Builder $query): void
+    {
+        $query->withoutGlobalScope(VisibilityScope::class);
+    }
+
+    /**
+     * Scope a query to include all prompts regardless of status or visibility.
+     */
+    #[Scope]
+    protected function withAll(Builder $query): void
+    {
+        $query->withoutGlobalScopes([
+            PublishedScope::class,
+            VisibilityScope::class,
+        ]);
     }
 }

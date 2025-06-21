@@ -43,19 +43,19 @@ class DummyDataSeeder extends Seeder
         // Create prompts
         $prompts = Prompt::factory(100)->create([
             'user_id' => fn () => $allUsers->random()->id,
-            'category_id' => fn () => Category::all()->random()->id,
+            'category_id' => fn () => Category::withUnapproved()->get()->random()->id,
         ]);
 
         // Attach platforms and AI models to prompts
         $prompts->each(function ($prompt) {
             // Attach 1-3 platforms to each prompt
             $prompt->platforms()->attach(
-                Platform::all()->random()->id
+                Platform::withUnapproved()->get()->random()->id
             );
 
             // Attach 1-2 AI models to each prompt
             $prompt->aiModels()->attach(
-                AiModel::all()->random()->id
+                AiModel::withUnapproved()->get()->random()->id
             );
 
             // Add some tags

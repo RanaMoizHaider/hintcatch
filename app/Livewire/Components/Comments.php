@@ -22,6 +22,7 @@ class Comments extends Component
 
     public function loadComments()
     {
+        // Frontend - only show approved comments due to global scope
         $this->comments = $this->commentable->comments()
             ->with('user')
             ->orderByDesc('created_at')

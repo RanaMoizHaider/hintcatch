@@ -19,21 +19,26 @@ class extends Component {
     {
         $user = auth()->user();
         
-        $this->totalPrompts = $user->prompts()->count();
-        $this->publicPrompts = $user->prompts()->where('visibility', 'public')->where('status', 'published')->count();
+        // Author sees ALL their own prompts regardless of status or visibility
+        $this->totalPrompts = $user->prompts()->withAll()->count();
+        
+        // For public published count, use default global scopes on a fresh query
+        $this->publicPrompts = Prompt::where('user_id', $user->id)->count(); // Uses global scopes (published + public)
+            
         // For favorites, we'll need to use the likes relationship or create a separate favorites feature
-        $this->favoritePrompts = $user->prompts()->whereHas('likes', function($query) use ($user) {
+        $this->favoritePrompts = $user->prompts()->withAll()->whereHas('likes', function($query) use ($user) {
             $query->where('user_id', $user->id);
         })->count();
-        $this->categoriesUsed = $user->prompts()->whereNotNull('category_id')->distinct('category_id')->count('category_id');
         
-        $this->recentPrompts = $user->prompts()
+        $this->categoriesUsed = $user->prompts()->withAll()->whereNotNull('category_id')->distinct('category_id')->count('category_id');
+        
+        $this->recentPrompts = $user->prompts()->withAll()
             ->with(['category', 'aiModels', 'platforms'])
             ->latest()
             ->take(5)
             ->get();
             
-        $this->topCategories = $user->prompts()
+        $this->topCategories = $user->prompts()->withAll()
             ->select('category_id')
             ->selectRaw('count(*) as prompts_count')
             ->with('category')
@@ -50,7 +55,7 @@ class extends Component {
             });
             
         // Since AI models have many-to-many relationship, we need to count differently
-        $this->topAiModels = $user->prompts()
+        $this->topAiModels = $user->prompts()->withAll()
             ->with('aiModels')
             ->get()
             ->flatMap(function ($prompt) {

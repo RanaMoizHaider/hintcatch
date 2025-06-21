@@ -22,6 +22,7 @@ class extends Component {
 
     public function mount()
     {
+        // Frontend - automatically gets only public + published prompts due to global scopes
         $this->trendingPrompts = Prompt::with(['user', 'tags', 'category'])
             ->withViewsCount()
             ->orderByDesc('views_count')
@@ -41,16 +42,16 @@ class extends Component {
             ->take(12)
             ->get();
             
-        $this->featuredPrompts = Prompt::where('featured', true)
+        $this->featuredPrompts = Prompt::featured()
             ->with(['user', 'tags', 'category'])
             ->withViewsCount()
             ->take(6)
             ->get();
             
-        // Get real statistics
-        $this->totalPrompts = Prompt::count();
-        $this->totalAiModels = AiModel::count();
-        $this->totalUsers = User::count();
+        // Get real statistics - only count approved/published content for public display
+        $this->totalPrompts = Prompt::count(); // Gets only public + published due to global scopes
+        $this->totalAiModels = AiModel::count(); // Gets only approved due to global scope
+        $this->totalUsers = User::count(); // No global scopes, gets all users
     }
 }; ?>
 

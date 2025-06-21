@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -106,5 +108,41 @@ class User extends Authenticatable
     public function prompts(): HasMany
     {
         return $this->hasMany(Prompt::class);
+    }
+
+    /**
+     * Scope to include only admin users
+     */
+    #[Scope]
+    protected function admins(Builder $query): void
+    {
+        $query->where('is_admin', true);
+    }
+
+    /**
+     * Scope to include only regular (non-admin) users
+     */
+    #[Scope]
+    protected function regular(Builder $query): void
+    {
+        $query->where('is_admin', false);
+    }
+
+    /**
+     * Scope to include users with verified email
+     */
+    #[Scope]
+    protected function verified(Builder $query): void
+    {
+        $query->whereNotNull('email_verified_at');
+    }
+
+    /**
+     * Scope to include users with unverified email
+     */
+    #[Scope]
+    protected function unverified(Builder $query): void
+    {
+        $query->whereNull('email_verified_at');
     }
 }

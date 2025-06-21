@@ -63,7 +63,8 @@ class extends Component {
 
     public function delete(int $id): void
     {
-        $prompt = Prompt::where('user_id', auth()->id())->find($id);
+        // Author sees ALL their own prompts regardless of status or visibility
+        $prompt = Prompt::withAll()->where('user_id', auth()->id())->find($id);
         if ($prompt) {
             $prompt->delete();
             session()->flash('success', 'Prompt deleted successfully.');
@@ -81,7 +82,8 @@ class extends Component {
 
     public function with(): array
     {
-        $prompts = Prompt::query()
+        // Author sees ALL their own prompts regardless of status or visibility
+        $prompts = Prompt::withAll()
             ->where('user_id', auth()->id())
             ->with(['category', 'aiModels', 'platforms', 'tags'])
             ->when($this->search, function($query) {
@@ -105,8 +107,13 @@ class extends Component {
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(15);
 
-        // Get all categories for the filter
-        $categories = Category::orderBy('name')->get();
+        // Get approved categories + author's own unapproved categories
+        $categories = Category::withUnapproved()
+            ->where(function ($query) {
+                $query->where('is_approved', true)
+                      ->orWhere('user_id', auth()->id());
+            })
+            ->orderBy('name')->get();
 
         return [
             'prompts' => $prompts,

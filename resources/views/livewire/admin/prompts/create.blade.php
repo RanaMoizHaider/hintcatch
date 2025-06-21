@@ -88,10 +88,11 @@ class extends Component {
 
     public function with(): array
     {
-        $categories = Category::orderBy('name')->get();
+        // Admin sees all categories including unapproved
+        $categories = Category::withUnapproved()->orderBy('name')->get();
         
-        // Filter AI Models based on search
-        $aiModelsQuery = AiModel::with('provider')->orderBy('name');
+        // Filter AI Models based on search - Admin sees all including unapproved
+        $aiModelsQuery = AiModel::withUnapproved()->with('provider')->orderBy('name');
         if ($this->aiModelSearch) {
             $aiModelsQuery->where(function($query) {
                 $query->where('name', 'like', '%' . $this->aiModelSearch . '%')
@@ -102,8 +103,8 @@ class extends Component {
         }
         $aiModels = $aiModelsQuery->get();
 
-        // Filter Platforms based on search
-        $platformsQuery = Platform::orderBy('name');
+        // Filter Platforms based on search - Admin sees all including unapproved
+        $platformsQuery = Platform::withUnapproved()->orderBy('name');
         if ($this->platformSearch) {
             $platformsQuery->where('name', 'like', '%' . $this->platformSearch . '%');
         }

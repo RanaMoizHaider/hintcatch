@@ -16,12 +16,19 @@ class extends Component {
 
     public function mount(): void
     {
-        $this->totalPrompts = Prompt::count();
-        $this->totalUsers = User::count();
-        $this->publicPrompts = Prompt::where('visibility', 'public')->where('status', 'published')->count();
-        $this->activeAiModels = AiModel::count();
+        // Admin sees all prompts regardless of status/visibility
+        $this->totalPrompts = Prompt::withAll()->count();
+        $this->totalUsers = User::count(); // No global scopes
         
-        $this->recentPrompts = Prompt::with(['user', 'category'])
+        // Public stats - count only published + public prompts using default global scopes
+        $this->publicPrompts = Prompt::count(); // Uses default global scopes (published + public)
+            
+        // Admin sees all AI models including unapproved
+        $this->activeAiModels = AiModel::withUnapproved()->count();
+        
+        // Admin sees all recent prompts regardless of status/visibility
+        $this->recentPrompts = Prompt::withAll()
+            ->with(['user', 'category'])
             ->latest()
             ->take(5)
             ->get();
