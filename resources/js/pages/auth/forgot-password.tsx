@@ -20,7 +20,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <Head title="Forgot password" />
 
             {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <div className="mb-4 text-center text-sm font-medium text-ds-success">
                     {status}
                 </div>
             )}
@@ -59,7 +59,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     )}
                 </Form>
 
-                <div className="space-x-1 text-center text-sm text-muted-foreground">
+                <div className="space-x-1 text-center text-sm text-ds-text-muted">
                     <span>Or, return to</span>
                     <TextLink href={login()}>log in</TextLink>
                 </div>

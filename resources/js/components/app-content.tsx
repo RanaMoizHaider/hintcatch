@@ -16,7 +16,7 @@ export function AppContent({
 
     return (
         <main
-            className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl"
+            className="mx-6 flex h-full w-auto max-w-[1080px] flex-1 flex-col gap-4 md:mx-auto"
             {...props}
         >
             {children}

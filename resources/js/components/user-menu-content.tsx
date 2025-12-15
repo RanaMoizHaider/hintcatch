@@ -1,10 +1,11 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { UserInfo } from '@/components/user-info';
+import { useInitials } from '@/hooks/use-initials';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
@@ -18,6 +19,7 @@ interface UserMenuContentProps {
 
 export function UserMenuContent({ user }: UserMenuContentProps) {
     const cleanup = useMobileNavigation();
+    const getInitials = useInitials();
 
     const handleLogout = () => {
         cleanup();
@@ -27,13 +29,31 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
     return (
         <>
             <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <UserInfo user={user} showEmail={true} />
-                </div>
+                <Link href={edit()} className="rounded-none" prefetch>
+                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm hover:bg-ds-bg-secondary">
+                        <Avatar className="h-8 w-8 rounded-none">
+                            <AvatarImage src={user.avatar} alt={user.name} />
+                            <AvatarFallback className="rounded-none bg-ds-bg-secondary text-ds-text-muted">
+                                {getInitials(user.name)}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                            <span className="truncate font-medium text-ds-text-primary">
+                                {user.name}
+                            </span>
+                            <span className="truncate text-xs text-ds-text-muted">
+                                {user.email}
+                            </span>
+                        </div>
+                    </div>
+                </Link>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-ds-bg-secondary" />
             <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem
+                    asChild
+                    className="rounded-none text-ds-text-secondary hover:bg-ds-bg-secondary hover:text-ds-text-primary"
+                >
                     <Link
                         className="block w-full"
                         href={edit()}
@@ -46,8 +66,11 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
+            <DropdownMenuSeparator className="bg-ds-bg-secondary" />
+            <DropdownMenuItem
+                asChild
+                className="rounded-none text-ds-text-secondary hover:bg-ds-bg-secondary hover:text-ds-text-primary"
+            >
                 <Link
                     className="block w-full"
                     href={logout()}
