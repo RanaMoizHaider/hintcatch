@@ -51,6 +51,10 @@ class FortifyServiceProvider extends ServiceProvider
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'canRegister' => Features::enabled(Features::registration()),
             'status' => $request->session()->get('status'),
+            'socialProviders' => [
+                'github' => config('services.github.client_id') !== null,
+                'gitlab' => config('services.gitlab.client_id') !== null,
+            ],
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [

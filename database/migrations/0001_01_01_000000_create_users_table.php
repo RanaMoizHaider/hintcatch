@@ -14,11 +14,22 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('username')->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable(); // Nullable for OAuth-only users
+            $table->text('bio')->nullable();
+            $table->string('website')->nullable();
+            // GitHub OAuth fields
+            $table->string('github_id')->nullable()->unique();
+            $table->string('github_username')->nullable();
+            $table->string('github_token')->nullable();
+            $table->string('github_refresh_token')->nullable();
+            $table->string('avatar')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->index('github_id');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
