@@ -1,5 +1,9 @@
 'use client';
 
+import { index as agentsIndex } from '@/actions/App/Http/Controllers/AgentController';
+import { index as configTypesIndex } from '@/actions/App/Http/Controllers/ConfigTypeController';
+import { index as mcpServersIndex } from '@/actions/App/Http/Controllers/McpServerController';
+import { index as promptsIndex } from '@/actions/App/Http/Controllers/PromptController';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,15 +17,20 @@ import {
 import { Icons } from '@/components/ui/icons';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
-import { dashboard, login, logout, register } from '@/routes';
+import { dashboard, login, logout } from '@/routes';
 import { edit as editProfile } from '@/routes/profile';
 import { edit as editPassword } from '@/routes/user-password';
 import { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LogOut, Settings, User } from 'lucide-react';
+import { LogOut, Plus, Settings, User } from 'lucide-react';
 import { useState } from 'react';
 
-const navItems = [{ label: 'Dashboard', href: dashboard }];
+const navItems = [
+    { label: 'Agents', href: agentsIndex },
+    { label: 'Configs', href: configTypesIndex },
+    { label: 'MCPs', href: mcpServersIndex },
+    { label: 'Prompts', href: promptsIndex },
+];
 
 export function SiteHeader() {
     const { auth } = usePage<SharedData>().props;
@@ -32,6 +41,9 @@ export function SiteHeader() {
     const isActive = (path: string) => {
         return currentPath === path || currentPath.startsWith(path + '/');
     };
+
+    // Submit button href - goes to login if not authenticated, otherwise to submit page
+    const submitHref = auth.user ? '/submit' : login();
 
     return (
         <header className="w-full border-b border-ds-border bg-ds-bg-card">
@@ -46,27 +58,37 @@ export function SiteHeader() {
                     </Link>
                 </div>
 
-                {/* Center: Desktop Navigation */}
-                {auth.user && (
-                    <nav className="hidden items-center gap-1 md:flex">
-                        {navItems.map((item) => (
-                            <Link
-                                key={item.href().url}
-                                href={item.href()}
-                                className={cn(
-                                    'px-3 py-2 text-sm text-ds-text-muted transition-colors hover:text-ds-text-primary',
-                                    isActive(item.href().url) &&
-                                        'text-ds-text-primary',
-                                )}
-                            >
-                                {item.label}
-                            </Link>
-                        ))}
-                    </nav>
-                )}
+                {/* Center: Navigation - Always visible */}
+                <nav className="hidden items-center gap-1 md:flex">
+                    {navItems.map((item) => (
+                        <Link
+                            key={item.href().url}
+                            href={item.href()}
+                            className={cn(
+                                'px-3 py-2 text-sm text-ds-text-muted uppercase transition-colors hover:text-ds-text-primary',
+                                isActive(item.href().url) &&
+                                    'text-ds-text-primary',
+                            )}
+                        >
+                            {item.label}
+                        </Link>
+                    ))}
+                </nav>
 
                 {/* Right: Actions */}
                 <div className="flex items-center gap-3">
+                    {/* Submit Button - Always visible */}
+                    <Button
+                        asChild
+                        size="sm"
+                        className="hidden bg-ds-text-primary text-ds-bg-base hover:bg-ds-text-secondary md:flex"
+                    >
+                        <Link href={submitHref}>
+                            <Plus className="mr-1 h-4 w-4" />
+                            Submit
+                        </Link>
+                    </Button>
+
                     {auth.user ? (
                         <>
                             {/* Mobile Menu Toggle */}
@@ -151,6 +173,15 @@ export function SiteHeader() {
                                         asChild
                                         className="text-ds-text-secondary hover:bg-ds-bg-secondary hover:text-ds-text-primary"
                                     >
+                                        <Link href={dashboard()}>
+                                            <User className="mr-2 h-4 w-4" />
+                                            Dashboard
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        asChild
+                                        className="text-ds-text-secondary hover:bg-ds-bg-secondary hover:text-ds-text-primary"
+                                    >
                                         <Link href={editProfile()}>
                                             <User className="mr-2 h-4 w-4" />
                                             Profile
@@ -185,26 +216,47 @@ export function SiteHeader() {
                         </>
                     ) : (
                         <>
-                            <Link
-                                href={login()}
-                                className="text-sm text-ds-text-muted transition-colors hover:text-ds-text-primary"
+                            {/* Mobile Menu Toggle */}
+                            <button
+                                type="button"
+                                className="flex h-8 w-8 items-center justify-center text-ds-text-muted hover:text-ds-text-primary md:hidden"
+                                onClick={() => setMobileOpen(!mobileOpen)}
+                                aria-expanded={mobileOpen}
+                                aria-controls="mobile-nav"
                             >
-                                Log in
-                            </Link>
-                            <Button
-                                asChild
-                                size="sm"
-                                className="bg-ds-text-primary text-ds-bg-base hover:bg-ds-text-secondary"
-                            >
-                                <Link href={register()}>Sign up</Link>
-                            </Button>
+                                <span className="sr-only">Toggle menu</span>
+                                <div className="relative flex h-4 w-4 flex-col items-center justify-center">
+                                    <span
+                                        className={cn(
+                                            'absolute h-px w-4 bg-current transition-all duration-200',
+                                            mobileOpen
+                                                ? 'rotate-45'
+                                                : '-translate-y-1.5',
+                                        )}
+                                    />
+                                    <span
+                                        className={cn(
+                                            'absolute h-px w-4 bg-current transition-all duration-200',
+                                            mobileOpen && 'opacity-0',
+                                        )}
+                                    />
+                                    <span
+                                        className={cn(
+                                            'absolute h-px w-4 bg-current transition-all duration-200',
+                                            mobileOpen
+                                                ? '-rotate-45'
+                                                : 'translate-y-1.5',
+                                        )}
+                                    />
+                                </div>
+                            </button>
                         </>
                     )}
                 </div>
             </div>
 
             {/* Mobile Navigation */}
-            {auth.user && mobileOpen && (
+            {mobileOpen && (
                 <nav
                     id="mobile-nav"
                     className="border-t border-ds-border px-4 py-4 md:hidden"
@@ -216,7 +268,7 @@ export function SiteHeader() {
                                 href={item.href()}
                                 onClick={() => setMobileOpen(false)}
                                 className={cn(
-                                    'px-3 py-2 text-sm text-ds-text-muted transition-colors hover:text-ds-text-primary',
+                                    'px-3 py-2 text-sm text-ds-text-muted uppercase transition-colors hover:text-ds-text-primary',
                                     isActive(item.href().url) &&
                                         'text-ds-text-primary',
                                 )}
@@ -224,6 +276,24 @@ export function SiteHeader() {
                                 {item.label}
                             </Link>
                         ))}
+                        <div className="my-2 border-t border-ds-border" />
+                        <Link
+                            href={submitHref}
+                            onClick={() => setMobileOpen(false)}
+                            className="px-3 py-2 text-sm font-medium text-ds-text-primary transition-colors hover:text-ds-text-secondary"
+                        >
+                            <Plus className="mr-1 inline h-4 w-4" />
+                            Submit
+                        </Link>
+                        {!auth.user && (
+                            <Link
+                                href={login()}
+                                onClick={() => setMobileOpen(false)}
+                                className="px-3 py-2 text-sm text-ds-text-muted transition-colors hover:text-ds-text-primary"
+                            >
+                                Log in
+                            </Link>
+                        )}
                     </div>
                 </nav>
             )}

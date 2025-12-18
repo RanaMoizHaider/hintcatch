@@ -4,9 +4,12 @@ import { Icons } from '@/components/ui/icons';
 import { Link, usePage } from '@inertiajs/react';
 
 const footerLinks = [
-    { name: 'GitHub', href: 'https://github.com', external: true },
-    { name: 'Docs', href: 'https://laravel.com/docs', external: true },
-    { name: 'Dashboard', href: '/dashboard', external: false },
+    {
+        name: 'GitHub',
+        href: 'https://github.com/ranamoizhaider/hintcatch',
+        external: true,
+    },
+    { name: 'About', href: '/about', external: false },
 ];
 
 export function SiteFooter() {
@@ -52,7 +55,7 @@ export function SiteFooter() {
                     </span>
                     <div className="flex items-center gap-4">
                         <a
-                            href="https://github.com"
+                            href="https://github.com/ranamoizhaider/hintcatch"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-ds-text-muted transition-colors hover:text-ds-text-primary"
