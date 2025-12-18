@@ -9,25 +9,75 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
+import { Github, Gitlab } from 'lucide-react';
 
 interface LoginProps {
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
+    socialProviders?: {
+        github: boolean;
+        gitlab: boolean;
+    };
 }
 
 export default function Login({
     status,
     canResetPassword,
     canRegister,
+    socialProviders,
 }: LoginProps) {
+    const hasSocialProviders =
+        socialProviders?.github || socialProviders?.gitlab;
+
     return (
         <AuthLayout
             title="Log in to your account"
-            description="Enter your email and password below to log in"
+            description="Sign in with your social account or email"
         >
             <Head title="Log in" />
+
+            {/* Social Login Buttons */}
+            {hasSocialProviders && (
+                <div className="mb-6 flex flex-col gap-3">
+                    {socialProviders?.github && (
+                        <Button
+                            variant="outline"
+                            className="w-full border-ds-border bg-ds-bg-card text-ds-text-primary hover:bg-ds-bg-secondary"
+                            asChild
+                        >
+                            <Link href="/auth/github">
+                                <Github className="mr-2 h-4 w-4" />
+                                Continue with GitHub
+                            </Link>
+                        </Button>
+                    )}
+                    {socialProviders?.gitlab && (
+                        <Button
+                            variant="outline"
+                            className="w-full border-ds-border bg-ds-bg-card text-ds-text-primary hover:bg-ds-bg-secondary"
+                            asChild
+                        >
+                            <Link href="/auth/gitlab">
+                                <Gitlab className="mr-2 h-4 w-4" />
+                                Continue with GitLab
+                            </Link>
+                        </Button>
+                    )}
+
+                    <div className="relative my-4">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-ds-border" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-ds-bg-base px-2 text-ds-text-muted">
+                                Or continue with email
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <Form
                 {...store.form()}
@@ -44,7 +94,7 @@ export default function Login({
                                     type="email"
                                     name="email"
                                     required
-                                    autoFocus
+                                    autoFocus={!hasSocialProviders}
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="email@example.com"
