@@ -14,13 +14,6 @@ class ConfigTypeSeeder extends Seeder
     {
         $configTypes = [
             [
-                'name' => 'MCP Servers',
-                'slug' => 'mcp-servers',
-                'description' => 'Model Context Protocol servers that extend AI agents with external tools and services',
-                'allowed_formats' => ['json'],
-                'allows_multiple_files' => false,
-            ],
-            [
                 'name' => 'Rules',
                 'slug' => 'rules',
                 'description' => 'Custom instructions that guide agent behavior for specific projects or globally',
@@ -68,13 +61,6 @@ class ConfigTypeSeeder extends Seeder
                 'description' => 'Model-invoked capabilities that the agent autonomously uses based on context',
                 'allowed_formats' => ['md', 'json', 'sh'],
                 'allows_multiple_files' => true,
-            ],
-            [
-                'name' => 'Prompts',
-                'slug' => 'prompts',
-                'description' => 'Reusable prompts for common tasks that work across all agents',
-                'allowed_formats' => ['md', 'txt'],
-                'allows_multiple_files' => false,
             ],
         ];
 
