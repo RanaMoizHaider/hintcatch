@@ -145,7 +145,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => 'CLAUDE.md',
-                'logo' => 'https://www.google.com/s2/favicons?domain=claude.ai&sz=128',
+                'logo' => 'https://www.google.com/s2/favicons?domain=claude.com&sz=128',
             ],
             [
                 'name' => 'Gemini CLI',
@@ -386,8 +386,8 @@ class AgentSeeder extends Seeder
                 'name' => 'Kimi CLI',
                 'slug' => 'kimi-cli',
                 'description' => "Moonshot AI's CLI agent with shell integration",
-                'website' => 'https://github.com/MoonshotAI/kimi-cli',
-                'docs_url' => 'https://github.com/MoonshotAI/kimi-cli#readme',
+                'website' => 'https://www.kimi.com/coding',
+                'docs_url' => 'https://www.kimi.com/coding/docs/en/kimi-cli.html',
                 'github_url' => 'https://github.com/MoonshotAI/kimi-cli',
                 'supported_config_types' => ['mcp-servers', 'rules', 'prompts'],
                 'supported_file_formats' => ['json', 'yaml'],
@@ -422,7 +422,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => null,
-                'logo' => 'https://www.google.com/s2/favicons?domain=moonshot.ai&sz=128',
+                'logo' => 'https://statics.moonshot.cn/moonshot-ai/favicon.ico',
             ],
             [
                 'name' => 'Kiro',
