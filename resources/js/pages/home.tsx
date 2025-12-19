@@ -177,12 +177,12 @@ export default function Home({
                                         href={showAgent(agent.slug)}
                                         className="group inline-flex items-center gap-3 border-2 border-ds-border bg-ds-bg-card px-4 py-2 transition-colors hover:border-ds-text-muted"
                                     >
-                                        <div className="flex h-8 w-8 items-center justify-center bg-ds-bg-secondary text-ds-text-muted">
+                                        <div className="flex h-8 w-8 items-center justify-center text-ds-text-muted">
                                             {agent.logo ? (
                                                 <img
                                                     src={agent.logo}
                                                     alt={agent.name}
-                                                    className="h-5 w-5"
+                                                    className="h-8 w-8"
                                                 />
                                             ) : (
                                                 <span className="text-sm font-medium">

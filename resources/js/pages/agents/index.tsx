@@ -37,12 +37,12 @@ export default function AgentsIndex({ agents }: AgentIndexPageProps) {
                                         href={showAgent(agent.slug)}
                                         className="group flex flex-col items-center gap-3 border-2 border-ds-border bg-ds-bg-card p-6 transition-colors hover:border-ds-text-muted"
                                     >
-                                        <div className="flex h-16 w-16 items-center justify-center rounded bg-ds-bg-secondary text-ds-text-muted">
+                                        <div className="flex h-16 w-16 items-center justify-center rounded text-ds-text-muted">
                                             {agent.logo ? (
                                                 <img
                                                     src={agent.logo}
                                                     alt={agent.name}
-                                                    className="h-10 w-10"
+                                                    className="h-16 w-16"
                                                 />
                                             ) : (
                                                 <span className="text-2xl font-medium">
