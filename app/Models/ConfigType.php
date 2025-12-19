@@ -37,4 +37,12 @@ class ConfigType extends Model
     {
         return $this->hasMany(Config::class);
     }
+
+    /**
+     * @return HasMany<Category, $this>
+     */
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
 }

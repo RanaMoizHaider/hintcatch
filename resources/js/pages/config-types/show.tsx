@@ -1,4 +1,4 @@
-import { show as showAgent } from '@/actions/App/Http/Controllers/AgentController';
+import { configs as agentConfigs } from '@/actions/App/Http/Controllers/AgentController';
 import { ConfigCard } from '@/components/config-card';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
@@ -48,7 +48,10 @@ export default function ConfigTypesShow({
                                     {agents.map((agent) => (
                                         <Link
                                             key={agent.id}
-                                            href={showAgent(agent.slug)}
+                                            href={agentConfigs([
+                                                agent.slug,
+                                                configType.slug,
+                                            ])}
                                         >
                                             <Badge
                                                 variant="outline"
