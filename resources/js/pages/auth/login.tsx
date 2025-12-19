@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import AuthLayout from '@/layouts/auth-layout';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { Github, Gitlab } from 'lucide-react';
 
 interface LoginProps {
@@ -26,10 +26,10 @@ export default function Login({ status, socialProviders }: LoginProps) {
                         className="w-full border-ds-border bg-ds-bg-card text-ds-text-primary hover:bg-ds-bg-secondary"
                         asChild
                     >
-                        <Link href="/auth/github">
+                        <a href="/auth/github">
                             <Github className="mr-2 h-4 w-4" />
                             Continue with GitHub
-                        </Link>
+                        </a>
                     </Button>
                 )}
                 {socialProviders?.gitlab && (
@@ -38,10 +38,10 @@ export default function Login({ status, socialProviders }: LoginProps) {
                         className="w-full border-ds-border bg-ds-bg-card text-ds-text-primary hover:bg-ds-bg-secondary"
                         asChild
                     >
-                        <Link href="/auth/gitlab">
+                        <a href="/auth/gitlab">
                             <Gitlab className="mr-2 h-4 w-4" />
                             Continue with GitLab
-                        </Link>
+                        </a>
                     </Button>
                 )}
             </div>
