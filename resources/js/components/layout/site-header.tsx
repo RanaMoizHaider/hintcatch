@@ -1,5 +1,3 @@
-'use client';
-
 import { index as agentsIndex } from '@/actions/App/Http/Controllers/AgentController';
 import { index as configTypesIndex } from '@/actions/App/Http/Controllers/ConfigTypeController';
 import { index as mcpServersIndex } from '@/actions/App/Http/Controllers/McpServerController';
@@ -18,8 +16,6 @@ import { Icons } from '@/components/ui/icons';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { dashboard, login, logout } from '@/routes';
-import { edit as editProfile } from '@/routes/profile';
-import { edit as editPassword } from '@/routes/user-password';
 import { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { LogOut, Plus, Settings, User } from 'lucide-react';
@@ -182,16 +178,7 @@ export function SiteHeader() {
                                         asChild
                                         className="text-ds-text-secondary hover:bg-ds-bg-secondary hover:text-ds-text-primary"
                                     >
-                                        <Link href={editProfile()}>
-                                            <User className="mr-2 h-4 w-4" />
-                                            Profile
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        asChild
-                                        className="text-ds-text-secondary hover:bg-ds-bg-secondary hover:text-ds-text-primary"
-                                    >
-                                        <Link href={editPassword()}>
+                                        <Link href={editAppearance()}>
                                             <Settings className="mr-2 h-4 w-4" />
                                             Settings
                                         </Link>

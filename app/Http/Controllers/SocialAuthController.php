@@ -124,4 +124,17 @@ class SocialAuthController extends Controller
             abort(404, 'Provider not supported.');
         }
     }
+
+    /**
+     * Log the user out.
+     */
+    public function logout(): RedirectResponse
+    {
+        Auth::logout();
+
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('home');
+    }
 }

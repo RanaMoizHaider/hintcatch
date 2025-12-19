@@ -43,8 +43,17 @@ Route::get('/prompts/{prompt:slug}', [PromptController::class, 'show'])->name('p
 Route::get('/u/{user:username}', [UserProfileController::class, 'show'])->name('users.show');
 
 // Social Authentication
+Route::get('/login', function () {
+    return Inertia::render('auth/login', [
+        'socialProviders' => [
+            'github' => config('services.github.client_id') !== null,
+            'gitlab' => config('services.gitlab.client_id') !== null,
+        ],
+    ]);
+})->name('login');
 Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
+Route::post('/logout', [SocialAuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Authenticated routes
 Route::middleware(['auth', 'verified'])->group(function () {
