@@ -1,8 +1,5 @@
 import { show as showAgent } from '@/actions/App/Http/Controllers/AgentController';
-import {
-    index as configTypesIndex,
-    show as showConfigType,
-} from '@/actions/App/Http/Controllers/ConfigTypeController';
+import { index as configTypesIndex } from '@/actions/App/Http/Controllers/ConfigTypeController';
 import { index as mcpServersIndex } from '@/actions/App/Http/Controllers/McpServerController';
 import { index as promptsIndex } from '@/actions/App/Http/Controllers/PromptController';
 import { ConfigCard } from '@/components/config-card';
@@ -115,8 +112,8 @@ export default function Home({
     return (
         <>
             <SeoHead
-                title="CLI AI Agent Configs"
-                description="The directory for CLI AI agent configurations. Find and share rules, prompts, and MCP server configs for OpenCode, Claude Code, Cursor, and more."
+                title="AI Agent Configs"
+                description="The directory for AI agent configurations. Find and share tools, skills, and MCP server configs for OpenCode, Claude Code, Cursor, and more."
             />
             <div className="flex min-h-screen flex-col bg-ds-bg-base">
                 <SiteHeader />

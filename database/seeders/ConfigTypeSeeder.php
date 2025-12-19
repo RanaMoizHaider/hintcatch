@@ -56,7 +56,7 @@ class ConfigTypeSeeder extends Seeder
                 'allows_multiple_files' => false,
             ],
             [
-                'name' => 'Skills',
+                'name' => 'Agent Skills',
                 'slug' => 'skills',
                 'description' => 'Model-invoked capabilities that the agent autonomously uses based on context',
                 'allowed_formats' => ['md', 'json', 'sh'],

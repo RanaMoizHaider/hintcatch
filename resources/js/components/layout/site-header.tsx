@@ -23,7 +23,7 @@ import { LogOut, Plus, Settings, User } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
-    { label: 'Agents', href: agentsIndex },
+    { label: 'AI Agents', href: agentsIndex },
     { label: 'Configs', href: configTypesIndex },
     { label: 'MCPs', href: mcpServersIndex },
     { label: 'Prompts', href: promptsIndex },
