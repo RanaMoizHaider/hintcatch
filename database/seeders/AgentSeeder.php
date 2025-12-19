@@ -75,6 +75,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => 'AGENTS.md',
+                'logo' => 'https://opencode.ai/favicon.svg',
             ],
             [
                 'name' => 'Claude Code',
@@ -144,13 +145,14 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => 'CLAUDE.md',
+                'logo' => 'https://www.google.com/s2/favicons?domain=claude.ai&sz=128',
             ],
             [
                 'name' => 'Gemini CLI',
                 'slug' => 'gemini-cli',
                 'description' => "Google's open-source Gemini agent for terminal",
                 'website' => 'https://geminicli.com',
-                'docs_url' => 'https://geminicli.com/docs/tools/mcp-server',
+                'docs_url' => 'https://geminicli.com/docs',
                 'github_url' => 'https://github.com/google-gemini/gemini-cli',
                 'supported_config_types' => ['mcp-servers', 'rules', 'slash-commands', 'prompts', 'extensions'],
                 'supported_file_formats' => ['json', 'md'],
@@ -212,6 +214,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => 'GEMINI.md',
+                'logo' => 'https://geminicli.com/icon.png',
             ],
             [
                 'name' => 'Codex',
@@ -254,6 +257,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => null,
+                'logo' => 'https://www.google.com/s2/favicons?domain=openai.com&sz=128',
             ],
             [
                 'name' => 'Aider',
@@ -269,6 +273,7 @@ class AgentSeeder extends Seeder
                 'mcp_config_paths' => null,
                 'mcp_config_template' => null,
                 'rules_filename' => '.aider',
+                'logo' => 'https://aider.chat/assets/logo.svg',
             ],
             [
                 'name' => 'Cursor',
@@ -329,6 +334,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => '.cursorrules',
+                'logo' => 'https://www.google.com/s2/favicons?domain=cursor.sh&sz=128',
             ],
             [
                 'name' => 'Cline',
@@ -374,6 +380,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => '.clinerules',
+                'logo' => 'https://raw.githubusercontent.com/cline/cline/main/assets/icons/icon.png',
             ],
             [
                 'name' => 'Kimi CLI',
@@ -415,6 +422,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => null,
+                'logo' => 'https://www.google.com/s2/favicons?domain=moonshot.ai&sz=128',
             ],
             [
                 'name' => 'Kiro',
@@ -457,6 +465,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => null,
+                'logo' => 'https://www.google.com/s2/favicons?domain=kiro.dev&sz=128',
             ],
             [
                 'name' => 'Windsurf',
@@ -497,6 +506,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => '.windsurfrules',
+                'logo' => 'https://www.google.com/s2/favicons?domain=codeium.com&sz=128',
             ],
             [
                 'name' => 'Zed',
@@ -536,6 +546,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => null,
+                'logo' => 'https://www.google.com/s2/favicons?domain=zed.dev&sz=128',
             ],
             [
                 'name' => 'GitHub Copilot',
@@ -581,6 +592,7 @@ class AgentSeeder extends Seeder
                     ],
                 ],
                 'rules_filename' => '.github/copilot-instructions.md',
+                'logo' => 'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
             ],
         ];
 

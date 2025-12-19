@@ -25,6 +25,7 @@ class Agent extends Model
         'mcp_config_paths',
         'mcp_config_template',
         'rules_filename',
+        'logo',
     ];
 
     /**
