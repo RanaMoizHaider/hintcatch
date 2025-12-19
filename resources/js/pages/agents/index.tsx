@@ -9,8 +9,8 @@ export default function AgentsIndex({ agents }: AgentIndexPageProps) {
     return (
         <>
             <SeoHead
-                title="CLI Agents"
-                description="Browse configurations for your favorite CLI AI agents."
+                title="AI Agents"
+                description="Browse configurations for your favorite AI agents."
             />
             <div className="flex min-h-screen flex-col bg-ds-bg-base">
                 <SiteHeader />
@@ -19,11 +19,10 @@ export default function AgentsIndex({ agents }: AgentIndexPageProps) {
                     <section className="border-b-2 border-ds-border">
                         <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
                             <h1 className="text-2xl font-medium text-ds-text-primary uppercase md:text-3xl">
-                                CLI Agents
+                                AI Agents
                             </h1>
                             <p className="mt-2 text-ds-text-secondary">
-                                Browse configurations for your favorite CLI AI
-                                agents
+                                Browse configurations for your favorite AI agents
                             </p>
                         </div>
                     </section>
