@@ -16,6 +16,7 @@ import { Icons } from '@/components/ui/icons';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { dashboard, login, logout } from '@/routes';
+import { edit as editAppearance } from '@/routes/appearance';
 import { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { LogOut, Plus, Settings, User } from 'lucide-react';

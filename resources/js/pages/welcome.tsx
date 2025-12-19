@@ -1,13 +1,9 @@
 import { Icons } from '@/components/ui/icons';
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 
-export default function Welcome({
-    canRegister = true,
-}: {
-    canRegister?: boolean;
-}) {
+export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
 
     return (
@@ -40,7 +36,7 @@ export default function Welcome({
                                 </Link>
                             ) : (
                                 <Link
-                                    href={register()}
+                                    href={login()}
                                     className="text-base text-ds-text-primary uppercase transition-colors hover:text-ds-text-secondary"
                                 >
                                     Get Started
@@ -92,8 +88,8 @@ export default function Welcome({
                                 <span className="font-medium text-ds-text-primary uppercase">
                                     Auth Ready
                                 </span>
-                                : Laravel Fortify provides robust authentication
-                                out of the box.
+                                : GitHub and GitLab OAuth authentication out of
+                                the box.
                             </li>
                             <li>
                                 <span className="font-medium text-ds-text-primary uppercase">
@@ -107,8 +103,8 @@ export default function Welcome({
 
                     {/* Auth Links Section */}
                     {!auth.user && (
-                        <section className="grid grid-cols-2 border-t-2 border-ds-border">
-                            <div className="border-r-2 border-ds-border px-4 py-4 text-center md:px-8">
+                        <section className="grid border-t-2 border-ds-border">
+                            <div className="px-4 py-4 text-center md:px-8">
                                 <h3 className="mb-2 text-xs text-ds-text-muted uppercase md:text-sm">
                                     Existing User
                                 </h3>
@@ -119,19 +115,6 @@ export default function Welcome({
                                     Sign In
                                 </Link>
                             </div>
-                            {canRegister && (
-                                <div className="px-4 py-4 text-center md:px-8">
-                                    <h3 className="mb-2 text-xs text-ds-text-muted uppercase md:text-sm">
-                                        New User
-                                    </h3>
-                                    <Link
-                                        href={register()}
-                                        className="text-sm font-medium text-ds-text-primary transition-colors hover:text-ds-text-secondary md:text-base"
-                                    >
-                                        Create Account
-                                    </Link>
-                                </div>
-                            )}
                         </section>
                     )}
 
