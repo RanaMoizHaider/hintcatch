@@ -182,16 +182,16 @@ export interface PublicUser {
 export interface Comment {
     id: number;
     user_id: number;
+    parent_id: number | null;
     body: string;
     is_edited: boolean;
     edited_at: string | null;
     created_at: string;
     updated_at: string;
-    // Relations
+    vote_score: number;
+    user_vote: 1 | -1 | null;
     user?: PublicUser;
     replies?: Comment[];
-    // Computed
-    vote_score?: number;
 }
 
 export interface Vote {
@@ -199,6 +199,20 @@ export interface Vote {
     user_id: number;
     value: 1 | -1;
     created_at: string;
+}
+
+export interface Favorite {
+    id: number;
+    user_id: number;
+    favorable_type: string;
+    favorable_id: number;
+    created_at: string;
+}
+
+export interface InteractionStatus {
+    user_vote: 1 | -1 | null;
+    is_favorited: boolean;
+    favorites_count: number;
 }
 
 // Page Props Types
@@ -262,6 +276,9 @@ export interface ConfigTypeShowPageProps {
 export interface ConfigShowPageProps {
     config: Config;
     relatedConfigs: Config[];
+    moreFromUser: Config[];
+    comments: Comment[];
+    interaction: InteractionStatus;
 }
 
 export interface McpServerIndexPageProps {
@@ -283,6 +300,8 @@ export interface McpServerShowPageProps {
     mcpServer: McpServer;
     agentIntegrations: Record<string, AgentIntegration>;
     moreFromUser: McpServer[];
+    comments: Comment[];
+    interaction: InteractionStatus;
 }
 
 export interface PaginatedData<T> {
@@ -314,6 +333,8 @@ export interface PromptShowPageProps {
     prompt: Prompt;
     relatedPrompts: Prompt[];
     moreFromUser: Prompt[];
+    comments: Comment[];
+    interaction: InteractionStatus;
 }
 
 export interface UserProfilePageProps {
