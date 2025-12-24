@@ -2,6 +2,7 @@ import { show as showAgent } from '@/actions/App/Http/Controllers/AgentControlle
 import { show as showConfigType } from '@/actions/App/Http/Controllers/ConfigTypeController';
 import { show as showUser } from '@/actions/App/Http/Controllers/UserProfileController';
 import { CodeViewer } from '@/components/code-viewer';
+import { CommentSection } from '@/components/comment-section';
 import { ConfigCard } from '@/components/config-card';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
@@ -17,7 +18,8 @@ export default function ConfigsShow({
     config,
     relatedConfigs,
     moreFromUser,
-}: ConfigShowPageProps & { moreFromUser: typeof relatedConfigs }) {
+    comments,
+}: ConfigShowPageProps) {
     const getInitials = useInitials();
 
     return (
@@ -151,6 +153,13 @@ export default function ConfigsShow({
                             </div>
                         </section>
                     )}
+
+                    {/* Comments */}
+                    <CommentSection
+                        commentableType="config"
+                        commentableId={config.id}
+                        comments={comments}
+                    />
 
                     {/* Related Configs */}
                     {relatedConfigs.length > 0 && (

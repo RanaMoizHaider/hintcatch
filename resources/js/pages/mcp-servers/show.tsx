@@ -1,4 +1,5 @@
 import { show as showUser } from '@/actions/App/Http/Controllers/UserProfileController';
+import { CommentSection } from '@/components/comment-section';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { McpServerCard } from '@/components/mcp-server-card';
@@ -25,6 +26,7 @@ export default function McpServersShow({
     mcpServer,
     agentIntegrations,
     moreFromUser,
+    comments,
 }: McpServerShowPageProps) {
     const getInitials = useInitials();
     const agentSlugs = Object.keys(agentIntegrations);
@@ -316,6 +318,13 @@ export default function McpServersShow({
                             </div>
                         </section>
                     )}
+
+                    {/* Comments */}
+                    <CommentSection
+                        commentableType="mcp-server"
+                        commentableId={mcpServer.id}
+                        comments={comments}
+                    />
 
                     {/* More from User */}
                     {moreFromUser && moreFromUser.length > 0 && (

@@ -1,4 +1,5 @@
 import { show as showUser } from '@/actions/App/Http/Controllers/UserProfileController';
+import { CommentSection } from '@/components/comment-section';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { PromptCard } from '@/components/prompt-card';
@@ -15,6 +16,7 @@ export default function PromptsShow({
     prompt,
     relatedPrompts,
     moreFromUser,
+    comments,
 }: PromptShowPageProps) {
     const getInitials = useInitials();
     const [copied, setCopied] = useState(false);
@@ -157,6 +159,13 @@ export default function PromptsShow({
                             </div>
                         </div>
                     </section>
+
+                    {/* Comments */}
+                    <CommentSection
+                        commentableType="prompt"
+                        commentableId={prompt.id}
+                        comments={comments}
+                    />
 
                     {/* Related Prompts */}
                     {relatedPrompts.length > 0 && (
