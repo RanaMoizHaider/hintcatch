@@ -74,7 +74,13 @@ export function VoteButton({
     const isSmall = size === 'sm';
 
     return (
-        <div className={cn('flex flex-col items-center gap-0.5', className)}>
+        <div
+            className={cn(
+                'flex items-center',
+                isSmall ? 'gap-0' : 'gap-1',
+                className,
+            )}
+        >
             <Button
                 variant="ghost"
                 size="icon"
@@ -92,7 +98,7 @@ export function VoteButton({
                 <ChevronUp
                     className={cn(
                         'transition-all',
-                        isSmall ? 'h-4 w-4' : 'h-6 w-6',
+                        isSmall ? 'h-4 w-4' : 'h-5 w-5',
                         userVote === 1 && 'fill-current stroke-[3px]',
                     )}
                 />
@@ -100,7 +106,7 @@ export function VoteButton({
 
             <span
                 className={cn(
-                    'font-mono leading-none font-medium tabular-nums',
+                    'min-w-[1.5ch] text-center leading-none font-medium tabular-nums',
                     userVote !== null
                         ? 'text-ds-text-primary'
                         : 'text-ds-text-muted',
@@ -127,7 +133,7 @@ export function VoteButton({
                 <ChevronDown
                     className={cn(
                         'transition-all',
-                        isSmall ? 'h-4 w-4' : 'h-6 w-6',
+                        isSmall ? 'h-4 w-4' : 'h-5 w-5',
                         userVote === -1 && 'fill-current stroke-[3px]',
                     )}
                 />
