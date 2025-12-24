@@ -6,7 +6,7 @@ use App\Models\Config;
 use App\Models\Favorite;
 use App\Models\McpServer;
 use App\Models\Prompt;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +19,7 @@ class FavoriteController extends Controller
         'mcp-server' => McpServer::class,
     ];
 
-    public function toggle(Request $request): JsonResponse
+    public function toggle(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'favorable_type' => ['required', 'string', 'in:config,prompt,mcp-server'],
@@ -49,14 +49,6 @@ class FavoriteController extends Controller
             $isFavorited = true;
         }
 
-        $favoritesCount = Favorite::query()
-            ->where('favorable_type', $modelClass)
-            ->where('favorable_id', $validated['favorable_id'])
-            ->count();
-
-        return response()->json([
-            'is_favorited' => $isFavorited,
-            'favorites_count' => $favoritesCount,
-        ]);
+        return back();
     }
 }

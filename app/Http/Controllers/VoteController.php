@@ -7,7 +7,7 @@ use App\Models\Config;
 use App\Models\McpServer;
 use App\Models\Prompt;
 use App\Models\Vote;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +22,7 @@ class VoteController extends Controller
         'comment' => Comment::class,
     ];
 
-    public function toggle(Request $request): JsonResponse
+    public function toggle(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'votable_type' => ['required', 'string', 'in:config,prompt,mcp-server,comment'],
@@ -72,10 +72,7 @@ class VoteController extends Controller
                 $votable->update(['vote_score' => $voteScore]);
             }
 
-            return response()->json([
-                'vote_score' => (int) $voteScore,
-                'user_vote' => $userVote,
-            ]);
+            return back();
         });
     }
 }
