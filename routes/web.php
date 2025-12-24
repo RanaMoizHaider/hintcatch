@@ -5,6 +5,7 @@ use App\Http\Controllers\AgentController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\ConfigTypeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\McpServerController;
@@ -60,9 +61,7 @@ Route::post('/logout', [SocialAuthController::class, 'logout'])->name('logout')-
 
 // Authenticated routes
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     // Submit routes
     Route::get('submit', [SubmitController::class, 'index'])->name('submit.index');
