@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Agent;
 use App\Models\McpServer;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,12 +30,26 @@ class McpServerController extends Controller
 
     public function show(McpServer $mcpServer): Response
     {
-        $mcpServer->load([
-            'user',
-            'comments' => fn ($q) => $q->with('user')->latest()->limit(20),
-        ]);
+        $mcpServer->load(['user']);
 
-        // Get all agents that support MCP and generate integrations for each
+        $user = Auth::user();
+
+        $comments = $mcpServer->comments()
+            ->with('user')
+            ->whereNull('parent_id')
+            ->withCount(['votes as vote_score' => fn ($q) => $q->select(DB::raw('COALESCE(SUM(value), 0)'))])
+            ->latest()
+            ->get()
+            ->map(fn ($comment) => $this->formatComment($comment, $user?->id));
+
+        $userVote = $user
+            ? $mcpServer->votes()->where('user_id', $user->id)->first()?->value
+            : null;
+
+        $isFavorited = $user
+            ? $mcpServer->favorites()->where('user_id', $user->id)->exists()
+            : false;
+
         $agents = Agent::query()
             ->where('supports_mcp', true)
             ->whereNotNull('mcp_config_template')
@@ -58,6 +74,39 @@ class McpServerController extends Controller
                 ->orderByDesc('vote_score')
                 ->limit(4)
                 ->get(),
+            'comments' => $comments,
+            'interaction' => [
+                'user_vote' => $userVote,
+                'is_favorited' => $isFavorited,
+                'favorites_count' => $mcpServer->favorites()->count(),
+            ],
         ]);
+    }
+
+    private function formatComment(object $comment, ?int $userId): array
+    {
+        $userVote = $userId
+            ? $comment->votes()->where('user_id', $userId)->first()?->value
+            : null;
+
+        return [
+            'id' => $comment->id,
+            'user_id' => $comment->user_id,
+            'parent_id' => $comment->parent_id,
+            'body' => $comment->body,
+            'is_edited' => $comment->is_edited,
+            'edited_at' => $comment->edited_at,
+            'created_at' => $comment->created_at,
+            'updated_at' => $comment->updated_at,
+            'vote_score' => (int) $comment->vote_score,
+            'user_vote' => $userVote,
+            'user' => $comment->user ? [
+                'id' => $comment->user->id,
+                'name' => $comment->user->name,
+                'username' => $comment->user->username,
+                'avatar' => $comment->user->avatar,
+            ] : null,
+            'replies' => $comment->replies?->map(fn ($reply) => $this->formatComment($reply, $userId))->toArray() ?? [],
+        ];
     }
 }

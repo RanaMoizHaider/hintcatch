@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\ConfigTypeController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\McpServerController;
 use App\Http\Controllers\PromptController;
@@ -11,6 +13,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\SubmitController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -69,6 +72,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('submit/mcp-server', [SubmitController::class, 'storeMcpServer'])->name('submit.mcp-server.store');
     Route::get('submit/prompt', [SubmitController::class, 'createPrompt'])->name('submit.prompt');
     Route::post('submit/prompt', [SubmitController::class, 'storePrompt'])->name('submit.prompt.store');
+
+    // Interaction routes (votes, favorites, comments)
+    Route::post('votes', [VoteController::class, 'toggle'])->name('votes.toggle');
+    Route::post('favorites', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+    Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::patch('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
 require __DIR__.'/settings.php';
