@@ -7,11 +7,11 @@ import { McpServerCard } from '@/components/mcp-server-card';
 import { SeoHead } from '@/components/seo-head';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { VoteButton } from '@/components/vote-button';
 import { useInitials } from '@/hooks/use-initials';
 import type { McpServerShowPageProps } from '@/types/models';
 import { Link } from '@inertiajs/react';
 import {
-    ArrowUp,
     Check,
     Copy,
     Download,
@@ -94,10 +94,12 @@ export default function McpServersShow({
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6 text-sm text-ds-text-muted">
-                                    <div className="flex items-center gap-1">
-                                        <ArrowUp className="h-4 w-4" />
-                                        <span>{mcpServer.vote_score}</span>
-                                    </div>
+                                    <VoteButton
+                                        votableType="mcp-server"
+                                        votableId={mcpServer.id}
+                                        voteScore={mcpServer.vote_score}
+                                        userVote={interaction.user_vote}
+                                    />
                                     <FavoriteButton
                                         favorableType="mcp-server"
                                         favorableId={mcpServer.id}

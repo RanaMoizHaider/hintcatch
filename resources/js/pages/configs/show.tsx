@@ -10,10 +10,11 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { SeoHead } from '@/components/seo-head';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { VoteButton } from '@/components/vote-button';
 import { useInitials } from '@/hooks/use-initials';
 import type { ConfigShowPageProps } from '@/types/models';
 import { Link } from '@inertiajs/react';
-import { ArrowUp, Download, ExternalLink } from 'lucide-react';
+import { Download, ExternalLink } from 'lucide-react';
 
 export default function ConfigsShow({
     config,
@@ -84,10 +85,12 @@ export default function ConfigsShow({
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6 text-sm text-ds-text-muted">
-                                    <div className="flex items-center gap-1">
-                                        <ArrowUp className="h-4 w-4" />
-                                        <span>{config.vote_score}</span>
-                                    </div>
+                                    <VoteButton
+                                        votableType="config"
+                                        votableId={config.id}
+                                        voteScore={config.vote_score}
+                                        userVote={interaction.user_vote}
+                                    />
                                     <FavoriteButton
                                         favorableType="config"
                                         favorableId={config.id}

@@ -7,10 +7,11 @@ import { PromptCard } from '@/components/prompt-card';
 import { SeoHead } from '@/components/seo-head';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { VoteButton } from '@/components/vote-button';
 import { useInitials } from '@/hooks/use-initials';
 import type { PromptShowPageProps } from '@/types/models';
 import { Link } from '@inertiajs/react';
-import { ArrowUp, Check, Copy, Download, ExternalLink } from 'lucide-react';
+import { Check, Copy, Download, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 export default function PromptsShow({
@@ -65,10 +66,12 @@ export default function PromptsShow({
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6 text-sm text-ds-text-muted">
-                                    <div className="flex items-center gap-1">
-                                        <ArrowUp className="h-4 w-4" />
-                                        <span>{prompt.vote_score}</span>
-                                    </div>
+                                    <VoteButton
+                                        votableType="prompt"
+                                        votableId={prompt.id}
+                                        voteScore={prompt.vote_score}
+                                        userVote={interaction.user_vote}
+                                    />
                                     <FavoriteButton
                                         favorableType="prompt"
                                         favorableId={prompt.id}
