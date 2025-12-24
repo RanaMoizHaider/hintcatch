@@ -20,7 +20,7 @@ class AgentSeeder extends Seeder
                 'website' => 'https://opencode.ai',
                 'docs_url' => 'https://opencode.ai/docs',
                 'github_url' => 'https://github.com/sst/opencode',
-                'supported_config_types' => ['mcp-servers', 'rules', 'agents', 'plugins', 'custom-tools', 'hooks', 'slash-commands', 'prompts'],
+                'supported_config_types' => ['mcp-servers', 'rules', 'agents', 'plugins', 'custom-tools', 'hooks', 'slash-commands', 'skills', 'prompts'],
                 'supported_file_formats' => ['json', 'jsonc', 'md', 'ts', 'js'],
                 'supports_mcp' => true,
                 'mcp_transport_types' => ['local', 'remote'],
@@ -220,43 +220,70 @@ class AgentSeeder extends Seeder
                 'name' => 'Codex',
                 'slug' => 'codex',
                 'description' => "OpenAI's terminal-based coding agent",
-                'website' => 'https://github.com/openai/codex',
-                'docs_url' => 'https://github.com/openai/codex#readme',
+                'website' => 'https://openai.com/codex',
+                'docs_url' => 'https://developers.openai.com/codex',
                 'github_url' => 'https://github.com/openai/codex',
-                'supported_config_types' => ['mcp-servers', 'rules', 'prompts'],
-                'supported_file_formats' => ['json', 'yaml'],
+                'supported_config_types' => ['mcp-servers', 'rules', 'skills', 'prompts'],
+                'supported_file_formats' => ['toml', 'md'],
                 'supports_mcp' => true,
-                'mcp_transport_types' => ['stdio', 'sse'],
+                'mcp_transport_types' => ['stdio', 'http'],
                 'mcp_config_paths' => [
-                    'global' => '~/.codex/config.json',
-                    'project' => '.codex/config.json',
+                    'global' => '~/.codex/config.toml',
                 ],
                 'mcp_config_template' => [
-                    'wrapper_key' => 'mcpServers',
-                    'config_format' => 'json',
+                    // Codex uses TOML format with [mcp_servers.<name>] tables
+                    'wrapper_key' => 'mcp_servers',
+                    'config_format' => 'toml',
+                    // CLI command template for adding MCP servers
+                    'cli_add_command' => 'codex mcp add {name} {env_flags} -- {command}',
+                    'cli_add_command_remote' => 'codex mcp add {name} {url}',
                     'stdio' => [
                         'fields' => [
                             'command' => 'command',
                             'args' => 'args',
                             'env' => 'env',
+                            'env_vars' => 'env_vars',
+                            'cwd' => 'cwd',
+                            'startup_timeout_sec' => 'startup_timeout_sec',
+                            'tool_timeout_sec' => 'tool_timeout_sec',
+                            'enabled' => 'enabled',
+                            'enabled_tools' => 'enabled_tools',
+                            'disabled_tools' => 'disabled_tools',
                         ],
                     ],
-                    'sse' => [
+                    'http' => [
                         'fields' => [
                             'url' => 'url',
-                            'headers' => 'headers',
+                            'bearer_token_env_var' => 'bearer_token_env_var',
+                            'http_headers' => 'http_headers',
+                            'env_http_headers' => 'env_http_headers',
+                            'startup_timeout_sec' => 'startup_timeout_sec',
+                            'tool_timeout_sec' => 'tool_timeout_sec',
+                            'enabled' => 'enabled',
+                            'enabled_tools' => 'enabled_tools',
+                            'disabled_tools' => 'disabled_tools',
                         ],
                     ],
                     'example_stdio' => [
-                        'mcpServers' => [
-                            'server-name' => [
+                        // TOML: [mcp_servers.context7]
+                        'mcp_servers' => [
+                            'context7' => [
                                 'command' => 'npx',
-                                'args' => ['-y', 'mcp-server'],
+                                'args' => ['-y', '@upstash/context7-mcp'],
+                            ],
+                        ],
+                    ],
+                    'example_http' => [
+                        // TOML: [mcp_servers.figma]
+                        'mcp_servers' => [
+                            'figma' => [
+                                'url' => 'https://mcp.figma.com/mcp',
+                                'bearer_token_env_var' => 'FIGMA_OAUTH_TOKEN',
                             ],
                         ],
                     ],
                 ],
-                'rules_filename' => null,
+                'rules_filename' => 'AGENTS.md',
                 'logo' => 'https://www.google.com/s2/favicons?domain=openai.com&sz=128',
             ],
             [
@@ -282,7 +309,7 @@ class AgentSeeder extends Seeder
                 'website' => 'https://cursor.sh',
                 'docs_url' => 'https://docs.cursor.com/context/model-context-protocol',
                 'github_url' => null,
-                'supported_config_types' => ['mcp-servers', 'rules', 'prompts'],
+                'supported_config_types' => ['mcp-servers', 'rules', 'skills', 'prompts'],
                 'supported_file_formats' => ['json', 'md'],
                 'supports_mcp' => true,
                 'mcp_transport_types' => ['stdio', 'sse', 'http'],
@@ -555,7 +582,7 @@ class AgentSeeder extends Seeder
                 'website' => 'https://github.com/features/copilot',
                 'docs_url' => 'https://docs.github.com/copilot',
                 'github_url' => null,
-                'supported_config_types' => ['mcp-servers', 'rules', 'prompts'],
+                'supported_config_types' => ['mcp-servers', 'rules', 'skills', 'prompts'],
                 'supported_file_formats' => ['json', 'md'],
                 'supports_mcp' => true,
                 'mcp_transport_types' => ['stdio', 'sse'],
