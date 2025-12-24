@@ -1,5 +1,6 @@
 import { show as showUser } from '@/actions/App/Http/Controllers/UserProfileController';
 import { CommentSection } from '@/components/comment-section';
+import { FavoriteButton } from '@/components/favorite-button';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { McpServerCard } from '@/components/mcp-server-card';
@@ -27,6 +28,7 @@ export default function McpServersShow({
     agentIntegrations,
     moreFromUser,
     comments,
+    interaction,
 }: McpServerShowPageProps) {
     const getInitials = useInitials();
     const agentSlugs = Object.keys(agentIntegrations);
@@ -96,6 +98,14 @@ export default function McpServersShow({
                                         <ArrowUp className="h-4 w-4" />
                                         <span>{mcpServer.vote_score}</span>
                                     </div>
+                                    <FavoriteButton
+                                        favorableType="mcp-server"
+                                        favorableId={mcpServer.id}
+                                        isFavorited={interaction.is_favorited}
+                                        favoritesCount={
+                                            interaction.favorites_count
+                                        }
+                                    />
                                     <div className="flex items-center gap-1">
                                         <Download className="h-4 w-4" />
                                         <span>{mcpServer.downloads}</span>

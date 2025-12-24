@@ -1,5 +1,6 @@
 import { show as showUser } from '@/actions/App/Http/Controllers/UserProfileController';
 import { CommentSection } from '@/components/comment-section';
+import { FavoriteButton } from '@/components/favorite-button';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { PromptCard } from '@/components/prompt-card';
@@ -17,6 +18,7 @@ export default function PromptsShow({
     relatedPrompts,
     moreFromUser,
     comments,
+    interaction,
 }: PromptShowPageProps) {
     const getInitials = useInitials();
     const [copied, setCopied] = useState(false);
@@ -67,6 +69,14 @@ export default function PromptsShow({
                                         <ArrowUp className="h-4 w-4" />
                                         <span>{prompt.vote_score}</span>
                                     </div>
+                                    <FavoriteButton
+                                        favorableType="prompt"
+                                        favorableId={prompt.id}
+                                        isFavorited={interaction.is_favorited}
+                                        favoritesCount={
+                                            interaction.favorites_count
+                                        }
+                                    />
                                     <div className="flex items-center gap-1">
                                         <Download className="h-4 w-4" />
                                         <span>{prompt.downloads}</span>

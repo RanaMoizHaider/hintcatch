@@ -4,6 +4,7 @@ import { show as showUser } from '@/actions/App/Http/Controllers/UserProfileCont
 import { CodeViewer } from '@/components/code-viewer';
 import { CommentSection } from '@/components/comment-section';
 import { ConfigCard } from '@/components/config-card';
+import { FavoriteButton } from '@/components/favorite-button';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SeoHead } from '@/components/seo-head';
@@ -19,6 +20,7 @@ export default function ConfigsShow({
     relatedConfigs,
     moreFromUser,
     comments,
+    interaction,
 }: ConfigShowPageProps) {
     const getInitials = useInitials();
 
@@ -86,6 +88,14 @@ export default function ConfigsShow({
                                         <ArrowUp className="h-4 w-4" />
                                         <span>{config.vote_score}</span>
                                     </div>
+                                    <FavoriteButton
+                                        favorableType="config"
+                                        favorableId={config.id}
+                                        isFavorited={interaction.is_favorited}
+                                        favoritesCount={
+                                            interaction.favorites_count
+                                        }
+                                    />
                                     <div className="flex items-center gap-1">
                                         <Download className="h-4 w-4" />
                                         <span>{config.downloads}</span>
