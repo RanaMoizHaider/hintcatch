@@ -10,8 +10,8 @@ class Favorite extends Model
 {
     protected $fillable = [
         'user_id',
-        'favorable_type',
-        'favorable_id',
+        'favoritable_type',
+        'favoritable_id',
     ];
 
     /**
@@ -25,7 +25,7 @@ class Favorite extends Model
     /**
      * @return MorphTo<Model, $this>
      */
-    public function favorable(): MorphTo
+    public function favoritable(): MorphTo
     {
         return $this->morphTo();
     }
