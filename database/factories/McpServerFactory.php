@@ -30,10 +30,9 @@ class McpServerFactory extends Factory
             'args' => null,
             'env' => null,
             'headers' => null,
-            'user_id' => User::factory(),
+            'submitted_by' => User::factory(),
             'source_url' => fake()->optional()->url(),
             'source_author' => fake()->optional()->userName(),
-            'downloads' => fake()->numberBetween(0, 5000),
             'vote_score' => fake()->numberBetween(-10, 500),
             'is_featured' => fake()->boolean(10),
         ];

@@ -11,6 +11,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\McpServerController;
 use App\Http\Controllers\PromptController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SkillController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\SubmitController;
 use App\Http\Controllers\UserProfileController;
@@ -43,6 +44,10 @@ Route::get('/mcps/{mcpServer:slug}', [McpServerController::class, 'show'])->name
 Route::get('/prompts', [PromptController::class, 'index'])->name('prompts.index');
 Route::get('/prompts/{prompt:slug}', [PromptController::class, 'show'])->name('prompts.show');
 
+// Skills
+Route::get('/skills', [SkillController::class, 'index'])->name('skills.index');
+Route::get('/skills/{skill:slug}', [SkillController::class, 'show'])->name('skills.show');
+
 // User Profiles
 Route::get('/u/{user:username}', [UserProfileController::class, 'show'])->name('users.show');
 
@@ -71,6 +76,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('submit/mcp-server', [SubmitController::class, 'storeMcpServer'])->name('submit.mcp-server.store');
     Route::get('submit/prompt', [SubmitController::class, 'createPrompt'])->name('submit.prompt');
     Route::post('submit/prompt', [SubmitController::class, 'storePrompt'])->name('submit.prompt.store');
+    Route::get('submit/skill', [SubmitController::class, 'createSkill'])->name('submit.skill');
+    Route::post('submit/skill', [SubmitController::class, 'storeSkill'])->name('submit.skill.store');
 
     // Interaction routes (votes, favorites, comments)
     Route::post('votes', [VoteController::class, 'toggle'])->name('votes.toggle');

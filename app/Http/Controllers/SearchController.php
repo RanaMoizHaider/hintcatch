@@ -8,6 +8,7 @@ use App\Models\Config;
 use App\Models\ConfigType;
 use App\Models\McpServer;
 use App\Models\Prompt;
+use App\Models\Skill;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -17,23 +18,23 @@ class SearchController extends Controller
     public function __invoke(Request $request): Response
     {
         $query = $request->input('q', '');
-        $type = $request->input('type', 'all'); // all, configs, mcp-servers, prompts
+        $type = $request->input('type', 'all');
         $agentId = $request->input('agent');
         $configTypeId = $request->input('config_type');
         $categoryId = $request->input('category');
         $promptCategory = $request->input('prompt_category');
-        $sort = $request->input('sort', 'recent'); // recent, top
+        $sort = $request->input('sort', 'recent');
 
         $configs = collect();
         $mcpServers = collect();
         $prompts = collect();
+        $skills = collect();
 
         $searchTerm = '%'.$query.'%';
 
-        // Search Configs
         if ($type === 'all' || $type === 'configs') {
             $configsQuery = Config::query()
-                ->with(['user', 'agent', 'configType', 'category'])
+                ->with(['submitter', 'agent', 'configType', 'category'])
                 ->when($query, function ($q) use ($searchTerm) {
                     $q->where(function ($sub) use ($searchTerm) {
                         $sub->where('name', 'ilike', $searchTerm)
@@ -54,10 +55,9 @@ class SearchController extends Controller
             $configs = $configsQuery->limit(20)->get();
         }
 
-        // Search MCP Servers
         if ($type === 'all' || $type === 'mcp-servers') {
             $mcpServersQuery = McpServer::query()
-                ->with('user')
+                ->with('submitter')
                 ->when($query, function ($q) use ($searchTerm) {
                     $q->where(function ($sub) use ($searchTerm) {
                         $sub->where('name', 'ilike', $searchTerm)
@@ -75,10 +75,9 @@ class SearchController extends Controller
             $mcpServers = $mcpServersQuery->limit(20)->get();
         }
 
-        // Search Prompts
         if ($type === 'all' || $type === 'prompts') {
             $promptsQuery = Prompt::query()
-                ->with('user')
+                ->with('submitter')
                 ->when($query, function ($q) use ($searchTerm) {
                     $q->where(function ($sub) use ($searchTerm) {
                         $sub->where('name', 'ilike', $searchTerm)
@@ -98,6 +97,28 @@ class SearchController extends Controller
             $prompts = $promptsQuery->limit(20)->get();
         }
 
+        if ($type === 'all' || $type === 'skills') {
+            $skillsQuery = Skill::query()
+                ->with(['submitter', 'category'])
+                ->when($query, function ($q) use ($searchTerm) {
+                    $q->where(function ($sub) use ($searchTerm) {
+                        $sub->where('name', 'ilike', $searchTerm)
+                            ->orWhere('description', 'ilike', $searchTerm)
+                            ->orWhere('content', 'ilike', $searchTerm)
+                            ->orWhere('source_author', 'ilike', $searchTerm);
+                    });
+                })
+                ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId));
+
+            $skillsQuery = match ($sort) {
+                'recent' => $skillsQuery->orderByDesc('created_at'),
+                'top' => $skillsQuery->orderByDesc('vote_score'),
+                default => $skillsQuery->orderByDesc('vote_score')->orderByDesc('created_at'),
+            };
+
+            $skills = $skillsQuery->limit(20)->get();
+        }
+
         return Inertia::render('search', [
             'query' => $query,
             'filters' => [
@@ -112,14 +133,15 @@ class SearchController extends Controller
                 'configs' => $configs,
                 'mcpServers' => $mcpServers,
                 'prompts' => $prompts,
+                'skills' => $skills,
             ],
             'counts' => [
                 'configs' => $configs->count(),
                 'mcpServers' => $mcpServers->count(),
                 'prompts' => $prompts->count(),
-                'total' => $configs->count() + $mcpServers->count() + $prompts->count(),
+                'skills' => $skills->count(),
+                'total' => $configs->count() + $mcpServers->count() + $prompts->count() + $skills->count(),
             ],
-            // Filter options
             'agents' => Agent::query()->orderBy('name')->get(['id', 'name', 'slug']),
             'configTypes' => ConfigType::query()->orderBy('name')->get(['id', 'name', 'slug']),
             'categories' => Category::query()->orderBy('name')->get(['id', 'name', 'slug', 'config_type_id']),

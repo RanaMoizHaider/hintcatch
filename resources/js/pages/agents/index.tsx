@@ -22,7 +22,8 @@ export default function AgentsIndex({ agents }: AgentIndexPageProps) {
                                 AI Agents
                             </h1>
                             <p className="mt-2 text-ds-text-secondary">
-                                Browse configurations for your favorite AI agents
+                                Browse configurations for your favorite AI
+                                agents
                             </p>
                         </div>
                     </section>

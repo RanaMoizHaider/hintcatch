@@ -13,7 +13,7 @@ class ConfigController extends Controller
     public function show(Config $config): Response
     {
         $config->load([
-            'user',
+            'submitter',
             'agent',
             'configType',
             'category',
@@ -23,7 +23,7 @@ class ConfigController extends Controller
         $user = Auth::user();
 
         $comments = $config->comments()
-            ->with('user')
+            ->with('submitter')
             ->whereNull('parent_id')
             ->withCount(['votes as vote_score' => fn ($q) => $q->select(DB::raw('COALESCE(SUM(value), 0)'))])
             ->latest()
@@ -41,10 +41,10 @@ class ConfigController extends Controller
         return Inertia::render('configs/show', [
             'config' => $config,
             'relatedConfigs' => $config->allConnections()
-                ->load(['user', 'agent', 'configType'])
+                ->load(['submitter', 'agent', 'configType'])
                 ->take(6),
             'moreFromUser' => Config::query()
-                ->where('user_id', $config->user_id)
+                ->where('submitted_by', $config->submitted_by)
                 ->where('id', '!=', $config->id)
                 ->with(['agent', 'configType'])
                 ->orderByDesc('vote_score')

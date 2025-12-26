@@ -29,11 +29,11 @@ class ConfigFactory extends Factory
             'description' => fake()->paragraph(),
             'config_type_id' => ConfigType::factory(),
             'agent_id' => Agent::factory(),
-            'user_id' => User::factory(),
+            'submitted_by' => User::factory(),
             'category_id' => null,
             'source_url' => fake()->optional()->url(),
+            'github_url' => fake()->optional(0.3)->url(),
             'source_author' => fake()->optional()->userName(),
-            'downloads' => fake()->numberBetween(0, 5000),
             'vote_score' => fake()->numberBetween(-10, 500),
             'version' => fake()->semver(),
             'is_featured' => fake()->boolean(10),
@@ -57,6 +57,26 @@ class ConfigFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'category_id' => Category::factory(),
+        ]);
+    }
+
+    /**
+     * Indicate that the config is multi-agent (no direct agent_id).
+     */
+    public function multiAgent(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'agent_id' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the config has a GitHub URL.
+     */
+    public function withGithubUrl(?string $url = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'github_url' => $url ?? fake()->url(),
         ]);
     }
 }

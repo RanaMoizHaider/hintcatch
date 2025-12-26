@@ -12,11 +12,25 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create system user for seeded content (submitter for official configs/servers/etc.)
+        User::firstOrCreate(
+            ['username' => 'ranamoizhaider'],
+            [
+                'name' => 'Rana Moiz Haider',
+                'email' => 'ranamoizhaider@gmail.com',
+                'password' => 'password',
+                'email_verified_at' => now(),
+            ]
+        );
+
         // Seed core lookup data
         $this->call([
             AgentSeeder::class,
             ConfigTypeSeeder::class,
             CategorySeeder::class,
+            McpServerSeeder::class,
+            SkillSeeder::class,
+            ConfigSeeder::class,
         ]);
 
         // Create test user in local/testing environments

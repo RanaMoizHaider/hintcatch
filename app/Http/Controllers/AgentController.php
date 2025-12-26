@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Agent;
 use App\Models\Category;
+use App\Models\Config;
 use App\Models\ConfigType;
 use App\Models\McpServer;
+use App\Models\Skill;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -14,36 +16,47 @@ class AgentController extends Controller
 {
     public function index(): Response
     {
+        $mcpServerCount = McpServer::count();
+        $skillsCount = Skill::count();
+
+        $agents = Agent::query()
+            ->orderBy('name')
+            ->withCount(['configs'])
+            ->get()
+            ->map(function ($agent) use ($mcpServerCount, $skillsCount) {
+                $agent->mcp_servers_count = $agent->supports_mcp ? $mcpServerCount : 0;
+                $agent->skills_count = $agent->supportsSkills() ? $skillsCount : 0;
+
+                return $agent;
+            });
+
         return Inertia::render('agents/index', [
-            'agents' => Agent::query()
-                ->withCount('configs')
-                ->orderBy('name')
-                ->get(),
+            'agents' => $agents,
         ]);
     }
 
     public function show(Agent $agent): Response
     {
-        // Get config types this agent supports with counts
         $configTypes = ConfigType::query()
             ->whereIn('slug', $agent->supported_config_types ?? [])
             ->withCount(['configs' => fn ($q) => $q->where('agent_id', $agent->id)])
             ->get();
 
-        // Build configs grouped by config type (recent + top for each)
         $configsByType = [];
         foreach ($configTypes as $configType) {
             $configsByType[$configType->slug] = [
                 'configType' => $configType,
-                'recent' => $agent->configs()
+                'recent' => Config::query()
+                    ->where('agent_id', $agent->id)
                     ->where('config_type_id', $configType->id)
-                    ->with(['user', 'configType', 'category', 'agent'])
+                    ->with(['submitter', 'configType', 'category', 'agent'])
                     ->orderByDesc('created_at')
                     ->limit(6)
                     ->get(),
-                'top' => $agent->configs()
+                'top' => Config::query()
+                    ->where('agent_id', $agent->id)
                     ->where('config_type_id', $configType->id)
-                    ->with(['user', 'configType', 'category', 'agent'])
+                    ->with(['submitter', 'configType', 'category', 'agent'])
                     ->orderByDesc('vote_score')
                     ->limit(6)
                     ->get(),
@@ -51,39 +64,37 @@ class AgentController extends Controller
         }
 
         $props = [
-            'agent' => $agent->loadCount('configs'),
+            'agent' => $agent,
+            'agentConfigsCount' => $agent->configs()->count(),
             'configTypes' => $configTypes,
             'configsByType' => $configsByType,
         ];
 
-        // Only include MCP server count if agent supports MCP
         if ($agent->supports_mcp) {
             $props['mcpServerCount'] = McpServer::count();
+        }
+
+        if ($agent->supportsSkills()) {
+            $props['skillsCount'] = Skill::count();
         }
 
         return Inertia::render('agents/show', $props);
     }
 
-    /**
-     * Show configs for a specific agent and config type.
-     * URL: /agents/{agent}/configs/{configType}
-     * Example: /agents/opencode/configs/rules
-     */
     public function configs(Request $request, Agent $agent, ConfigType $configType): Response
     {
         $sort = $request->get('sort', 'recent');
         $categorySlug = $request->get('category');
 
-        $query = $agent->configs()
+        $query = Config::query()
+            ->where('agent_id', $agent->id)
             ->where('config_type_id', $configType->id)
-            ->with(['user', 'configType', 'category']);
+            ->with(['submitter', 'configType', 'category']);
 
-        // Filter by category if provided
         if ($categorySlug) {
             $query->whereHas('category', fn ($q) => $q->where('slug', $categorySlug));
         }
 
-        // Sort
         if ($sort === 'top') {
             $query->orderByDesc('vote_score');
         } else {
@@ -92,7 +103,6 @@ class AgentController extends Controller
 
         $configs = $query->paginate(24)->withQueryString();
 
-        // Get categories for this config type
         $categories = Category::query()
             ->where('config_type_id', $configType->id)
             ->withCount(['configs' => fn ($q) => $q->where('agent_id', $agent->id)])
@@ -108,7 +118,10 @@ class AgentController extends Controller
                 'sort' => $sort,
                 'category' => $categorySlug,
             ],
-            'totalCount' => $agent->configs()->where('config_type_id', $configType->id)->count(),
+            'totalCount' => Config::query()
+                ->where('agent_id', $agent->id)
+                ->where('config_type_id', $configType->id)
+                ->count(),
         ]);
     }
 }

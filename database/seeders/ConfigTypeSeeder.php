@@ -7,9 +7,6 @@ use Illuminate\Database\Seeder;
 
 class ConfigTypeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $configTypes = [
@@ -19,6 +16,8 @@ class ConfigTypeSeeder extends Seeder
                 'description' => 'Custom instructions that guide agent behavior for specific projects or globally',
                 'allowed_formats' => ['md'],
                 'allows_multiple_files' => false,
+                'is_standard' => false,
+                'requires_agent' => true,
             ],
             [
                 'name' => 'Agents',
@@ -26,6 +25,8 @@ class ConfigTypeSeeder extends Seeder
                 'description' => 'Specialized AI assistants configured for specific tasks with custom prompts, models, and tool access',
                 'allowed_formats' => ['json', 'md', 'yaml'],
                 'allows_multiple_files' => false,
+                'is_standard' => false,
+                'requires_agent' => false,
             ],
             [
                 'name' => 'Plugins',
@@ -33,6 +34,8 @@ class ConfigTypeSeeder extends Seeder
                 'description' => 'Modular extensions that bundle commands, agents, hooks, Skills, and MCP servers into distributable packages',
                 'allowed_formats' => ['json', 'md', 'ts', 'js', 'sh'],
                 'allows_multiple_files' => true,
+                'is_standard' => false,
+                'requires_agent' => false,
             ],
             [
                 'name' => 'Custom Tools',
@@ -40,6 +43,8 @@ class ConfigTypeSeeder extends Seeder
                 'description' => 'Functions that the LLM can call during conversations, extending built-in tools with project-specific functionality',
                 'allowed_formats' => ['ts', 'js'],
                 'allows_multiple_files' => false,
+                'is_standard' => false,
+                'requires_agent' => false,
             ],
             [
                 'name' => 'Hooks',
@@ -47,6 +52,8 @@ class ConfigTypeSeeder extends Seeder
                 'description' => 'Execute custom logic before or after specific events during agent operation',
                 'allowed_formats' => ['json', 'yaml'],
                 'allows_multiple_files' => false,
+                'is_standard' => false,
+                'requires_agent' => false,
             ],
             [
                 'name' => 'Slash Commands',
@@ -54,13 +61,8 @@ class ConfigTypeSeeder extends Seeder
                 'description' => 'User-invoked prompts stored as Markdown files that can be executed with /command-name',
                 'allowed_formats' => ['md'],
                 'allows_multiple_files' => false,
-            ],
-            [
-                'name' => 'Agent Skills',
-                'slug' => 'skills',
-                'description' => 'Model-invoked capabilities that the agent autonomously uses based on context',
-                'allowed_formats' => ['md', 'json', 'sh'],
-                'allows_multiple_files' => true,
+                'is_standard' => false,
+                'requires_agent' => false,
             ],
         ];
 
@@ -70,5 +72,7 @@ class ConfigTypeSeeder extends Seeder
                 $configType
             );
         }
+
+        ConfigType::where('slug', 'skills')->delete();
     }
 }

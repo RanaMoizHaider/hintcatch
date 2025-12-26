@@ -8,36 +8,36 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('configs', function (Blueprint $table) {
+        Schema::create('skills', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->foreignId('config_type_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('agent_id')->nullable()->constrained()->nullOnDelete();
+            $table->longText('content');
             $table->foreignId('submitted_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('license')->nullable();
+            $table->json('compatibility')->nullable();
+            $table->json('metadata')->nullable();
+            $table->json('allowed_tools')->nullable();
+            $table->json('scripts')->nullable();
+            $table->json('references')->nullable();
+            $table->json('assets')->nullable();
             $table->string('source_url')->nullable();
             $table->string('source_author')->nullable();
             $table->string('github_url')->nullable();
-            $table->text('instructions')->nullable();
             $table->integer('vote_score')->default(0);
-            $table->string('version')->default('1.0.0');
             $table->boolean('is_featured')->default(false);
             $table->timestamps();
-        });
 
-        Schema::create('config_connections', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('config_id')->constrained()->cascadeOnDelete();
-            $table->morphs('connectable');
-            $table->timestamps();
+            $table->index('vote_score');
+            $table->index('is_featured');
+            $table->index('category_id');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('config_connections');
-        Schema::dropIfExists('configs');
+        Schema::dropIfExists('skills');
     }
 };

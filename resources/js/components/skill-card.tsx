@@ -1,66 +1,57 @@
-import { show as showConfig } from '@/actions/App/Http/Controllers/ConfigController';
+import { show as showSkill } from '@/actions/App/Http/Controllers/SkillController';
 import { Badge } from '@/components/ui/badge';
-import type { Config } from '@/types/models';
+import type { Skill } from '@/types/models';
 import { Link } from '@inertiajs/react';
 import { ArrowUp } from 'lucide-react';
 
-interface ConfigCardProps {
-    config: Config;
-    showAgent?: boolean;
+interface SkillCardProps {
+    skill: Skill;
 }
 
-export function ConfigCard({ config, showAgent = true }: ConfigCardProps) {
+export function SkillCard({ skill }: SkillCardProps) {
     return (
         <Link
-            href={showConfig(config.slug)}
+            href={showSkill(skill.slug)}
             className="group flex flex-col border-2 border-ds-bg-card bg-ds-bg-card p-4 transition-colors hover:border-ds-text-muted"
         >
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
                     <h3 className="truncate text-sm font-medium text-ds-text-primary group-hover:text-ds-text-secondary">
-                        {config.name}
+                        {skill.name}
                     </h3>
-                    {config.submitter && (
+                    {skill.submitter && (
                         <div className="mt-1 text-xs text-ds-text-muted">
-                            by {config.submitter.name}
+                            by {skill.submitter.name}
                         </div>
                     )}
                 </div>
                 <div className="flex items-center gap-1 text-xs text-ds-text-muted">
                     <ArrowUp className="h-3 w-3" />
-                    <span>{config.vote_score}</span>
+                    <span>{skill.vote_score}</span>
                 </div>
             </div>
 
-            {config.description && (
+            {skill.description && (
                 <p className="mt-2 line-clamp-2 text-xs text-ds-text-secondary">
-                    {config.description}
+                    {skill.description}
                 </p>
             )}
 
             <div className="mt-auto flex items-center gap-2 pt-3">
-                {showAgent && config.agent && (
+                {skill.category && (
                     <Badge
                         variant="outline"
                         className="border-ds-border text-ds-text-muted"
                     >
-                        {config.agent.name}
+                        {skill.category.name}
                     </Badge>
                 )}
-                {showAgent && !config.agent && (
+                {skill.license && (
                     <Badge
                         variant="outline"
                         className="border-ds-border text-ds-text-muted"
                     >
-                        Universal
-                    </Badge>
-                )}
-                {config.config_type && (
-                    <Badge
-                        variant="outline"
-                        className="border-ds-border text-ds-text-muted"
-                    >
-                        {config.config_type.name}
+                        {skill.license}
                     </Badge>
                 )}
             </div>

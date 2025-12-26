@@ -22,10 +22,10 @@ class McpServer extends Model
         'args',
         'env',
         'headers',
-        'user_id',
+        'submitted_by',
         'source_url',
         'source_author',
-        'downloads',
+        'github_url',
         'vote_score',
         'is_featured',
     ];
@@ -39,7 +39,6 @@ class McpServer extends Model
             'args' => 'array',
             'env' => 'array',
             'headers' => 'array',
-            'downloads' => 'integer',
             'vote_score' => 'integer',
             'is_featured' => 'boolean',
         ];
@@ -48,9 +47,9 @@ class McpServer extends Model
     /**
      * @return BelongsTo<User, $this>
      */
-    public function user(): BelongsTo
+    public function submitter(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'submitted_by');
     }
 
     /**
@@ -74,7 +73,7 @@ class McpServer extends Model
      */
     public function favorites(): MorphMany
     {
-        return $this->morphMany(Favorite::class, 'favorable');
+        return $this->morphMany(Favorite::class, 'favoritable');
     }
 
     /**

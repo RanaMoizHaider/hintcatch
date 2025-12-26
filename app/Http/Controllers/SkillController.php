@@ -2,42 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Prompt;
+use App\Models\Agent;
+use App\Models\Skill;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class PromptController extends Controller
+class SkillController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('prompts/index', [
-            'prompts' => Prompt::query()
+        return Inertia::render('skills/index', [
+            'skills' => Skill::query()
                 ->with('submitter')
                 ->orderByDesc('vote_score')
-                ->paginate(24),
-            'featuredPrompts' => Prompt::query()
+                ->orderByDesc('created_at')
+                ->get(),
+            'featuredSkills' => Skill::query()
                 ->with('submitter')
                 ->where('is_featured', true)
                 ->orderByDesc('vote_score')
                 ->limit(6)
                 ->get(),
-            'categories' => Prompt::query()
-                ->select('category')
-                ->distinct()
-                ->whereNotNull('category')
-                ->pluck('category'),
         ]);
     }
 
-    public function show(Prompt $prompt): Response
+    public function show(Skill $skill): Response
     {
-        $prompt->load(['submitter']);
+        $skill->load(['submitter', 'category']);
 
         $user = Auth::user();
 
-        $comments = $prompt->comments()
+        $comments = $skill->comments()
             ->with('submitter')
             ->whereNull('parent_id')
             ->withCount(['votes as vote_score' => fn ($q) => $q->select(DB::raw('COALESCE(SUM(value), 0)'))])
@@ -46,25 +43,33 @@ class PromptController extends Controller
             ->map(fn ($comment) => $this->formatComment($comment, $user?->id));
 
         $userVote = $user
-            ? $prompt->votes()->where('user_id', $user->id)->first()?->value
+            ? $skill->votes()->where('user_id', $user->id)->first()?->value
             : null;
 
         $isFavorited = $user
-            ? $prompt->favorites()->where('user_id', $user->id)->exists()
+            ? $skill->favorites()->where('user_id', $user->id)->exists()
             : false;
 
-        return Inertia::render('prompts/show', [
-            'prompt' => $prompt,
-            'relatedPrompts' => Prompt::query()
-                ->where('category', $prompt->category)
-                ->where('id', '!=', $prompt->id)
-                ->with('submitter')
-                ->orderByDesc('vote_score')
-                ->limit(4)
-                ->get(),
-            'moreFromUser' => Prompt::query()
-                ->where('submitted_by', $prompt->submitted_by)
-                ->where('id', '!=', $prompt->id)
+        $agents = Agent::query()
+            ->whereNotNull('skills_config_template')
+            ->orderBy('name')
+            ->get();
+
+        $agentIntegrations = $agents
+            ->mapWithKeys(fn (Agent $agent) => [
+                $agent->slug => [
+                    'agent' => $agent,
+                    'integration' => $skill->generateIntegrationForAgent($agent),
+                ],
+            ])
+            ->filter(fn ($data) => ! empty($data['integration']));
+
+        return Inertia::render('skills/show', [
+            'skill' => $skill,
+            'agentIntegrations' => $agentIntegrations,
+            'moreFromUser' => Skill::query()
+                ->where('submitted_by', $skill->submitted_by)
+                ->where('id', '!=', $skill->id)
                 ->orderByDesc('vote_score')
                 ->limit(4)
                 ->get(),
@@ -72,7 +77,7 @@ class PromptController extends Controller
             'interaction' => [
                 'user_vote' => $userVote,
                 'is_favorited' => $isFavorited,
-                'favorites_count' => $prompt->favorites()->count(),
+                'favorites_count' => $skill->favorites()->count(),
             ],
         ]);
     }

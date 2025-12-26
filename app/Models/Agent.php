@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Agent extends Model
 {
-    /** @use HasFactory<\Database\Factories\AgentFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -24,13 +23,12 @@ class Agent extends Model
         'mcp_transport_types',
         'mcp_config_paths',
         'mcp_config_template',
+        'skills_config_template',
+        'config_type_templates',
         'rules_filename',
         'logo',
     ];
 
-    /**
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -40,14 +38,28 @@ class Agent extends Model
             'mcp_transport_types' => 'array',
             'mcp_config_paths' => 'array',
             'mcp_config_template' => 'array',
+            'skills_config_template' => 'array',
+            'config_type_templates' => 'array',
         ];
     }
 
-    /**
-     * @return HasMany<Config, $this>
-     */
     public function configs(): HasMany
     {
         return $this->hasMany(Config::class);
+    }
+
+    public function getConfigTypeTemplate(string $configTypeSlug): ?array
+    {
+        return $this->config_type_templates[$configTypeSlug] ?? null;
+    }
+
+    public function supportsConfigType(string $configTypeSlug): bool
+    {
+        return in_array($configTypeSlug, $this->supported_config_types ?? []);
+    }
+
+    public function supportsSkills(): bool
+    {
+        return ! empty($this->skills_config_template);
     }
 }

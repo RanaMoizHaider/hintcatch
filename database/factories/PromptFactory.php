@@ -26,7 +26,7 @@ class PromptFactory extends Factory
             'description' => fake()->sentence(),
             'content' => fake()->paragraphs(3, true),
             'category' => fake()->randomElement(['system', 'task', 'review', 'documentation']),
-            'user_id' => User::factory(),
+            'submitted_by' => User::factory(),
             'source_url' => fake()->optional()->url(),
             'source_author' => fake()->optional()->userName(),
             'downloads' => fake()->numberBetween(0, 5000),

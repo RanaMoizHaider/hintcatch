@@ -16,28 +16,28 @@ class UserProfileController extends Controller
         return Inertia::render('users/show', [
             'profileUser' => $user,
             'configs' => Config::query()
-                ->where('user_id', $user->id)
+                ->where('submitted_by', $user->id)
                 ->with(['agent', 'configType', 'category'])
                 ->orderByDesc('vote_score')
                 ->limit(12)
                 ->get(),
             'mcpServers' => McpServer::query()
-                ->where('user_id', $user->id)
+                ->where('submitted_by', $user->id)
                 ->orderByDesc('vote_score')
                 ->limit(12)
                 ->get(),
             'prompts' => Prompt::query()
-                ->where('user_id', $user->id)
+                ->where('submitted_by', $user->id)
                 ->orderByDesc('vote_score')
                 ->limit(12)
                 ->get(),
             'stats' => [
-                'totalConfigs' => Config::where('user_id', $user->id)->count(),
-                'totalMcpServers' => McpServer::where('user_id', $user->id)->count(),
-                'totalPrompts' => Prompt::where('user_id', $user->id)->count(),
-                'totalVotes' => Config::where('user_id', $user->id)->sum('vote_score')
-                    + McpServer::where('user_id', $user->id)->sum('vote_score')
-                    + Prompt::where('user_id', $user->id)->sum('vote_score'),
+                'totalConfigs' => Config::where('submitted_by', $user->id)->count(),
+                'totalMcpServers' => McpServer::where('submitted_by', $user->id)->count(),
+                'totalPrompts' => Prompt::where('submitted_by', $user->id)->count(),
+                'totalVotes' => Config::where('submitted_by', $user->id)->sum('vote_score')
+                    + McpServer::where('submitted_by', $user->id)->sum('vote_score')
+                    + Prompt::where('submitted_by', $user->id)->sum('vote_score'),
             ],
         ]);
     }

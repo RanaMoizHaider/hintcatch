@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('prompts', function (Blueprint $table) {
@@ -16,13 +13,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->longText('content'); // The prompt text
+            $table->longText('content');
             $table->enum('category', ['system', 'task', 'review', 'documentation'])->default('task');
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('submitted_by')->nullable()->constrained('users')->nullOnDelete();
             $table->string('source_url')->nullable();
             $table->string('source_author')->nullable();
-            $table->unsignedInteger('downloads')->default(0);
-            $table->integer('vote_score')->default(0); // Cached vote score (upvotes - downvotes)
+            $table->string('github_url')->nullable();
+            $table->integer('vote_score')->default(0);
             $table->boolean('is_featured')->default(false);
             $table->timestamps();
 
@@ -32,9 +29,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('prompts');

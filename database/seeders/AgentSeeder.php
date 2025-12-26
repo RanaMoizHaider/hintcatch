@@ -76,6 +76,35 @@ class AgentSeeder extends Seeder
                 ],
                 'rules_filename' => 'AGENTS.md',
                 'logo' => 'https://opencode.ai/favicon.svg',
+                'skills_config_template' => [
+                    'config_format' => 'markdown',
+                    'global_path' => '~/.config/opencode/skills/',
+                    'project_path' => '.opencode/skills/',
+                    'file_extension' => '.md',
+                    'supports_subdirectories' => true,
+                ],
+                'config_type_templates' => [
+                    'commands' => [
+                        'global_path' => '~/.config/opencode/command/',
+                        'project_path' => '.opencode/command/',
+                        'config_format' => 'markdown',
+                        'file_extension' => '.md',
+                    ],
+                    'plugins' => [
+                        'install_method' => 'cli',
+                        'install_command' => 'opencode plugin add {name}',
+                    ],
+                    'hooks' => [
+                        'global_path' => '~/.config/opencode/hooks/',
+                        'project_path' => '.opencode/hooks/',
+                        'config_format' => 'typescript',
+                    ],
+                    'agents' => [
+                        'global_path' => '~/.config/opencode/agents/',
+                        'project_path' => '.opencode/agents/',
+                        'config_format' => 'yaml',
+                    ],
+                ],
             ],
             [
                 'name' => 'Claude Code',
@@ -146,6 +175,26 @@ class AgentSeeder extends Seeder
                 ],
                 'rules_filename' => 'CLAUDE.md',
                 'logo' => 'https://www.google.com/s2/favicons?domain=claude.com&sz=128',
+                'skills_config_template' => [
+                    'config_format' => 'markdown',
+                    'global_path' => '~/.claude/skills/',
+                    'project_path' => '.claude/skills/',
+                    'file_extension' => '.md',
+                    'supports_subdirectories' => true,
+                ],
+                'config_type_templates' => [
+                    'commands' => [
+                        'global_path' => '~/.claude/commands/',
+                        'project_path' => '.claude/commands/',
+                        'config_format' => 'markdown',
+                        'file_extension' => '.md',
+                    ],
+                    'hooks' => [
+                        'global_path' => '~/.claude/hooks/',
+                        'project_path' => '.claude/hooks/',
+                        'config_format' => 'json',
+                    ],
+                ],
             ],
             [
                 'name' => 'Gemini CLI',
@@ -215,6 +264,13 @@ class AgentSeeder extends Seeder
                 ],
                 'rules_filename' => 'GEMINI.md',
                 'logo' => 'https://geminicli.com/icon.png',
+                'skills_config_template' => null,
+                'config_type_templates' => [
+                    'extensions' => [
+                        'global_path' => '~/.gemini/extensions/',
+                        'config_format' => 'javascript',
+                    ],
+                ],
             ],
             [
                 'name' => 'Codex',
@@ -285,6 +341,12 @@ class AgentSeeder extends Seeder
                 ],
                 'rules_filename' => 'AGENTS.md',
                 'logo' => 'https://www.google.com/s2/favicons?domain=openai.com&sz=128',
+                'skills_config_template' => [
+                    'config_format' => 'markdown',
+                    'global_path' => '~/.codex/skills/',
+                    'file_extension' => '.md',
+                ],
+                'config_type_templates' => null,
             ],
             [
                 'name' => 'Aider',
@@ -301,6 +363,8 @@ class AgentSeeder extends Seeder
                 'mcp_config_template' => null,
                 'rules_filename' => '.aider',
                 'logo' => 'https://aider.chat/assets/logo.svg',
+                'skills_config_template' => null,
+                'config_type_templates' => null,
             ],
             [
                 'name' => 'Cursor',
@@ -362,6 +426,13 @@ class AgentSeeder extends Seeder
                 ],
                 'rules_filename' => '.cursorrules',
                 'logo' => 'https://www.google.com/s2/favicons?domain=cursor.sh&sz=128',
+                'skills_config_template' => [
+                    'config_format' => 'markdown',
+                    'global_path' => '~/.cursor/skills/',
+                    'project_path' => '.cursor/skills/',
+                    'file_extension' => '.md',
+                ],
+                'config_type_templates' => null,
             ],
             [
                 'name' => 'Cline',
@@ -408,6 +479,8 @@ class AgentSeeder extends Seeder
                 ],
                 'rules_filename' => '.clinerules',
                 'logo' => 'https://raw.githubusercontent.com/cline/cline/main/assets/icons/icon.png',
+                'skills_config_template' => null,
+                'config_type_templates' => null,
             ],
             [
                 'name' => 'Kimi CLI',
@@ -450,6 +523,8 @@ class AgentSeeder extends Seeder
                 ],
                 'rules_filename' => null,
                 'logo' => 'https://statics.moonshot.cn/moonshot-ai/favicon.ico',
+                'skills_config_template' => null,
+                'config_type_templates' => null,
             ],
             [
                 'name' => 'Kiro',

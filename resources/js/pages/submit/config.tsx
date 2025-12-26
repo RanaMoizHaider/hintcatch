@@ -15,13 +15,21 @@ import { Spinner } from '@/components/ui/spinner';
 import type { Category, SubmitConfigPageProps } from '@/types/models';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ConfigFile {
     filename: string;
     content: string;
     language: string;
     path: string;
+}
+
+interface AgentInstall {
+    agent_id: string;
+    install_method: 'file_path' | 'cli_command' | 'custom';
+    config_path: string;
+    install_command?: string;
+    instructions: string;
 }
 
 export default function SubmitConfig({
@@ -32,15 +40,17 @@ export default function SubmitConfig({
         string | null
     >(null);
 
-    const { data, setData, post, processing, errors } = useForm<{
+    const { data, setData, post, processing, errors, transform } = useForm<{
         name: string;
         description: string;
         agent_id: string;
         config_type_id: string;
         category_id: string;
         source_url: string;
+        github_url: string;
         source_author: string;
         files: ConfigFile[];
+        agent_installs: AgentInstall[];
     }>({
         name: '',
         description: '',
@@ -48,9 +58,47 @@ export default function SubmitConfig({
         config_type_id: '',
         category_id: '',
         source_url: '',
+        github_url: '',
         source_author: '',
         files: [{ filename: '', content: '', language: 'json', path: '' }],
+        agent_installs: [],
     });
+
+    useEffect(() => {
+        transform((data) => ({
+            ...data,
+            agent_installs: data.agent_installs.map((install) => ({
+                ...install,
+                install_command:
+                    install.install_method === 'cli_command'
+                        ? install.config_path
+                        : undefined,
+                config_path:
+                    install.install_method !== 'cli_command'
+                        ? install.config_path
+                        : '',
+            })),
+        }));
+    }, []);
+
+    useEffect(() => {
+        transform((data) => ({
+            ...data,
+            agent_installs: data.agent_installs.map((install) => ({
+                ...install,
+                // If method is CLI, map config_path (input) to install_command
+                install_command:
+                    install.install_method === 'cli_command'
+                        ? install.config_path
+                        : undefined,
+                // If method is NOT CLI, keep config_path, otherwise clear it (it's in command now)
+                config_path:
+                    install.install_method !== 'cli_command'
+                        ? install.config_path
+                        : '',
+            })),
+        }));
+    }, []);
 
     const selectedConfigType = configTypes.find(
         (ct) => ct.id.toString() === selectedConfigTypeId,
@@ -71,12 +119,10 @@ export default function SubmitConfig({
     };
 
     const removeFile = (index: number) => {
-        if (data.files.length > 1) {
-            setData(
-                'files',
-                data.files.filter((_, i) => i !== index),
-            );
-        }
+        setData(
+            'files',
+            data.files.filter((_, i) => i !== index),
+        );
     };
 
     const updateFile = (
@@ -87,6 +133,36 @@ export default function SubmitConfig({
         const newFiles = [...data.files];
         newFiles[index] = { ...newFiles[index], [field]: value };
         setData('files', newFiles);
+    };
+
+    const addInstall = () => {
+        setData('agent_installs', [
+            ...data.agent_installs,
+            {
+                agent_id: '',
+                install_method: 'file_path',
+                config_path: '',
+                instructions: '',
+            },
+        ]);
+    };
+
+    const removeInstall = (index: number) => {
+        setData(
+            'agent_installs',
+            data.agent_installs.filter((_, i) => i !== index),
+        );
+    };
+
+    const updateInstall = (
+        index: number,
+        field: keyof AgentInstall,
+        value: string,
+    ) => {
+        const newInstalls = [...data.agent_installs];
+        // @ts-ignore - TS doesn't like the dynamic assignment here but it's safe
+        newInstalls[index] = { ...newInstalls[index], [field]: value };
+        setData('agent_installs', newInstalls);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -193,9 +269,13 @@ export default function SubmitConfig({
                                                 }
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select an agent" />
+                                                    <SelectValue placeholder="Universal (works with multiple agents)" />
                                                 </SelectTrigger>
                                                 <SelectContent>
+                                                    <SelectItem value="">
+                                                        Universal (works with
+                                                        multiple agents)
+                                                    </SelectItem>
                                                     {agents.map((agent) => (
                                                         <SelectItem
                                                             key={agent.id}
@@ -279,6 +359,218 @@ export default function SubmitConfig({
                                         </div>
                                     )}
                                 </div>
+
+                                {!data.agent_id && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div className="space-y-1">
+                                                <h2 className="text-sm font-medium text-ds-text-muted uppercase">
+                                                    Agent Installation Details
+                                                </h2>
+                                                <p className="text-xs text-ds-text-secondary">
+                                                    Specify how to install this
+                                                    config for different agents.
+                                                </p>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={addInstall}
+                                                className="border-ds-border"
+                                            >
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Add Agent
+                                            </Button>
+                                        </div>
+
+                                        {data.agent_installs.length === 0 && (
+                                            <div className="border border-dashed border-ds-border p-8 text-center">
+                                                <p className="text-sm text-ds-text-secondary">
+                                                    No agent installation
+                                                    details added yet.
+                                                </p>
+                                                <Button
+                                                    type="button"
+                                                    variant="link"
+                                                    onClick={addInstall}
+                                                    className="mt-2 text-ds-text-primary underline"
+                                                >
+                                                    Add one now
+                                                </Button>
+                                            </div>
+                                        )}
+
+                                        {data.agent_installs.map(
+                                            (install, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="space-y-4 border-2 border-ds-border bg-ds-bg-card p-4"
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-sm font-medium text-ds-text-muted">
+                                                            Installation Details{' '}
+                                                            {index + 1}
+                                                        </span>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() =>
+                                                                removeInstall(
+                                                                    index,
+                                                                )
+                                                            }
+                                                            className="text-red-500 hover:text-red-400"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+
+                                                    <div className="grid gap-4 md:grid-cols-2">
+                                                        <div className="grid gap-2">
+                                                            <Label
+                                                                htmlFor={`install-agent-${index}`}
+                                                            >
+                                                                Agent
+                                                            </Label>
+                                                            <Select
+                                                                value={
+                                                                    install.agent_id
+                                                                }
+                                                                onValueChange={(
+                                                                    value,
+                                                                ) =>
+                                                                    updateInstall(
+                                                                        index,
+                                                                        'agent_id',
+                                                                        value,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Select an agent" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {agents.map(
+                                                                        (
+                                                                            agent,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    agent.id
+                                                                                }
+                                                                                value={agent.id.toString()}
+                                                                            >
+                                                                                {
+                                                                                    agent.name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <Label
+                                                                htmlFor={`install-method-${index}`}
+                                                            >
+                                                                Method
+                                                            </Label>
+                                                            <Select
+                                                                value={
+                                                                    install.install_method
+                                                                }
+                                                                onValueChange={(
+                                                                    value,
+                                                                ) =>
+                                                                    updateInstall(
+                                                                        index,
+                                                                        'install_method',
+                                                                        value as any,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="file_path">
+                                                                        File
+                                                                        Path
+                                                                    </SelectItem>
+                                                                    <SelectItem value="cli_command">
+                                                                        CLI
+                                                                        Command
+                                                                    </SelectItem>
+                                                                    <SelectItem value="custom">
+                                                                        Custom
+                                                                    </SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid gap-2">
+                                                        <Label
+                                                            htmlFor={`install-path-${index}`}
+                                                        >
+                                                            Config Path /
+                                                            Command (optional)
+                                                        </Label>
+                                                        <Input
+                                                            id={`install-path-${index}`}
+                                                            type="text"
+                                                            value={
+                                                                install.config_path
+                                                            }
+                                                            onChange={(e) =>
+                                                                updateInstall(
+                                                                    index,
+                                                                    'config_path',
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            placeholder={
+                                                                install.install_method ===
+                                                                'cli_command'
+                                                                    ? 'npm install @package/config'
+                                                                    : '/path/to/config.json'
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid gap-2">
+                                                        <Label
+                                                            htmlFor={`install-instructions-${index}`}
+                                                        >
+                                                            Instructions
+                                                            (optional)
+                                                        </Label>
+                                                        <textarea
+                                                            id={`install-instructions-${index}`}
+                                                            value={
+                                                                install.instructions
+                                                            }
+                                                            onChange={(e) =>
+                                                                updateInstall(
+                                                                    index,
+                                                                    'instructions',
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            placeholder="Any specific steps to follow..."
+                                                            className="flex min-h-[80px] w-full border border-ds-border bg-ds-bg-secondary px-3 py-2 text-sm text-ds-text-primary shadow-xs outline-none placeholder:text-ds-text-muted focus-visible:border-white focus-visible:ring-[3px] focus-visible:ring-white/20"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ),
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Files */}
                                 <div className="space-y-4">
@@ -445,6 +737,24 @@ export default function SubmitConfig({
 
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
+                                            <Label htmlFor="github_url">
+                                                GitHub URL
+                                            </Label>
+                                            <Input
+                                                id="github_url"
+                                                type="url"
+                                                value={data.github_url}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'github_url',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder="https://github.com/username/repo"
+                                            />
+                                        </div>
+
+                                        <div className="grid gap-2">
                                             <Label htmlFor="source_url">
                                                 Source URL
                                             </Label>
@@ -458,7 +768,7 @@ export default function SubmitConfig({
                                                         e.target.value,
                                                     )
                                                 }
-                                                placeholder="https://github.com/..."
+                                                placeholder="https://example.com/config"
                                             />
                                             <InputError
                                                 message={errors.source_url}

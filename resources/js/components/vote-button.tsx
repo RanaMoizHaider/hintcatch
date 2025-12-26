@@ -7,7 +7,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useTransition } from 'react';
 
 interface VoteButtonProps {
-    votableType: 'config' | 'prompt' | 'mcp-server' | 'comment';
+    votableType: 'config' | 'prompt' | 'mcp-server' | 'skill' | 'comment';
     votableId: number;
     voteScore: number;
     userVote: 1 | -1 | null;
@@ -77,7 +77,7 @@ export function VoteButton({
         <div
             className={cn(
                 'flex items-center',
-                isSmall ? 'gap-0' : 'gap-1',
+                isSmall ? 'gap-1.5' : 'gap-2',
                 className,
             )}
         >
@@ -85,10 +85,10 @@ export function VoteButton({
                 variant="ghost"
                 size="icon"
                 className={cn(
-                    'h-8 w-8 hover:bg-transparent',
+                    'h-8 w-8 rounded-md border transition-all',
                     userVote === 1
-                        ? 'text-ds-text-primary'
-                        : 'text-ds-text-muted hover:text-ds-text-primary',
+                        ? 'border-ds-text-primary bg-ds-bg-secondary/10 text-ds-text-primary'
+                        : 'border-ds-border text-ds-text-muted hover:border-ds-border-hover hover:bg-ds-bg-secondary hover:text-ds-text-primary',
                     isSmall && 'h-6 w-6',
                 )}
                 onClick={() => handleVote(1)}
@@ -120,10 +120,10 @@ export function VoteButton({
                 variant="ghost"
                 size="icon"
                 className={cn(
-                    'h-8 w-8 hover:bg-transparent',
+                    'h-8 w-8 rounded-md border transition-all',
                     userVote === -1
-                        ? 'text-ds-text-primary'
-                        : 'text-ds-text-muted hover:text-ds-text-primary',
+                        ? 'border-ds-text-primary bg-ds-bg-secondary/10 text-ds-text-primary'
+                        : 'border-ds-border text-ds-text-muted hover:border-ds-border-hover hover:bg-ds-bg-secondary hover:text-ds-text-primary',
                     isSmall && 'h-6 w-6',
                 )}
                 onClick={() => handleVote(-1)}

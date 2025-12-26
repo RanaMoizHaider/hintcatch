@@ -12,12 +12,14 @@ class ConfigTypeController extends Controller
 {
     public function index(): Response
     {
+        $configTypes = ConfigType::query()
+            ->whereNotIn('slug', ['mcp-servers', 'prompts'])
+            ->withCount(['configs', 'categories'])
+            ->orderBy('name')
+            ->get();
+
         return Inertia::render('config-types/index', [
-            'configTypes' => ConfigType::query()
-                ->whereNotIn('slug', ['mcp-servers', 'prompts'])
-                ->withCount(['configs', 'categories'])
-                ->orderBy('name')
-                ->get(),
+            'configTypes' => $configTypes,
         ]);
     }
 
@@ -26,7 +28,7 @@ class ConfigTypeController extends Controller
         return Inertia::render('config-types/show', [
             'configType' => $configType->loadCount(['configs', 'categories']),
             'configs' => $configType->configs()
-                ->with(['user', 'agent', 'category'])
+                ->with(['submitter', 'agent', 'category'])
                 ->orderByDesc('vote_score')
                 ->limit(20)
                 ->get(),

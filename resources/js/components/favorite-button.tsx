@@ -7,23 +7,23 @@ import { Heart } from 'lucide-react';
 import { useState, useTransition } from 'react';
 
 interface FavoriteButtonProps {
-    favorableType: 'config' | 'prompt' | 'mcp-server';
-    favorableId: number;
+    favoritableType: 'config' | 'prompt' | 'mcp-server' | 'skill';
+    favoritableId: number;
     isFavorited: boolean;
-    favoritesCount: number;
+    favoritesCount?: number;
     className?: string;
 }
 
 export function FavoriteButton({
-    favorableType,
-    favorableId,
+    favoritableType,
+    favoritableId,
     isFavorited: initialIsFavorited,
     favoritesCount: initialCount,
     className,
 }: FavoriteButtonProps) {
     const { auth } = usePage<SharedData>().props;
     const [isFavorited, setIsFavorited] = useState(initialIsFavorited);
-    const [count, setCount] = useState(initialCount);
+    const [count, setCount] = useState(initialCount ?? 0);
     const [isPending, startTransition] = useTransition();
 
     const handleToggle = () => {
@@ -45,8 +45,8 @@ export function FavoriteButton({
             router.post(
                 toggle.url(),
                 {
-                    favorable_type: favorableType,
-                    favorable_id: favorableId,
+                    favoritable_type: favoritableType,
+                    favoritable_id: favoritableId,
                 },
                 {
                     preserveScroll: true,

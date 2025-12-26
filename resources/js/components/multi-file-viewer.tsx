@@ -1,15 +1,24 @@
 import { cn } from '@/lib/utils';
-import type { ConfigFile } from '@/types/models';
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
 
-interface CodeViewerProps {
-    files: ConfigFile[];
+export interface MultiFileViewerFile {
+    id: string | number;
+    filename: string;
+    content: string;
+    path?: string | null;
+    language?: string;
+    isPrimary?: boolean;
 }
 
-export function CodeViewer({ files }: CodeViewerProps) {
+interface MultiFileViewerProps {
+    files: MultiFileViewerFile[];
+    className?: string;
+}
+
+export function MultiFileViewer({ files, className }: MultiFileViewerProps) {
     const [activeFile, setActiveFile] = useState(
-        files.find((f) => f.is_primary) ?? files[0],
+        files.find((f) => f.isPrimary) ?? files[0],
     );
     const [copied, setCopied] = useState(false);
 
@@ -20,20 +29,21 @@ export function CodeViewer({ files }: CodeViewerProps) {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    if (!activeFile) return null;
+    if (!activeFile || files.length === 0) return null;
 
     return (
-        <div className="border-2 border-ds-border bg-ds-bg-card">
-            {/* File Tabs */}
+        <div
+            className={cn('border-2 border-ds-border bg-ds-bg-card', className)}
+        >
             {files.length > 1 && (
-                <div className="flex border-b-2 border-ds-border">
+                <div className="flex overflow-x-auto border-b-2 border-ds-border">
                     {files.map((file) => (
                         <button
                             key={file.id}
                             type="button"
                             onClick={() => setActiveFile(file)}
                             className={cn(
-                                'border-r-2 border-ds-border px-4 py-2 text-xs transition-colors',
+                                'shrink-0 border-r-2 border-ds-border px-4 py-2 text-xs transition-colors',
                                 activeFile.id === file.id
                                     ? 'bg-ds-bg-secondary text-ds-text-primary'
                                     : 'text-ds-text-muted hover:bg-ds-bg-secondary hover:text-ds-text-primary',
@@ -45,7 +55,6 @@ export function CodeViewer({ files }: CodeViewerProps) {
                 </div>
             )}
 
-            {/* Header with file info and copy button */}
             <div className="flex items-center justify-between border-b-2 border-ds-border px-4 py-2">
                 <div className="flex items-center gap-2">
                     <span className="text-xs text-ds-text-muted">
@@ -76,7 +85,6 @@ export function CodeViewer({ files }: CodeViewerProps) {
                 </button>
             </div>
 
-            {/* Code content */}
             <div className="overflow-x-auto">
                 <pre className="p-4 text-sm leading-relaxed text-ds-text-primary">
                     <code>{activeFile.content}</code>

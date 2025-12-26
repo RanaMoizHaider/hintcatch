@@ -16,10 +16,29 @@ export interface Agent {
     mcp_transport_types: string[] | null;
     mcp_config_paths: McpConfigPaths | null;
     rules_filename: string | null;
+    skills_config_template: SkillsConfigTemplate | null;
+    config_type_templates: Record<string, ConfigTypeTemplate> | null;
     created_at: string;
     updated_at: string;
     // Counts
     configs_count?: number;
+    skills_count?: number;
+}
+
+export interface SkillsConfigTemplate {
+    config_format: string;
+    global_path: string;
+    project_path?: string;
+    file_extension: string;
+    supports_subdirectories?: boolean;
+}
+
+export interface ConfigTypeTemplate {
+    global_path?: string;
+    project_path?: string;
+    config_format?: string;
+    install_method?: string;
+    install_command?: string;
 }
 
 export interface McpConfigPaths {
@@ -31,7 +50,6 @@ export interface McpConfigPaths {
 export interface McpConfigTemplate {
     wrapper_key: string;
     config_format: string;
-    // Transport type configurations (stdio, local, remote, http, sse)
     [transportType: string]:
         | string
         | McpTransportConfig
@@ -52,6 +70,9 @@ export interface ConfigType {
     description: string;
     allowed_formats: string[];
     allows_multiple_files: boolean;
+    is_standard: boolean;
+    standard_url: string | null;
+    requires_agent: boolean;
     created_at: string;
     updated_at: string;
     // Relations
@@ -76,8 +97,8 @@ export interface Category {
 
 export interface Config {
     id: number;
-    user_id: number;
-    agent_id: number;
+    submitted_by: number | null;
+    agent_id: number | null;
     config_type_id: number;
     category_id: number | null;
     name: string;
@@ -85,14 +106,14 @@ export interface Config {
     description: string;
     source_url: string | null;
     source_author: string | null;
-    downloads: number;
+    github_url: string | null;
+    instructions: string | null;
     vote_score: number;
-    version: string;
     is_featured: boolean;
     created_at: string;
     updated_at: string;
     // Relations
-    user?: PublicUser;
+    submitter?: PublicUser;
     agent?: Agent;
     config_type?: ConfigType;
     category?: Category;
@@ -116,9 +137,61 @@ export interface ConfigFile {
     full_path?: string;
 }
 
+export interface Skill {
+    id: number;
+    submitted_by: number | null;
+    category_id: number | null;
+    name: string;
+    slug: string;
+    description: string;
+    content: string;
+    license: string | null;
+    compatibility: SkillCompatibility | null;
+    metadata: Record<string, unknown> | null;
+    allowed_tools: string[] | null;
+    scripts: SkillScript[] | null;
+    references: SkillReference[] | null;
+    assets: string[] | null;
+    source_url: string | null;
+    source_author: string | null;
+    github_url: string | null;
+    vote_score: number;
+    is_featured: boolean;
+    created_at: string;
+    updated_at: string;
+    // Relations
+    submitter?: PublicUser;
+    category?: Category;
+}
+
+export interface SkillCompatibility {
+    agents?: string[];
+    platforms?: string[];
+    languages?: string[];
+}
+
+export interface SkillScript {
+    name: string;
+    content: string;
+}
+
+export interface SkillReference {
+    name: string;
+    content: string;
+}
+
+export interface SkillIntegration {
+    agent: Agent;
+    integration: {
+        skill_md: string;
+        install_path?: string | null;
+        project_path?: string | null;
+    };
+}
+
 export interface McpServer {
     id: number;
-    user_id: number;
+    submitted_by: number | null;
     name: string;
     slug: string;
     description: string;
@@ -130,18 +203,18 @@ export interface McpServer {
     headers: Record<string, string> | null;
     source_url: string | null;
     source_author: string | null;
-    downloads: number;
+    github_url: string | null;
     vote_score: number;
     is_featured: boolean;
     created_at: string;
     updated_at: string;
     // Relations
-    user?: PublicUser;
+    submitter?: PublicUser;
 }
 
 export interface Prompt {
     id: number;
-    user_id: number;
+    submitted_by: number | null;
     name: string;
     slug: string;
     description: string;
@@ -155,13 +228,13 @@ export interface Prompt {
         | 'refactoring';
     source_url: string | null;
     source_author: string | null;
-    downloads: number;
+    github_url: string | null;
     vote_score: number;
     is_featured: boolean;
     created_at: string;
     updated_at: string;
     // Relations
-    user?: PublicUser;
+    submitter?: PublicUser;
 }
 
 export interface PublicUser {
@@ -177,6 +250,7 @@ export interface PublicUser {
     configs_count?: number;
     prompts_count?: number;
     mcp_servers_count?: number;
+    skills_count?: number;
 }
 
 export interface Comment {
@@ -204,8 +278,8 @@ export interface Vote {
 export interface Favorite {
     id: number;
     user_id: number;
-    favorable_type: string;
-    favorable_id: number;
+    favoritable_type: string;
+    favoritable_id: number;
     created_at: string;
 }
 
@@ -220,15 +294,18 @@ export interface HomePageProps {
     recentConfigs: Config[];
     recentMcpServers: McpServer[];
     recentPrompts: Prompt[];
+    recentSkills: Skill[];
     topConfigs: Config[];
     topMcpServers: McpServer[];
     topPrompts: Prompt[];
+    topSkills: Skill[];
     agents: Agent[];
     configTypes: ConfigType[];
     stats: {
         totalConfigs: number;
         totalMcpServers: number;
         totalPrompts: number;
+        totalSkills: number;
         totalUsers: number;
     };
 }
@@ -248,6 +325,7 @@ export interface AgentShowPageProps {
     configTypes: ConfigType[];
     configsByType: Record<string, ConfigsByTypeEntry>;
     mcpServerCount?: number;
+    skillsCount?: number;
 }
 
 export interface AgentConfigsPageProps {
@@ -304,6 +382,19 @@ export interface McpServerShowPageProps {
     interaction: InteractionStatus;
 }
 
+export interface SkillIndexPageProps {
+    skills: Skill[];
+    featuredSkills: Skill[];
+}
+
+export interface SkillShowPageProps {
+    skill: Skill;
+    agentIntegrations: Record<string, SkillIntegration>;
+    moreFromUser: Skill[];
+    comments: Comment[];
+    interaction: InteractionStatus;
+}
+
 export interface PaginatedData<T> {
     data: T[];
     links: {
@@ -342,10 +433,12 @@ export interface UserProfilePageProps {
     configs: Config[];
     prompts: Prompt[];
     mcpServers: McpServer[];
+    skills: Skill[];
     stats: {
         totalConfigs: number;
         totalMcpServers: number;
         totalPrompts: number;
+        totalSkills: number;
         totalVotes: number;
     };
 }
@@ -365,12 +458,17 @@ export interface SubmitMcpServerPageProps {
     agents: Agent[];
 }
 
+export interface SubmitSkillPageProps {
+    agents: Agent[];
+    categories: Category[];
+}
+
 export interface SubmitPromptPageProps {
     // No specific props needed - categories are defined on frontend
 }
 
 export interface SearchFilters {
-    type: 'all' | 'configs' | 'mcp-servers' | 'prompts';
+    type: 'all' | 'configs' | 'mcp-servers' | 'prompts' | 'skills';
     agent: number | null;
     config_type: number | null;
     category: number | null;
@@ -385,11 +483,13 @@ export interface SearchPageProps {
         configs: Config[];
         mcpServers: McpServer[];
         prompts: Prompt[];
+        skills: Skill[];
     };
     counts: {
         configs: number;
         mcpServers: number;
         prompts: number;
+        skills: number;
         total: number;
     };
     agents: Pick<Agent, 'id' | 'name' | 'slug'>[];

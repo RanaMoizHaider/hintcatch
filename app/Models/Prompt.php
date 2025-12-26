@@ -18,10 +18,11 @@ class Prompt extends Model
         'description',
         'content',
         'category',
-        'user_id',
+        'submitted_by',
         'source_url',
         'source_author',
-        'downloads',
+        'github_url',
+
         'vote_score',
         'is_featured',
     ];
@@ -32,7 +33,7 @@ class Prompt extends Model
     protected function casts(): array
     {
         return [
-            'downloads' => 'integer',
+
             'vote_score' => 'integer',
             'is_featured' => 'boolean',
         ];
@@ -41,9 +42,9 @@ class Prompt extends Model
     /**
      * @return BelongsTo<User, $this>
      */
-    public function user(): BelongsTo
+    public function submitter(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'submitted_by');
     }
 
     /**
@@ -67,7 +68,7 @@ class Prompt extends Model
      */
     public function favorites(): MorphMany
     {
-        return $this->morphMany(Favorite::class, 'favorable');
+        return $this->morphMany(Favorite::class, 'favoritable');
     }
 
     /**

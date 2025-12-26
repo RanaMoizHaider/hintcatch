@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('mcp_servers', function (Blueprint $table) {
@@ -17,16 +14,16 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->enum('type', ['remote', 'local'])->default('remote');
-            $table->string('url')->nullable(); // For remote MCPs
-            $table->string('command')->nullable(); // For local MCPs
-            $table->json('args')->nullable(); // For local MCPs - array of arguments
-            $table->json('env')->nullable(); // Environment variables
-            $table->json('headers')->nullable(); // HTTP headers for remote MCPs
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('url')->nullable();
+            $table->string('command')->nullable();
+            $table->json('args')->nullable();
+            $table->json('env')->nullable();
+            $table->json('headers')->nullable();
+            $table->foreignId('submitted_by')->nullable()->constrained('users')->nullOnDelete();
             $table->string('source_url')->nullable();
             $table->string('source_author')->nullable();
-            $table->unsignedInteger('downloads')->default(0);
-            $table->integer('vote_score')->default(0); // Cached vote score (upvotes - downvotes)
+            $table->string('github_url')->nullable();
+            $table->integer('vote_score')->default(0);
             $table->boolean('is_featured')->default(false);
             $table->timestamps();
 
@@ -36,9 +33,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('mcp_servers');

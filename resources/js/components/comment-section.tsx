@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { CommentItem } from './comment-item';
 
 interface CommentSectionProps {
-    commentableType: 'config' | 'prompt' | 'mcp-server';
+    commentableType: 'config' | 'prompt' | 'mcp-server' | 'skill';
     commentableId: number;
     comments: Comment[];
     className?: string;
@@ -45,7 +45,7 @@ export function CommentSection({
 
     return (
         <div
-            className={`border-2 border-ds-border bg-ds-bg-card p-6 ${className}`}
+            className={`border-ds-border bg-ds-bg-card p-6 ${className}`}
         >
             <h3 className="mb-6 text-lg font-bold text-ds-text-primary">
                 Comments ({comments.length})

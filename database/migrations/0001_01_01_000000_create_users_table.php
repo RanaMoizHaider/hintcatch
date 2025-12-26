@@ -17,14 +17,20 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password')->nullable(); // Nullable for OAuth-only users
+            $table->string('password')->nullable();
+            $table->text('two_factor_secret')->nullable();
+            $table->text('two_factor_recovery_codes')->nullable();
+            $table->timestamp('two_factor_confirmed_at')->nullable();
             $table->text('bio')->nullable();
             $table->string('website')->nullable();
-            // GitHub OAuth fields
-            $table->string('github_id')->nullable()->unique();
+            $table->string('github_id')->unique()->nullable();
             $table->string('github_username')->nullable();
-            $table->string('github_token')->nullable();
-            $table->string('github_refresh_token')->nullable();
+            $table->text('github_token')->nullable();
+            $table->text('github_refresh_token')->nullable();
+            $table->string('gitlab_id')->unique()->nullable();
+            $table->string('gitlab_username')->nullable();
+            $table->text('gitlab_token')->nullable();
+            $table->text('gitlab_refresh_token')->nullable();
             $table->string('avatar')->nullable();
             $table->rememberToken();
             $table->timestamps();

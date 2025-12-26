@@ -1,17 +1,11 @@
-import { show as showUser } from '@/actions/App/Http/Controllers/UserProfileController';
 import { CommentSection } from '@/components/comment-section';
-import { FavoriteButton } from '@/components/favorite-button';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { PromptCard } from '@/components/prompt-card';
 import { SeoHead } from '@/components/seo-head';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { VoteButton } from '@/components/vote-button';
-import { useInitials } from '@/hooks/use-initials';
+import { ShowPageHeader } from '@/components/show-page-header';
 import type { PromptShowPageProps } from '@/types/models';
-import { Link } from '@inertiajs/react';
-import { Check, Copy, Download, ExternalLink } from 'lucide-react';
+import { Check, Copy, FileCode } from 'lucide-react';
 import { useState } from 'react';
 
 export default function PromptsShow({
@@ -21,7 +15,6 @@ export default function PromptsShow({
     comments,
     interaction,
 }: PromptShowPageProps) {
-    const getInitials = useInitials();
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -41,105 +34,25 @@ export default function PromptsShow({
                 <SiteHeader />
 
                 <main className="flex-1">
-                    {/* Header */}
-                    <section className="border-b-2 border-ds-border">
-                        <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
-                            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                                <div className="flex-1">
-                                    <h1 className="text-2xl font-medium text-ds-text-primary md:text-3xl">
-                                        {prompt.name}
-                                    </h1>
-                                    {prompt.description && (
-                                        <p className="mt-2 text-ds-text-secondary">
-                                            {prompt.description}
-                                        </p>
-                                    )}
-                                    <div className="mt-4 flex flex-wrap items-center gap-3">
-                                        {prompt.category && (
-                                            <Badge
-                                                variant="outline"
-                                                className="border-ds-border text-ds-text-secondary capitalize"
-                                            >
-                                                {prompt.category}
-                                            </Badge>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-6 text-sm text-ds-text-muted">
-                                    <VoteButton
-                                        votableType="prompt"
-                                        votableId={prompt.id}
-                                        voteScore={prompt.vote_score}
-                                        userVote={interaction.user_vote}
-                                    />
-                                    <FavoriteButton
-                                        favorableType="prompt"
-                                        favorableId={prompt.id}
-                                        isFavorited={interaction.is_favorited}
-                                        favoritesCount={
-                                            interaction.favorites_count
-                                        }
-                                    />
-                                    <div className="flex items-center gap-1">
-                                        <Download className="h-4 w-4" />
-                                        <span>{prompt.downloads}</span>
-                                    </div>
-                                </div>
-                            </div>
+                    <ShowPageHeader
+                        type="prompt"
+                        name={prompt.name}
+                        description={prompt.description}
+                        voteScore={prompt.vote_score}
+                        userVote={interaction.user_vote}
+                        votableId={prompt.id}
+                        isFavorited={interaction.is_favorited}
+                        favoritesCount={interaction.favorites_count}
+                        submitterUser={prompt.submitter}
+                        sourceAuthor={prompt.source_author}
+                        githubUrl={prompt.github_url}
+                        sourceUrl={prompt.source_url}
+                        category={prompt.category}
+                        icon={
+                            <FileCode className="h-6 w-6 text-ds-text-muted" />
+                        }
+                    />
 
-                            {/* Author */}
-                            {prompt.user && (
-                                <div className="mt-6 flex items-center gap-3">
-                                    <Link href={showUser(prompt.user.username)}>
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarImage
-                                                src={
-                                                    prompt.user.avatar ??
-                                                    undefined
-                                                }
-                                                alt={prompt.user.name}
-                                            />
-                                            <AvatarFallback className="bg-ds-bg-secondary text-xs text-ds-text-muted">
-                                                {getInitials(prompt.user.name)}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </Link>
-                                    <div>
-                                        <Link
-                                            href={showUser(
-                                                prompt.user.username,
-                                            )}
-                                            className="text-sm text-ds-text-primary hover:text-ds-text-secondary"
-                                        >
-                                            {prompt.user.name}
-                                        </Link>
-                                        <div className="text-xs text-ds-text-muted">
-                                            @{prompt.user.username}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Source */}
-                            {prompt.source_url && (
-                                <div className="mt-4">
-                                    <a
-                                        href={prompt.source_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-sm text-ds-text-muted transition-colors hover:text-ds-text-primary"
-                                    >
-                                        <ExternalLink className="h-3 w-3" />
-                                        Source
-                                        {prompt.source_author &&
-                                            ` by ${prompt.source_author}`}
-                                    </a>
-                                </div>
-                            )}
-                        </div>
-                    </section>
-
-                    {/* Prompt Content */}
                     <section className="border-b-2 border-ds-border">
                         <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
                             <div className="border-2 border-ds-border bg-ds-bg-card">
@@ -173,14 +86,12 @@ export default function PromptsShow({
                         </div>
                     </section>
 
-                    {/* Comments */}
                     <CommentSection
                         commentableType="prompt"
                         commentableId={prompt.id}
                         comments={comments}
                     />
 
-                    {/* Related Prompts */}
                     {relatedPrompts.length > 0 && (
                         <section className="border-b-2 border-ds-border">
                             <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
@@ -196,12 +107,11 @@ export default function PromptsShow({
                         </section>
                     )}
 
-                    {/* More from User */}
                     {moreFromUser && moreFromUser.length > 0 && (
                         <section className="border-ds-border">
                             <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
                                 <h2 className="mb-6 text-sm font-medium text-ds-text-muted uppercase">
-                                    More from {prompt.user?.name}
+                                    More from {prompt.submitter?.name}
                                 </h2>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                                     {moreFromUser.map((p) => (

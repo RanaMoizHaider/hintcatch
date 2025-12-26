@@ -125,13 +125,13 @@ class User extends Authenticatable
     /**
      * Check if user has favorited a given item.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $favorable
+     * @param  \Illuminate\Database\Eloquent\Model  $favoritable
      */
-    public function hasFavorited($favorable): bool
+    public function hasFavorited($favoritable): bool
     {
         return $this->favorites()
-            ->where('favorable_type', $favorable->getMorphClass())
-            ->where('favorable_id', $favorable->getKey())
+            ->where('favoritable_type', $favoritable->getMorphClass())
+            ->where('favoritable_id', $favoritable->getKey())
             ->exists();
     }
 

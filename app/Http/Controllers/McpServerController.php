@@ -15,12 +15,12 @@ class McpServerController extends Controller
     {
         return Inertia::render('mcp-servers/index', [
             'mcpServers' => McpServer::query()
-                ->with('user')
+                ->with('submitter')
                 ->orderByDesc('vote_score')
                 ->orderByDesc('created_at')
                 ->get(),
             'featuredMcpServers' => McpServer::query()
-                ->with('user')
+                ->with('submitter')
                 ->where('is_featured', true)
                 ->orderByDesc('vote_score')
                 ->limit(6)
@@ -30,12 +30,12 @@ class McpServerController extends Controller
 
     public function show(McpServer $mcpServer): Response
     {
-        $mcpServer->load(['user']);
+        $mcpServer->load(['submitter']);
 
         $user = Auth::user();
 
         $comments = $mcpServer->comments()
-            ->with('user')
+            ->with('submitter')
             ->whereNull('parent_id')
             ->withCount(['votes as vote_score' => fn ($q) => $q->select(DB::raw('COALESCE(SUM(value), 0)'))])
             ->latest()
@@ -69,7 +69,7 @@ class McpServerController extends Controller
             'mcpServer' => $mcpServer,
             'agentIntegrations' => $agentIntegrations,
             'moreFromUser' => McpServer::query()
-                ->where('user_id', $mcpServer->user_id)
+                ->where('submitted_by', $mcpServer->submitted_by)
                 ->where('id', '!=', $mcpServer->id)
                 ->orderByDesc('vote_score')
                 ->limit(4)

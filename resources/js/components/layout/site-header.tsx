@@ -2,6 +2,7 @@ import { index as agentsIndex } from '@/actions/App/Http/Controllers/AgentContro
 import { index as configTypesIndex } from '@/actions/App/Http/Controllers/ConfigTypeController';
 import { index as mcpServersIndex } from '@/actions/App/Http/Controllers/McpServerController';
 import { index as promptsIndex } from '@/actions/App/Http/Controllers/PromptController';
+import { index as skillsIndex } from '@/actions/App/Http/Controllers/SkillController';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +27,7 @@ const navItems = [
     { label: 'AI Agents', href: agentsIndex },
     { label: 'Configs', href: configTypesIndex },
     { label: 'MCPs', href: mcpServersIndex },
+    { label: 'Agent Skills', href: skillsIndex },
     { label: 'Prompts', href: promptsIndex },
 ];
 

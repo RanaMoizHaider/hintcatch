@@ -1,20 +1,16 @@
-import { show as showAgent } from '@/actions/App/Http/Controllers/AgentController';
-import { show as showConfigType } from '@/actions/App/Http/Controllers/ConfigTypeController';
-import { show as showUser } from '@/actions/App/Http/Controllers/UserProfileController';
-import { CodeViewer } from '@/components/code-viewer';
 import { CommentSection } from '@/components/comment-section';
 import { ConfigCard } from '@/components/config-card';
-import { FavoriteButton } from '@/components/favorite-button';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import {
+    MultiFileViewer,
+    type MultiFileViewerFile,
+} from '@/components/multi-file-viewer';
 import { SeoHead } from '@/components/seo-head';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { VoteButton } from '@/components/vote-button';
-import { useInitials } from '@/hooks/use-initials';
+import { ShowPageHeader } from '@/components/show-page-header';
 import type { ConfigShowPageProps } from '@/types/models';
-import { Link } from '@inertiajs/react';
-import { Download, ExternalLink } from 'lucide-react';
+import { FileCode } from 'lucide-react';
+import { useMemo } from 'react';
 
 export default function ConfigsShow({
     config,
@@ -23,7 +19,18 @@ export default function ConfigsShow({
     comments,
     interaction,
 }: ConfigShowPageProps) {
-    const getInitials = useInitials();
+    const configFiles = useMemo((): MultiFileViewerFile[] => {
+        if (!config.files || config.files.length === 0) return [];
+
+        return config.files.map((file) => ({
+            id: file.id,
+            filename: file.filename,
+            content: file.content,
+            path: file.path,
+            language: file.language,
+            isPrimary: file.is_primary,
+        }));
+    }, [config.files]);
 
     return (
         <>
@@ -32,149 +39,56 @@ export default function ConfigsShow({
                 <SiteHeader />
 
                 <main className="flex-1">
-                    {/* Header */}
-                    <section className="border-b-2 border-ds-border">
-                        <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
-                            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                                <div className="flex-1">
-                                    <h1 className="text-2xl font-medium text-ds-text-primary md:text-3xl">
-                                        {config.name}
-                                    </h1>
-                                    {config.description && (
-                                        <p className="mt-2 text-ds-text-secondary">
-                                            {config.description}
-                                        </p>
-                                    )}
-                                    <div className="mt-4 flex flex-wrap items-center gap-3">
-                                        {config.agent && (
-                                            <Link
-                                                href={showAgent(
-                                                    config.agent.slug,
-                                                )}
-                                            >
-                                                <Badge
-                                                    variant="outline"
-                                                    className="border-ds-border text-ds-text-secondary hover:border-ds-text-muted"
-                                                >
-                                                    {config.agent.name}
-                                                </Badge>
-                                            </Link>
-                                        )}
-                                        {config.config_type && (
-                                            <Link
-                                                href={showConfigType(
-                                                    config.config_type.slug,
-                                                )}
-                                            >
-                                                <Badge
-                                                    variant="outline"
-                                                    className="border-ds-border text-ds-text-secondary hover:border-ds-text-muted"
-                                                >
-                                                    {config.config_type.name}
-                                                </Badge>
-                                            </Link>
-                                        )}
-                                        {config.category && (
-                                            <Badge
-                                                variant="outline"
-                                                className="border-ds-border text-ds-text-muted"
-                                            >
-                                                {config.category.name}
-                                            </Badge>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-6 text-sm text-ds-text-muted">
-                                    <VoteButton
-                                        votableType="config"
-                                        votableId={config.id}
-                                        voteScore={config.vote_score}
-                                        userVote={interaction.user_vote}
-                                    />
-                                    <FavoriteButton
-                                        favorableType="config"
-                                        favorableId={config.id}
-                                        isFavorited={interaction.is_favorited}
-                                        favoritesCount={
-                                            interaction.favorites_count
-                                        }
-                                    />
-                                    <div className="flex items-center gap-1">
-                                        <Download className="h-4 w-4" />
-                                        <span>{config.downloads}</span>
-                                    </div>
-                                </div>
-                            </div>
+                    <ShowPageHeader
+                        type="config"
+                        name={config.name}
+                        description={config.description}
+                        voteScore={config.vote_score}
+                        userVote={interaction.user_vote}
+                        votableId={config.id}
+                        isFavorited={interaction.is_favorited}
+                        favoritesCount={interaction.favorites_count}
+                        submitterUser={config.submitter}
+                        sourceAuthor={config.source_author}
+                        githubUrl={config.github_url}
+                        sourceUrl={config.source_url}
+                        agent={config.agent}
+                        configType={config.config_type}
+                        category={config.category}
+                        icon={
+                            <FileCode className="h-6 w-6 text-ds-text-muted" />
+                        }
+                    />
 
-                            {/* Author */}
-                            {config.user && (
-                                <div className="mt-6 flex items-center gap-3">
-                                    <Link href={showUser(config.user.username)}>
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarImage
-                                                src={
-                                                    config.user.avatar ??
-                                                    undefined
-                                                }
-                                                alt={config.user.name}
-                                            />
-                                            <AvatarFallback className="bg-ds-bg-secondary text-xs text-ds-text-muted">
-                                                {getInitials(config.user.name)}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </Link>
-                                    <div>
-                                        <Link
-                                            href={showUser(
-                                                config.user.username,
-                                            )}
-                                            className="text-sm text-ds-text-primary hover:text-ds-text-secondary"
-                                        >
-                                            {config.user.name}
-                                        </Link>
-                                        <div className="text-xs text-ds-text-muted">
-                                            @{config.user.username}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Source */}
-                            {config.source_url && (
-                                <div className="mt-4">
-                                    <a
-                                        href={config.source_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-sm text-ds-text-muted transition-colors hover:text-ds-text-primary"
-                                    >
-                                        <ExternalLink className="h-3 w-3" />
-                                        Source
-                                        {config.source_author &&
-                                            ` by ${config.source_author}`}
-                                    </a>
-                                </div>
-                            )}
-                        </div>
-                    </section>
-
-                    {/* Code Viewer */}
-                    {config.files && config.files.length > 0 && (
+                    {config.instructions && (
                         <section className="border-b-2 border-ds-border">
                             <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
-                                <CodeViewer files={config.files} />
+                                <h2 className="mb-6 text-lg font-medium text-ds-text-primary">
+                                    Instructions
+                                </h2>
+                                <div className="prose prose-neutral dark:prose-invert max-w-none">
+                                    <div className="rounded-lg border border-ds-border bg-ds-bg-secondary p-6 whitespace-pre-wrap text-ds-text-secondary">
+                                        {config.instructions}
+                                    </div>
+                                </div>
                             </div>
                         </section>
                     )}
 
-                    {/* Comments */}
+                    {configFiles.length > 0 && (
+                        <section className="border-b-2 border-ds-border">
+                            <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
+                                <MultiFileViewer files={configFiles} />
+                            </div>
+                        </section>
+                    )}
+
                     <CommentSection
                         commentableType="config"
                         commentableId={config.id}
                         comments={comments}
                     />
 
-                    {/* Related Configs */}
                     {relatedConfigs.length > 0 && (
                         <section className="border-b-2 border-ds-border">
                             <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
@@ -190,12 +104,11 @@ export default function ConfigsShow({
                         </section>
                     )}
 
-                    {/* More from User */}
                     {moreFromUser && moreFromUser.length > 0 && (
                         <section className="border-ds-border">
                             <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
                                 <h2 className="mb-6 text-sm font-medium text-ds-text-muted uppercase">
-                                    More from {config.user?.name}
+                                    More from {config.submitter?.name}
                                 </h2>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                                     {moreFromUser.map((c) => (

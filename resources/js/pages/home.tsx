@@ -2,14 +2,22 @@ import { show as showAgent } from '@/actions/App/Http/Controllers/AgentControlle
 import { index as configTypesIndex } from '@/actions/App/Http/Controllers/ConfigTypeController';
 import { index as mcpServersIndex } from '@/actions/App/Http/Controllers/McpServerController';
 import { index as promptsIndex } from '@/actions/App/Http/Controllers/PromptController';
+import { index as skillsIndex } from '@/actions/App/Http/Controllers/SkillController';
 import { ConfigCard } from '@/components/config-card';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { McpServerCard } from '@/components/mcp-server-card';
 import { PromptCard } from '@/components/prompt-card';
 import { SeoHead } from '@/components/seo-head';
+import { SkillCard } from '@/components/skill-card';
 import { Icons } from '@/components/ui/icons';
-import type { Config, HomePageProps, McpServer, Prompt } from '@/types/models';
+import type {
+    Config,
+    HomePageProps,
+    McpServer,
+    Prompt,
+    Skill,
+} from '@/types/models';
 import { Link, router } from '@inertiajs/react';
 import { ArrowRight, Search } from 'lucide-react';
 import { useState } from 'react';
@@ -92,9 +100,11 @@ function TabbedSection<T extends { id: number }>({
 export default function Home({
     recentConfigs,
     recentMcpServers,
+    recentSkills,
     recentPrompts,
     topConfigs,
     topMcpServers,
+    topSkills,
     topPrompts,
     agents,
     configTypes,
@@ -221,6 +231,16 @@ export default function Home({
                             <McpServerCard mcpServer={mcpServer} />
                         )}
                         emptyMessage="No MCP servers found"
+                    />
+
+                    {/* Agent Skills Section with Tabs */}
+                    <TabbedSection<Skill>
+                        title="Agent Skills"
+                        viewAllHref={skillsIndex.url()}
+                        recent={recentSkills}
+                        top={topSkills}
+                        renderItem={(skill) => <SkillCard skill={skill} />}
+                        emptyMessage="No skills found"
                     />
 
                     {/* Prompts Section with Tabs */}
