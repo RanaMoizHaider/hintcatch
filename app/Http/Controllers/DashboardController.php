@@ -36,7 +36,7 @@ class DashboardController extends Controller
             ->get();
 
         $recentFavorites = Favorite::query()
-            ->where('submitted_by', $user->id)
+            ->where('user_id', $user->id)
             ->with(['favoritable'])
             ->orderByDesc('created_at')
             ->limit(5)
