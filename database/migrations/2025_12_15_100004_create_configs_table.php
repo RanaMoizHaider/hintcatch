@@ -30,8 +30,11 @@ return new class extends Migration
         Schema::create('config_connections', function (Blueprint $table) {
             $table->id();
             $table->foreignId('config_id')->constrained()->cascadeOnDelete();
-            $table->morphs('connectable');
+            $table->foreignId('connected_config_id')->constrained('configs')->cascadeOnDelete();
+            $table->string('relationship_type')->nullable();
             $table->timestamps();
+
+            $table->unique(['config_id', 'connected_config_id']);
         });
     }
 
