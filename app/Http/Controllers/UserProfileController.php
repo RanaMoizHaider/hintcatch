@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Config;
 use App\Models\McpServer;
 use App\Models\Prompt;
+use App\Models\Skill;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -31,13 +32,21 @@ class UserProfileController extends Controller
                 ->orderByDesc('vote_score')
                 ->limit(12)
                 ->get(),
+            'skills' => Skill::query()
+                ->where('submitted_by', $user->id)
+                ->with(['category'])
+                ->orderByDesc('vote_score')
+                ->limit(12)
+                ->get(),
             'stats' => [
                 'totalConfigs' => Config::where('submitted_by', $user->id)->count(),
                 'totalMcpServers' => McpServer::where('submitted_by', $user->id)->count(),
                 'totalPrompts' => Prompt::where('submitted_by', $user->id)->count(),
+                'totalSkills' => Skill::where('submitted_by', $user->id)->count(),
                 'totalVotes' => Config::where('submitted_by', $user->id)->sum('vote_score')
                     + McpServer::where('submitted_by', $user->id)->sum('vote_score')
-                    + Prompt::where('submitted_by', $user->id)->sum('vote_score'),
+                    + Prompt::where('submitted_by', $user->id)->sum('vote_score')
+                    + Skill::where('submitted_by', $user->id)->sum('vote_score'),
             ],
         ]);
     }

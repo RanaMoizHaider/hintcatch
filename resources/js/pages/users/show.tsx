@@ -4,6 +4,7 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { McpServerCard } from '@/components/mcp-server-card';
 import { PromptCard } from '@/components/prompt-card';
 import { SeoHead } from '@/components/seo-head';
+import { SkillCard } from '@/components/skill-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useInitials } from '@/hooks/use-initials';
 import type { UserProfilePageProps } from '@/types/models';
@@ -14,6 +15,7 @@ import {
     Github,
     MessageSquare,
     Server,
+    Sparkles,
 } from 'lucide-react';
 
 export default function UsersShow({
@@ -21,6 +23,7 @@ export default function UsersShow({
     configs,
     prompts,
     mcpServers,
+    skills,
     stats,
 }: UserProfilePageProps) {
     const getInitials = useInitials();
@@ -92,7 +95,7 @@ export default function UsersShow({
                     {/* Stats */}
                     <section className="border-b-2 border-ds-border">
                         <div className="mx-auto max-w-[1200px] px-4 py-6 md:px-6">
-                            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                            <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
                                 <div className="border-2 border-ds-border bg-ds-bg-card p-4 text-center">
                                     <div className="flex items-center justify-center gap-2 text-ds-text-muted">
                                         <FileCode className="h-4 w-4" />
@@ -124,6 +127,17 @@ export default function UsersShow({
                                     </div>
                                     <div className="mt-1 text-2xl font-medium text-ds-text-primary">
                                         {stats.totalPrompts}
+                                    </div>
+                                </div>
+                                <div className="border-2 border-ds-border bg-ds-bg-card p-4 text-center">
+                                    <div className="flex items-center justify-center gap-2 text-ds-text-muted">
+                                        <Sparkles className="h-4 w-4" />
+                                        <span className="text-xs uppercase">
+                                            Skills
+                                        </span>
+                                    </div>
+                                    <div className="mt-1 text-2xl font-medium text-ds-text-primary">
+                                        {stats.totalSkills}
                                     </div>
                                 </div>
                                 <div className="border-2 border-ds-border bg-ds-bg-card p-4 text-center">
@@ -198,10 +212,30 @@ export default function UsersShow({
                         </section>
                     )}
 
+                    {/* Skills */}
+                    {skills.length > 0 && (
+                        <section className="border-b-2 border-ds-border">
+                            <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
+                                <h2 className="mb-6 text-sm font-medium text-ds-text-muted uppercase">
+                                    Skills
+                                </h2>
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                    {skills.map((skill) => (
+                                        <SkillCard
+                                            key={skill.id}
+                                            skill={skill}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+                    )}
+
                     {/* Empty State */}
                     {configs.length === 0 &&
                         mcpServers.length === 0 &&
-                        prompts.length === 0 && (
+                        prompts.length === 0 &&
+                        skills.length === 0 && (
                             <section className="border-ds-border">
                                 <div className="mx-auto max-w-[1200px] px-4 py-12 text-center md:px-6">
                                     <p className="text-ds-text-muted">
