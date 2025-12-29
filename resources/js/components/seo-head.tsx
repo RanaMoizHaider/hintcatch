@@ -6,6 +6,7 @@ interface SeoHeadProps {
     ogImage?: string;
     ogType?: string;
     canonicalUrl?: string;
+    ogUrl?: string;
     noIndex?: boolean;
     children?: React.ReactNode;
 }
@@ -16,6 +17,7 @@ export function SeoHead({
     ogImage,
     ogType = 'website',
     canonicalUrl,
+    ogUrl,
     noIndex,
     children,
 }: SeoHeadProps) {
@@ -38,6 +40,9 @@ export function SeoHead({
                 />
             )}
             <meta head-key="og:type" property="og:type" content={ogType} />
+            {ogUrl && (
+                <meta head-key="og:url" property="og:url" content={ogUrl} />
+            )}
             {ogImage && (
                 <meta
                     head-key="og:image"

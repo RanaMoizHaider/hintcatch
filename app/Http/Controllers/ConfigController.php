@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Config;
+use App\Services\SeoService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -30,6 +31,7 @@ class ConfigController extends Controller
             ->withQueryString();
 
         return Inertia::render('configs/index', [
+            'seo' => SeoService::forConfigIndex(),
             'configs' => Inertia::scroll(fn () => $configs),
             'filters' => ['search' => $search],
         ]);
@@ -64,6 +66,7 @@ class ConfigController extends Controller
             : false;
 
         return Inertia::render('configs/show', [
+            'seo' => SeoService::forConfig($config),
             'config' => $config,
             'relatedConfigs' => $config->allConnections()
                 ->load(['submitter', 'agent', 'configType'])

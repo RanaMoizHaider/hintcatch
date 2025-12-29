@@ -30,7 +30,39 @@
             }
         </style>
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ $page['props']['seo']['title'] ?? config('app.name', 'Laravel') }}</title>
+
+        @php
+            $seo = $page['props']['seo'] ?? [];
+            $seoDefaults = $page['props']['seoDefaults'] ?? [];
+            $title = ($seo['title'] ?? 'AI Agent Configs') . ' - ' . ($seoDefaults['siteName'] ?? 'Hint Catch');
+            $description = $seo['description'] ?? $seoDefaults['defaultDescription'] ?? '';
+            $ogImage = $seo['ogImage'] ?? $seoDefaults['defaultImage'] ?? '';
+            $canonicalUrl = $seo['canonicalUrl'] ?? url()->current();
+            $twitterSite = $seoDefaults['twitterSite'] ?? '@hintcatch';
+        @endphp
+
+        <meta name="description" content="{{ $description }}">
+        <link rel="canonical" href="{{ $canonicalUrl }}">
+
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="{{ $seoDefaults['siteName'] ?? 'Hint Catch' }}">
+        <meta property="og:title" content="{{ $title }}">
+        <meta property="og:description" content="{{ $description }}">
+        <meta property="og:url" content="{{ $canonicalUrl }}">
+        @if($ogImage)
+        <meta property="og:image" content="{{ $ogImage }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        @endif
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="{{ $twitterSite }}">
+        <meta name="twitter:title" content="{{ $title }}">
+        <meta name="twitter:description" content="{{ $description }}">
+        @if($ogImage)
+        <meta name="twitter:image" content="{{ $ogImage }}">
+        @endif
 
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Prompt;
+use App\Services\SeoService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -32,6 +33,7 @@ class PromptController extends Controller
             ->withQueryString();
 
         return Inertia::render('prompts/index', [
+            'seo' => SeoService::forPromptIndex(),
             'prompts' => Inertia::scroll(fn () => $prompts),
             'filters' => [
                 'search' => $search,
@@ -75,6 +77,7 @@ class PromptController extends Controller
             : false;
 
         return Inertia::render('prompts/show', [
+            'seo' => SeoService::forPrompt($prompt),
             'prompt' => $prompt,
             'relatedPrompts' => Prompt::query()
                 ->where('category', $prompt->category)

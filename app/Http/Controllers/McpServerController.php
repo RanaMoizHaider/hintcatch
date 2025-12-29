@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Agent;
 use App\Models\McpServer;
+use App\Services\SeoService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -30,6 +31,7 @@ class McpServerController extends Controller
             ->withQueryString();
 
         return Inertia::render('mcp-servers/index', [
+            'seo' => SeoService::forMcpServerIndex(),
             'mcpServers' => Inertia::scroll(fn () => $mcpServers),
             'filters' => ['search' => $search],
             'featuredMcpServers' => McpServer::query()
@@ -79,6 +81,7 @@ class McpServerController extends Controller
             ->filter(fn ($data) => ! empty($data['integration']));
 
         return Inertia::render('mcp-servers/show', [
+            'seo' => SeoService::forMcpServer($mcpServer),
             'mcpServer' => $mcpServer,
             'agentIntegrations' => $agentIntegrations,
             'moreFromUser' => McpServer::query()

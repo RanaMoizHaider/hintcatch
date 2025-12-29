@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Agent;
 use App\Models\Skill;
+use App\Services\SeoService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -30,6 +31,7 @@ class SkillController extends Controller
             ->withQueryString();
 
         return Inertia::render('skills/index', [
+            'seo' => SeoService::forSkillIndex(),
             'skills' => Inertia::scroll(fn () => $skills),
             'filters' => ['search' => $search],
             'featuredSkills' => Skill::query()
@@ -78,6 +80,7 @@ class SkillController extends Controller
             ->filter(fn ($data) => ! empty($data['integration']));
 
         return Inertia::render('skills/show', [
+            'seo' => SeoService::forSkill($skill),
             'skill' => $skill,
             'agentIntegrations' => $agentIntegrations,
             'moreFromUser' => Skill::query()

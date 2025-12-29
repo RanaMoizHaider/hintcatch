@@ -9,6 +9,7 @@ use App\Models\McpServer;
 use App\Models\Prompt;
 use App\Models\Skill;
 use App\Models\User;
+use App\Services\SeoService;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,6 +18,7 @@ class HomeController extends Controller
     public function __invoke(): Response
     {
         return Inertia::render('home', [
+            'seo' => SeoService::forHome(),
             'recentConfigs' => Config::query()
                 ->with(['submitter', 'agent', 'configType'])
                 ->orderByDesc('created_at')

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Agent;
 use App\Models\Category;
 use App\Models\ConfigType;
+use App\Services\SeoService;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,6 +20,7 @@ class ConfigTypeController extends Controller
             ->get();
 
         return Inertia::render('config-types/index', [
+            'seo' => SeoService::forConfigTypeIndex(),
             'configTypes' => $configTypes,
         ]);
     }
@@ -42,6 +44,7 @@ class ConfigTypeController extends Controller
             ->withQueryString();
 
         return Inertia::render('config-types/show', [
+            'seo' => SeoService::forConfigType($configType),
             'configType' => $configType->loadCount(['configs', 'categories']),
             'configs' => Inertia::scroll(fn () => $configs),
             'filters' => ['search' => $search],

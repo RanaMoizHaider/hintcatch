@@ -8,6 +8,7 @@ use App\Models\Config;
 use App\Models\ConfigType;
 use App\Models\McpServer;
 use App\Models\Skill;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -31,6 +32,7 @@ class AgentController extends Controller
             });
 
         return Inertia::render('agents/index', [
+            'seo' => SeoService::forAgentIndex(),
             'agents' => $agents,
         ]);
     }
@@ -64,6 +66,7 @@ class AgentController extends Controller
         }
 
         $props = [
+            'seo' => SeoService::forAgent($agent),
             'agent' => $agent,
             'agentConfigsCount' => $agent->configs()->count(),
             'configTypes' => $configTypes,
@@ -110,6 +113,7 @@ class AgentController extends Controller
             ->get();
 
         return Inertia::render('agents/configs', [
+            'seo' => SeoService::forAgentConfigs($agent, $configType),
             'agent' => $agent,
             'configType' => $configType,
             'configs' => $configs,
