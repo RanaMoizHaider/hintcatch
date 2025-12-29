@@ -15,13 +15,22 @@ class ConfigTypeController extends Controller
     {
         $configTypes = ConfigType::query()
             ->whereNotIn('slug', ['mcp-servers', 'prompts'])
-            ->withCount(['configs', 'categories'])
             ->orderBy('name')
             ->get();
 
         return Inertia::render('config-types/index', [
             'seo' => SeoService::forConfigTypeIndex(),
             'configTypes' => $configTypes,
+            'configTypeCounts' => Inertia::defer(fn () => ConfigType::query()
+                ->whereNotIn('slug', ['mcp-servers', 'prompts'])
+                ->withCount(['configs', 'categories'])
+                ->get()
+                ->mapWithKeys(fn ($type) => [
+                    $type->id => [
+                        'configs_count' => $type->configs_count,
+                        'categories_count' => $type->categories_count,
+                    ],
+                ])),
         ]);
     }
 

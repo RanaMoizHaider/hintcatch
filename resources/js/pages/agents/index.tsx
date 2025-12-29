@@ -2,10 +2,29 @@ import { show as showAgent } from '@/actions/App/Http/Controllers/AgentControlle
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SeoHead } from '@/components/seo-head';
-import type { AgentIndexPageProps } from '@/types/models';
-import { Link } from '@inertiajs/react';
+import type { Agent } from '@/types/models';
+import { Deferred, Link } from '@inertiajs/react';
 
-export default function AgentsIndex({ agents }: AgentIndexPageProps) {
+interface AgentCounts {
+    [key: number]: {
+        configs_count: number;
+        mcp_servers_count: number;
+        skills_count: number;
+    };
+}
+
+interface Props {
+    agents: Agent[];
+    agentCounts?: AgentCounts;
+}
+
+function CountSkeleton() {
+    return (
+        <span className="inline-block h-3 w-12 animate-pulse rounded bg-ds-bg-secondary" />
+    );
+}
+
+export default function AgentsIndex({ agents, agentCounts }: Props) {
     return (
         <>
             <SeoHead
@@ -57,8 +76,15 @@ export default function AgentsIndex({ agents }: AgentIndexPageProps) {
                                                 {agent.name}
                                             </div>
                                             <div className="mt-1 text-xs text-ds-text-muted">
-                                                {agent.configs_count ?? 0}{' '}
-                                                configs
+                                                <Deferred
+                                                    data="agentCounts"
+                                                    fallback={<CountSkeleton />}
+                                                >
+                                                    {agentCounts?.[agent.id]
+                                                        ?.configs_count ??
+                                                        0}{' '}
+                                                    configs
+                                                </Deferred>
                                             </div>
                                         </div>
                                     </Link>

@@ -39,41 +39,41 @@ class HomeController extends Controller
                 ->orderByDesc('created_at')
                 ->limit(6)
                 ->get(),
-            'topConfigs' => Config::query()
+            'topConfigs' => Inertia::defer(fn () => Config::query()
                 ->with(['submitter', 'agent', 'configType'])
                 ->orderByDesc('vote_score')
                 ->limit(6)
-                ->get(),
-            'topMcpServers' => McpServer::query()
+                ->get()),
+            'topMcpServers' => Inertia::defer(fn () => McpServer::query()
                 ->with('submitter')
                 ->orderByDesc('vote_score')
                 ->limit(6)
-                ->get(),
-            'topSkills' => Skill::query()
+                ->get()),
+            'topSkills' => Inertia::defer(fn () => Skill::query()
                 ->with('submitter')
                 ->orderByDesc('vote_score')
                 ->limit(6)
-                ->get(),
-            'topPrompts' => Prompt::query()
+                ->get()),
+            'topPrompts' => Inertia::defer(fn () => Prompt::query()
                 ->with('submitter')
                 ->orderByDesc('vote_score')
                 ->limit(6)
-                ->get(),
-            'agents' => Agent::query()
+                ->get()),
+            'agents' => Inertia::defer(fn () => Agent::query()
                 ->withCount('configs')
                 ->orderBy('name')
-                ->get(),
-            'configTypes' => ConfigType::query()
+                ->get()),
+            'configTypes' => Inertia::defer(fn () => ConfigType::query()
                 ->withCount('configs')
                 ->orderBy('name')
-                ->get(),
-            'stats' => [
+                ->get()),
+            'stats' => Inertia::defer(fn () => [
                 'totalConfigs' => Config::count(),
                 'totalMcpServers' => McpServer::count(),
                 'totalSkills' => Skill::count(),
                 'totalPrompts' => Prompt::count(),
                 'totalUsers' => User::count(),
-            ],
+            ]),
         ]);
     }
 }

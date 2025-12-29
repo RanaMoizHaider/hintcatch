@@ -17,23 +17,31 @@ class AgentController extends Controller
 {
     public function index(): Response
     {
-        $mcpServerCount = McpServer::count();
-        $skillsCount = Skill::count();
-
         $agents = Agent::query()
             ->orderBy('name')
-            ->withCount(['configs'])
-            ->get()
-            ->map(function ($agent) use ($mcpServerCount, $skillsCount) {
-                $agent->mcp_servers_count = $agent->supports_mcp ? $mcpServerCount : 0;
-                $agent->skills_count = $agent->supportsSkills() ? $skillsCount : 0;
-
-                return $agent;
-            });
+            ->get();
 
         return Inertia::render('agents/index', [
             'seo' => SeoService::forAgentIndex(),
             'agents' => $agents,
+            'agentCounts' => Inertia::defer(function () {
+                $mcpServerCount = McpServer::count();
+                $skillsCount = Skill::count();
+
+                return Agent::query()
+                    ->orderBy('name')
+                    ->withCount(['configs'])
+                    ->get()
+                    ->mapWithKeys(function ($agent) use ($mcpServerCount, $skillsCount) {
+                        return [
+                            $agent->id => [
+                                'configs_count' => $agent->configs_count,
+                                'mcp_servers_count' => $agent->supports_mcp ? $mcpServerCount : 0,
+                                'skills_count' => $agent->supportsSkills() ? $skillsCount : 0,
+                            ],
+                        ];
+                    });
+            }),
         ]);
     }
 
