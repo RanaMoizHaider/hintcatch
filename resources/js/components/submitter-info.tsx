@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useInitials } from '@/hooks/use-initials';
+import { show as usersShow } from '@/routes/users';
 import { Link } from '@inertiajs/react';
 
 interface SubmitterInfoProps {
@@ -23,7 +24,7 @@ export function SubmitterInfo({ user, sourceAuthor }: SubmitterInfoProps) {
         <div className="flex items-center gap-3">
             {user ? (
                 <>
-                    <Link href={`/users/${user.username}`}>
+                    <Link href={usersShow(user)}>
                         <Avatar className="h-8 w-8 border-2 border-ds-border">
                             <AvatarImage
                                 src={user.avatar ?? undefined}
@@ -36,7 +37,7 @@ export function SubmitterInfo({ user, sourceAuthor }: SubmitterInfoProps) {
                     </Link>
                     <div className="flex flex-col justify-center">
                         <Link
-                            href={`/users/${user.username}`}
+                            href={usersShow(user)}
                             className="text-sm leading-tight text-ds-text-primary hover:text-ds-text-secondary"
                         >
                             {user.name}
