@@ -4,14 +4,13 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SeoHead } from '@/components/seo-head';
 import type { AgentConfigsPageProps } from '@/types/models';
-import { Link, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { InfiniteScroll, Link, router } from '@inertiajs/react';
+import { ChevronRight } from 'lucide-react';
 
 export default function AgentConfigs({
     agent,
     configType,
     configs,
-    categories,
     filters,
     totalCount,
 }: AgentConfigsPageProps) {
@@ -23,14 +22,6 @@ export default function AgentConfigs({
         router.get(
             window.location.pathname,
             { ...filters, sort },
-            { preserveState: true, preserveScroll: true },
-        );
-    };
-
-    const handleCategoryChange = (category: string | null) => {
-        router.get(
-            window.location.pathname,
-            { ...filters, category },
             { preserveState: true, preserveScroll: true },
         );
     };
@@ -121,46 +112,6 @@ export default function AgentConfigs({
                                         Most Liked
                                     </button>
                                 </div>
-
-                                {/* Category Filter */}
-                                {categories.length > 0 && (
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <span className="text-xs text-ds-text-muted uppercase">
-                                            Category:
-                                        </span>
-                                        <button
-                                            onClick={() =>
-                                                handleCategoryChange(null)
-                                            }
-                                            className={`text-xs transition-colors ${
-                                                !filters.category
-                                                    ? 'text-ds-text-primary underline'
-                                                    : 'text-ds-text-muted hover:text-ds-text-secondary'
-                                            }`}
-                                        >
-                                            All
-                                        </button>
-                                        {categories.map((cat) => (
-                                            <button
-                                                key={cat.id}
-                                                onClick={() =>
-                                                    handleCategoryChange(
-                                                        cat.slug,
-                                                    )
-                                                }
-                                                className={`text-xs transition-colors ${
-                                                    filters.category ===
-                                                    cat.slug
-                                                        ? 'text-ds-text-primary underline'
-                                                        : 'text-ds-text-muted hover:text-ds-text-secondary'
-                                                }`}
-                                            >
-                                                {cat.name} (
-                                                {cat.configs_count ?? 0})
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </section>
@@ -169,7 +120,15 @@ export default function AgentConfigs({
                     <section className="border-ds-border">
                         <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
                             {configs.data.length > 0 ? (
-                                <>
+                                <InfiniteScroll
+                                    data="configs"
+                                    buffer={500}
+                                    loading={
+                                        <div className="mt-8 flex justify-center">
+                                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-ds-border border-t-ds-text-primary" />
+                                        </div>
+                                    }
+                                >
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                         {configs.data.map((config) => (
                                             <ConfigCard
@@ -179,35 +138,7 @@ export default function AgentConfigs({
                                             />
                                         ))}
                                     </div>
-
-                                    {/* Pagination */}
-                                    {configs.meta.last_page > 1 && (
-                                        <div className="mt-8 flex items-center justify-center gap-2">
-                                            {configs.links.prev && (
-                                                <Link
-                                                    href={configs.links.prev}
-                                                    className="flex items-center gap-1 border-2 border-ds-border px-3 py-1 text-sm text-ds-text-muted transition-colors hover:border-ds-text-muted hover:text-ds-text-primary"
-                                                >
-                                                    <ChevronLeft className="h-4 w-4" />
-                                                    Previous
-                                                </Link>
-                                            )}
-                                            <span className="px-3 py-1 text-sm text-ds-text-muted">
-                                                Page {configs.meta.current_page}{' '}
-                                                of {configs.meta.last_page}
-                                            </span>
-                                            {configs.links.next && (
-                                                <Link
-                                                    href={configs.links.next}
-                                                    className="flex items-center gap-1 border-2 border-ds-border px-3 py-1 text-sm text-ds-text-muted transition-colors hover:border-ds-text-muted hover:text-ds-text-primary"
-                                                >
-                                                    Next
-                                                    <ChevronRight className="h-4 w-4" />
-                                                </Link>
-                                            )}
-                                        </div>
-                                    )}
-                                </>
+                                </InfiniteScroll>
                             ) : (
                                 <div className="border-2 border-ds-border bg-ds-bg-card p-12 text-center">
                                     <p className="text-ds-text-muted">

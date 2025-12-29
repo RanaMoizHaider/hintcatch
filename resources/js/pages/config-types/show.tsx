@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { login } from '@/routes';
 import { SharedData } from '@/types';
-import type { Config, ConfigTypeShowPageProps } from '@/types/models';
+import type { Agent, Config, ConfigType } from '@/types/models';
 import { InfiniteScroll, Link, router, usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -20,8 +20,10 @@ interface PaginatedConfigs {
     prev_page_url: string | null;
 }
 
-interface Props extends Omit<ConfigTypeShowPageProps, 'configs'> {
+interface Props {
+    configType: ConfigType & { configs_count?: number };
     configs: PaginatedConfigs;
+    agents?: (Agent & { configs_count?: number })[];
     filters: {
         search?: string;
     };
@@ -30,7 +32,6 @@ interface Props extends Omit<ConfigTypeShowPageProps, 'configs'> {
 export default function ConfigTypesShow({
     configType,
     configs,
-    categories,
     agents,
     filters = { search: '' },
 }: Props) {
@@ -85,11 +86,11 @@ export default function ConfigTypesShow({
                         </div>
                     </section>
 
-                    {agents.length > 0 && (
+                    {agents && agents.length > 0 && (
                         <section className="border-b-2 border-ds-border">
                             <div className="mx-auto max-w-[1200px] px-4 py-6 md:px-6">
                                 <h2 className="mb-4 text-sm font-medium text-ds-text-muted uppercase">
-                                    Supported Agents
+                                    Filter by Agent
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
                                     {agents.map((agent) => (
@@ -108,28 +109,6 @@ export default function ConfigTypesShow({
                                                 {agent.configs_count ?? 0})
                                             </Badge>
                                         </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        </section>
-                    )}
-
-                    {categories.length > 0 && (
-                        <section className="border-b-2 border-ds-border">
-                            <div className="mx-auto max-w-[1200px] px-4 py-6 md:px-6">
-                                <h2 className="mb-4 text-sm font-medium text-ds-text-muted uppercase">
-                                    Categories
-                                </h2>
-                                <div className="flex flex-wrap gap-2">
-                                    {categories.map((category) => (
-                                        <Badge
-                                            key={category.id}
-                                            variant="outline"
-                                            className="border-ds-border text-ds-text-secondary"
-                                        >
-                                            {category.name} (
-                                            {category.configs_count ?? 0})
-                                        </Badge>
                                     ))}
                                 </div>
                             </div>

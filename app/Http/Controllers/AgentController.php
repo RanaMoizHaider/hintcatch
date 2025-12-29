@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agent;
-use App\Models\Category;
 use App\Models\Config;
 use App\Models\ConfigType;
 use App\Models\McpServer;
@@ -95,16 +94,11 @@ class AgentController extends Controller
     public function configs(Request $request, Agent $agent, ConfigType $configType): Response
     {
         $sort = $request->get('sort', 'recent');
-        $categorySlug = $request->get('category');
 
         $query = Config::query()
             ->where('agent_id', $agent->id)
             ->where('config_type_id', $configType->id)
             ->with(['submitter', 'configType', 'category']);
-
-        if ($categorySlug) {
-            $query->whereHas('category', fn ($q) => $q->where('slug', $categorySlug));
-        }
 
         if ($sort === 'top') {
             $query->orderByDesc('vote_score');
@@ -112,23 +106,13 @@ class AgentController extends Controller
             $query->orderByDesc('created_at');
         }
 
-        $configs = $query->paginate(24)->withQueryString();
-
-        $categories = Category::query()
-            ->where('config_type_id', $configType->id)
-            ->withCount(['configs' => fn ($q) => $q->where('agent_id', $agent->id)])
-            ->orderBy('name')
-            ->get();
-
         return Inertia::render('agents/configs', [
             'seo' => SeoService::forAgentConfigs($agent, $configType),
             'agent' => $agent,
             'configType' => $configType,
-            'configs' => $configs,
-            'categories' => $categories,
+            'configs' => Inertia::scroll(fn () => $query->paginate(12)->withQueryString()),
             'filters' => [
                 'sort' => $sort,
-                'category' => $categorySlug,
             ],
             'totalCount' => Config::query()
                 ->where('agent_id', $agent->id)

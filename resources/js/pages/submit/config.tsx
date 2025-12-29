@@ -260,6 +260,106 @@ export default function SubmitConfig({
                                             message={errors.description}
                                         />
                                     </div>
+
+                                    <div className="grid gap-4 md:grid-cols-2">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="config_type_id">
+                                                Config Type
+                                            </Label>
+                                            <Select
+                                                value={
+                                                    selectedConfigTypeId ?? ''
+                                                }
+                                                onValueChange={
+                                                    handleConfigTypeChange
+                                                }
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a config type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {configTypes.map((type) => (
+                                                        <SelectItem
+                                                            key={type.id}
+                                                            value={type.id.toString()}
+                                                        >
+                                                            {type.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <InputError
+                                                message={errors.config_type_id}
+                                            />
+                                        </div>
+
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="agent_id">
+                                                Agent (optional)
+                                            </Label>
+                                            <Select
+                                                value={data.agent_id}
+                                                onValueChange={(value) =>
+                                                    setData('agent_id', value)
+                                                }
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select an agent (or leave empty for all)" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {agents.map((agent) => (
+                                                        <SelectItem
+                                                            key={agent.id}
+                                                            value={agent.id.toString()}
+                                                        >
+                                                            {agent.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <InputError
+                                                message={errors.agent_id}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {categories.length > 0 && (
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="category_id">
+                                                Category
+                                            </Label>
+                                            <Select
+                                                value={data.category_id}
+                                                onValueChange={(value) =>
+                                                    setData(
+                                                        'category_id',
+                                                        value,
+                                                    )
+                                                }
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a category" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {categories.map(
+                                                        (category) => (
+                                                            <SelectItem
+                                                                key={
+                                                                    category.id
+                                                                }
+                                                                value={category.id.toString()}
+                                                            >
+                                                                {category.name}
+                                                            </SelectItem>
+                                                        ),
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                            <InputError
+                                                message={errors.category_id}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-4">

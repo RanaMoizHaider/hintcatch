@@ -356,10 +356,8 @@ export interface AgentConfigsPageProps {
     agent: Agent;
     configType: ConfigType;
     configs: PaginatedData<Config>;
-    categories: Category[];
     filters: {
         sort: 'recent' | 'top';
-        category: string | null;
     };
     totalCount: number;
 }
@@ -371,8 +369,7 @@ export interface ConfigTypeIndexPageProps {
 export interface ConfigTypeShowPageProps {
     configType: ConfigType;
     configs: Config[];
-    categories: Category[];
-    agents: Agent[];
+    agents?: Agent[];
 }
 
 export interface ConfigShowPageProps {

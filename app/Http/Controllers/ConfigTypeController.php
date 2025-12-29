@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agent;
-use App\Models\Category;
 use App\Models\ConfigType;
 use App\Services\SeoService;
 use Inertia\Inertia;
@@ -57,15 +56,12 @@ class ConfigTypeController extends Controller
             'configType' => $configType->loadCount(['configs', 'categories']),
             'configs' => Inertia::scroll(fn () => $configs),
             'filters' => ['search' => $search],
-            'categories' => Category::query()
-                ->where('config_type_id', $configType->id)
+            'agents' => Inertia::defer(fn () => Agent::query()
                 ->withCount(['configs' => fn ($q) => $q->where('config_type_id', $configType->id)])
-                ->orderBy('name')
-                ->get(),
-            'agents' => Agent::query()
-                ->whereJsonContains('supported_config_types', $configType->slug)
-                ->withCount(['configs' => fn ($q) => $q->where('config_type_id', $configType->id)])
-                ->get(),
+                ->get()
+                ->filter(fn ($agent) => $agent->configs_count > 0)
+                ->sortByDesc('configs_count')
+                ->values()),
         ]);
     }
 }
