@@ -12,11 +12,31 @@ class PromptController extends Controller
 {
     public function index(): Response
     {
+        $search = request('search');
+        $category = request('category');
+
+        $prompts = Prompt::query()
+            ->with('submitter')
+            ->when($search, function ($query, $search) {
+                $searchLower = strtolower($search);
+                $query->where(function ($q) use ($searchLower) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchLower}%"])
+                        ->orWhereRaw('LOWER(description) LIKE ?', ["%{$searchLower}%"]);
+                });
+            })
+            ->when($category, function ($query, $category) {
+                $query->where('category', $category);
+            })
+            ->orderByDesc('vote_score')
+            ->paginate(12)
+            ->withQueryString();
+
         return Inertia::render('prompts/index', [
-            'prompts' => Prompt::query()
-                ->with('submitter')
-                ->orderByDesc('vote_score')
-                ->paginate(24),
+            'prompts' => Inertia::scroll(fn () => $prompts),
+            'filters' => [
+                'search' => $search,
+                'category' => $category,
+            ],
             'featuredPrompts' => Prompt::query()
                 ->with('submitter')
                 ->where('is_featured', true)
@@ -27,6 +47,7 @@ class PromptController extends Controller
                 ->select('category')
                 ->distinct()
                 ->whereNotNull('category')
+                ->orderBy('category')
                 ->pluck('category'),
         ]);
     }

@@ -13,12 +13,25 @@ class McpServerController extends Controller
 {
     public function index(): Response
     {
+        $search = request('search');
+
+        $mcpServers = McpServer::query()
+            ->with('submitter')
+            ->when($search, function ($query, $search) {
+                $searchLower = mb_strtolower($search);
+                $query->where(function ($q) use ($searchLower) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchLower}%"])
+                        ->orWhereRaw('LOWER(description) LIKE ?', ["%{$searchLower}%"]);
+                });
+            })
+            ->orderByDesc('vote_score')
+            ->orderByDesc('created_at')
+            ->paginate(12)
+            ->withQueryString();
+
         return Inertia::render('mcp-servers/index', [
-            'mcpServers' => McpServer::query()
-                ->with('submitter')
-                ->orderByDesc('vote_score')
-                ->orderByDesc('created_at')
-                ->get(),
+            'mcpServers' => Inertia::scroll(fn () => $mcpServers),
+            'filters' => ['search' => $search],
             'featuredMcpServers' => McpServer::query()
                 ->with('submitter')
                 ->where('is_featured', true)

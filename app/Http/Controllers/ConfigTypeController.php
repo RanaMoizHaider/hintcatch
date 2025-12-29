@@ -25,13 +25,26 @@ class ConfigTypeController extends Controller
 
     public function show(ConfigType $configType): Response
     {
+        $search = request('search');
+
+        $configs = $configType->configs()
+            ->with(['submitter', 'agent', 'category'])
+            ->when($search, function ($query, $search) {
+                $searchLower = mb_strtolower($search);
+                $query->where(function ($q) use ($searchLower) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchLower}%"])
+                        ->orWhereRaw('LOWER(description) LIKE ?', ["%{$searchLower}%"]);
+                });
+            })
+            ->orderByDesc('vote_score')
+            ->orderByDesc('created_at')
+            ->paginate(12)
+            ->withQueryString();
+
         return Inertia::render('config-types/show', [
             'configType' => $configType->loadCount(['configs', 'categories']),
-            'configs' => $configType->configs()
-                ->with(['submitter', 'agent', 'category'])
-                ->orderByDesc('vote_score')
-                ->limit(20)
-                ->get(),
+            'configs' => Inertia::scroll(fn () => $configs),
+            'filters' => ['search' => $search],
             'categories' => Category::query()
                 ->where('config_type_id', $configType->id)
                 ->withCount(['configs' => fn ($q) => $q->where('config_type_id', $configType->id)])

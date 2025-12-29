@@ -1,13 +1,47 @@
+import { index } from '@/actions/App/Http/Controllers/McpServerController';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { McpServerCard } from '@/components/mcp-server-card';
+import { SearchInput } from '@/components/search-input';
 import { SeoHead } from '@/components/seo-head';
-import type { McpServerIndexPageProps } from '@/types/models';
+import { Button } from '@/components/ui/button';
+import { login } from '@/routes';
+import { SharedData } from '@/types';
+import type { McpServer, PaginatedData } from '@/types/models';
+import { InfiniteScroll, Link, router, usePage } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
+
+interface Props {
+    mcpServers: PaginatedData<McpServer>;
+    filters: {
+        search?: string;
+    };
+    featuredMcpServers?: McpServer[];
+}
 
 export default function McpServersIndex({
     mcpServers,
+    filters,
     featuredMcpServers,
-}: McpServerIndexPageProps) {
+}: Props) {
+    const { auth } = usePage<SharedData>().props;
+    const [search, setSearch] = useState(filters.search || '');
+    const submitHref = auth.user ? '/submit' : login();
+
+    const handleSearch = (value: string) => {
+        setSearch(value);
+        router.get(
+            index.url(),
+            { search: value || undefined },
+            {
+                preserveState: true,
+                replace: true,
+                reset: ['mcpServers'],
+            },
+        );
+    };
+
     return (
         <>
             <SeoHead
@@ -20,54 +54,89 @@ export default function McpServersIndex({
                 <main className="flex-1">
                     <section className="border-b-2 border-ds-border">
                         <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
-                            <h1 className="text-2xl font-medium text-ds-text-primary uppercase md:text-3xl">
-                                MCP Servers
-                            </h1>
-                            <p className="mt-2 text-ds-text-secondary">
-                                Model Context Protocol server configurations for
-                                your AI agents
-                            </p>
+                            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                                <div>
+                                    <h1 className="text-2xl font-medium text-ds-text-primary uppercase md:text-3xl">
+                                        MCP Servers
+                                    </h1>
+                                    <p className="mt-2 text-ds-text-secondary">
+                                        Model Context Protocol server
+                                        configurations for your AI agents
+                                    </p>
+                                </div>
+                                <div className="w-full md:w-72">
+                                    <SearchInput
+                                        value={search}
+                                        onChange={handleSearch}
+                                        placeholder="Search MCP servers..."
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </section>
 
-                    {/* Featured Servers */}
-                    {featuredMcpServers && featuredMcpServers.length > 0 && (
-                        <section className="border-b-2 border-ds-border">
-                            <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
-                                <h2 className="mb-6 text-sm font-medium text-ds-text-muted uppercase">
-                                    Featured
-                                </h2>
-                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                    {featuredMcpServers.map((server) => (
-                                        <McpServerCard
-                                            key={server.id}
-                                            mcpServer={server}
-                                        />
-                                    ))}
+                    {!search &&
+                        featuredMcpServers &&
+                        featuredMcpServers.length > 0 && (
+                            <section className="border-b-2 border-ds-border">
+                                <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
+                                    <h2 className="mb-6 text-sm font-medium text-ds-text-muted uppercase">
+                                        Featured
+                                    </h2>
+                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                        {featuredMcpServers.map((server) => (
+                                            <McpServerCard
+                                                key={server.id}
+                                                mcpServer={server}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        </section>
-                    )}
+                            </section>
+                        )}
 
-                    {/* All Servers */}
                     <section className="border-ds-border">
                         <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
                             <h2 className="mb-6 text-sm font-medium text-ds-text-muted uppercase">
-                                All MCP Servers
+                                {search ? 'Search Results' : 'All MCP Servers'}
                             </h2>
-                            {mcpServers.length > 0 ? (
-                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                    {mcpServers.map((server) => (
-                                        <McpServerCard
-                                            key={server.id}
-                                            mcpServer={server}
-                                        />
-                                    ))}
-                                </div>
+                            {mcpServers.data.length > 0 ? (
+                                <InfiniteScroll
+                                    data="mcpServers"
+                                    buffer={500}
+                                    loading={
+                                        <div className="mt-8 flex justify-center">
+                                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-ds-border border-t-ds-text-primary" />
+                                        </div>
+                                    }
+                                >
+                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                        {mcpServers.data.map((server) => (
+                                            <McpServerCard
+                                                key={server.id}
+                                                mcpServer={server}
+                                            />
+                                        ))}
+                                    </div>
+                                </InfiniteScroll>
                             ) : (
-                                <div className="py-12 text-center text-ds-text-muted">
-                                    No MCP servers yet. Be the first to share
-                                    one!
+                                <div className="border-2 border-ds-border bg-ds-bg-card p-12 text-center">
+                                    <p className="text-ds-text-muted">
+                                        {search
+                                            ? `No MCP servers found matching "${search}"`
+                                            : 'No MCP servers yet. Be the first to share one!'}
+                                    </p>
+                                    {!search && (
+                                        <Button
+                                            asChild
+                                            className="mt-4 bg-ds-text-primary text-ds-bg-base hover:bg-ds-text-secondary"
+                                        >
+                                            <Link href={submitHref}>
+                                                <Plus className="mr-1 h-4 w-4" />
+                                                Submit Now
+                                            </Link>
+                                        </Button>
+                                    )}
                                 </div>
                             )}
                         </div>

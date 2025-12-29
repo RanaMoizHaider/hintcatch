@@ -13,12 +13,25 @@ class SkillController extends Controller
 {
     public function index(): Response
     {
+        $search = request('search');
+
+        $skills = Skill::query()
+            ->with('submitter')
+            ->when($search, function ($query, $search) {
+                $searchLower = strtolower($search);
+                $query->where(function ($q) use ($searchLower) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchLower}%"])
+                        ->orWhereRaw('LOWER(description) LIKE ?', ["%{$searchLower}%"]);
+                });
+            })
+            ->orderByDesc('vote_score')
+            ->orderByDesc('created_at')
+            ->paginate(12)
+            ->withQueryString();
+
         return Inertia::render('skills/index', [
-            'skills' => Skill::query()
-                ->with('submitter')
-                ->orderByDesc('vote_score')
-                ->orderByDesc('created_at')
-                ->get(),
+            'skills' => Inertia::scroll(fn () => $skills),
+            'filters' => ['search' => $search],
             'featuredSkills' => Skill::query()
                 ->with('submitter')
                 ->where('is_featured', true)

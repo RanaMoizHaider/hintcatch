@@ -10,6 +10,31 @@ use Inertia\Response;
 
 class ConfigController extends Controller
 {
+    public function index(): Response
+    {
+        $search = request('search');
+
+        // This is a placeholder since the main browsing happens via config types
+        // But we can offer a consolidated view if needed
+        $configs = Config::query()
+            ->with(['submitter', 'agent', 'configType', 'category'])
+            ->when($search, function ($query, $search) {
+                $searchLower = strtolower($search);
+                $query->where(function ($q) use ($searchLower) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchLower}%"])
+                        ->orWhereRaw('LOWER(description) LIKE ?', ["%{$searchLower}%"]);
+                });
+            })
+            ->orderByDesc('created_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        return Inertia::render('configs/index', [
+            'configs' => Inertia::scroll(fn () => $configs),
+            'filters' => ['search' => $search],
+        ]);
+    }
+
     public function show(Config $config): Response
     {
         $config->load([
