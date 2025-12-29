@@ -30,10 +30,11 @@ Route::get('/agents/{agent:slug}', [AgentController::class, 'show'])->name('agen
 Route::get('/agents/{agent:slug}/configs/{configType:slug}', [AgentController::class, 'configs'])->name('agents.configs')->withoutScopedBindings();
 
 // Config Types
-Route::get('/configs', [ConfigTypeController::class, 'index'])->name('config-types.index');
+Route::get('/config-types', [ConfigTypeController::class, 'index'])->name('config-types.index');
 Route::get('/configs/{configType:slug}', [ConfigTypeController::class, 'show'])->name('config-types.show');
 
-// Single Config
+// Configs
+Route::get('/configs', [ConfigController::class, 'index'])->name('configs.index');
 Route::get('/c/{config:slug}', [ConfigController::class, 'show'])->name('configs.show');
 
 // MCP Servers
