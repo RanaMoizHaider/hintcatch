@@ -1,6 +1,7 @@
 import InputError from '@/components/input-error';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import { MarkdownEditor } from '@/components/markdown-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,6 +30,7 @@ export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
         source_url: string;
         source_author: string;
         github_url: string;
+        readme: string;
     }>({
         name: '',
         description: '',
@@ -39,6 +41,7 @@ export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
         source_url: '',
         source_author: '',
         github_url: '',
+        readme: '',
     });
 
     const addAllowedTool = () => {
@@ -74,6 +77,7 @@ export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
             source_url: data.source_url || null,
             source_author: data.source_author || null,
             github_url: data.github_url || null,
+            readme: data.readme || null,
         };
 
         router.post('/submit/skill', submitData, {
@@ -405,6 +409,25 @@ keyword1, keyword2, keyword3`}
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div className="bg-ds-card rounded-lg p-6">
+                                    <h2 className="mb-4 text-lg font-semibold text-ds-text-primary">
+                                        README / Documentation (optional)
+                                    </h2>
+                                    <p className="mb-4 text-sm text-ds-text-secondary">
+                                        Add installation instructions, usage
+                                        examples, or any documentation you want
+                                        to share. Supports Markdown formatting.
+                                    </p>
+                                    <MarkdownEditor
+                                        value={data.readme}
+                                        onChange={(value: string) =>
+                                            setData('readme', value)
+                                        }
+                                        placeholder="# Installation&#10;&#10;Instructions for installing this skill...&#10;&#10;## Usage&#10;&#10;How to use this skill..."
+                                    />
+                                    <InputError message={errors.readme} />
                                 </div>
 
                                 <div className="flex justify-end gap-4 border-t-2 border-ds-border pt-6">

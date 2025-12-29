@@ -23,6 +23,8 @@ class Config extends Model
         'category_id',
         'source_url',
         'source_author',
+        'uses_standard_install',
+        'readme',
         'github_url',
         'instructions',
         'vote_score',
@@ -35,6 +37,7 @@ class Config extends Model
         return [
             'vote_score' => 'integer',
             'is_featured' => 'boolean',
+            'uses_standard_install' => 'boolean',
         ];
     }
 

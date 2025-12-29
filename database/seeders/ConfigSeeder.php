@@ -20,6 +20,7 @@ class ConfigSeeder extends Seeder
 
         $this->seedRulesConfigs();
         $this->seedSlashCommands();
+        $this->seedPlugins();
     }
 
     private function seedRulesConfigs(): void
@@ -1404,6 +1405,227 @@ Run this command after staging changes with `git add`.
 ## Format
 
 Uses conventional commits format.
+MD;
+    }
+
+    private function seedPlugins(): void
+    {
+        $pluginsType = ConfigType::where('slug', 'plugins')->first();
+        $category = Category::first();
+
+        if (! $pluginsType || ! $category) {
+            return;
+        }
+
+        $configs = $this->getPluginsData();
+
+        foreach ($configs as $configData) {
+            $agent = Agent::where('slug', $configData['agent_slug'])->first();
+            if (! $agent) {
+                continue;
+            }
+
+            $config = Config::updateOrCreate(
+                ['slug' => $configData['slug']],
+                [
+                    'name' => $configData['name'],
+                    'slug' => $configData['slug'],
+                    'description' => $configData['description'],
+                    'config_type_id' => $pluginsType->id,
+                    'agent_id' => $agent->id,
+                    'submitted_by' => $this->systemUser->id,
+                    'category_id' => $category->id,
+                    'source_url' => $configData['source_url'] ?? null,
+                    'source_author' => $configData['source_author'] ?? null,
+                    'uses_standard_install' => $configData['uses_standard_install'] ?? true,
+                    'readme' => $configData['readme'] ?? null,
+                ]
+            );
+
+            if (isset($configData['files'])) {
+                foreach ($configData['files'] as $file) {
+                    ConfigFile::updateOrCreate(
+                        ['config_id' => $config->id, 'filename' => $file['filename']],
+                        $file
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * @return array<int, array{agent_slug: string, name: string, slug: string, description: string, source_url: string, source_author: string, uses_standard_install: bool, instructions?: string, files: array<int, array{filename: string, path: string, content: string, language: string, is_primary: bool, order: int}>}>
+     */
+    private function getPluginsData(): array
+    {
+        return [
+            // OpenCode Plugins
+            [
+                'agent_slug' => 'opencode',
+                'name' => 'Zellij Session Namer',
+                'slug' => 'opencode-zellij-namer',
+                'description' => 'AI-powered dynamic Zellij session naming. Generates contextual names like project-intent-tag (e.g. myapp-feat-auth) using Gemini AI.',
+                'source_url' => 'https://github.com/24601/opencode-zellij-namer',
+                'source_author' => '24601',
+                'uses_standard_install' => true,
+                'files' => [
+                    [
+                        'filename' => 'opencode.json',
+                        'path' => 'opencode.json',
+                        'content' => $this->getZellijNamerConfigContent(),
+                        'language' => 'json',
+                        'is_primary' => true,
+                        'order' => 1,
+                    ],
+                ],
+            ],
+            [
+                'agent_slug' => 'opencode',
+                'name' => 'Helicone Session',
+                'slug' => 'opencode-helicone-session',
+                'description' => 'Auto-injects Helicone session headers (Helicone-Session-Id, Helicone-Session-Name) for LLM request grouping and observability.',
+                'source_url' => 'https://github.com/H2Shami/opencode-helicone-session',
+                'source_author' => 'H2Shami',
+                'uses_standard_install' => true,
+                'files' => [
+                    [
+                        'filename' => 'opencode.json',
+                        'path' => 'opencode.json',
+                        'content' => $this->getHeliconeSessionConfigContent(),
+                        'language' => 'json',
+                        'is_primary' => true,
+                        'order' => 1,
+                    ],
+                ],
+            ],
+            // Claude Code Plugins (Official Marketplace)
+            [
+                'agent_slug' => 'claude-code',
+                'name' => 'GitHub Integration',
+                'slug' => 'claude-code-github',
+                'description' => 'Official GitHub integration for Claude Code. Work with issues, pull requests, repositories, and code reviews directly from Claude.',
+                'source_url' => 'https://github.com/anthropics/claude-code-plugins',
+                'source_author' => 'Anthropic',
+                'uses_standard_install' => true,
+                'readme' => $this->getClaudePluginInstallContent('github'),
+            ],
+            [
+                'agent_slug' => 'claude-code',
+                'name' => 'Linear Integration',
+                'slug' => 'claude-code-linear',
+                'description' => 'Official Linear integration for Claude Code. Manage issues, projects, and workflows directly from your coding session.',
+                'source_url' => 'https://github.com/anthropics/claude-code-plugins',
+                'source_author' => 'Anthropic',
+                'uses_standard_install' => true,
+                'readme' => $this->getClaudePluginInstallContent('linear'),
+            ],
+            [
+                'agent_slug' => 'claude-code',
+                'name' => 'Commit Commands',
+                'slug' => 'claude-code-commit-commands',
+                'description' => 'Enhanced git commit workflows for Claude Code. Generate conventional commits, interactive staging, and smart commit messages.',
+                'source_url' => 'https://github.com/anthropics/claude-code-plugins',
+                'source_author' => 'Anthropic',
+                'uses_standard_install' => true,
+                'readme' => $this->getClaudePluginInstallContent('commit-commands'),
+            ],
+            [
+                'agent_slug' => 'claude-code',
+                'name' => 'PR Review Toolkit',
+                'slug' => 'claude-code-pr-review-toolkit',
+                'description' => 'Comprehensive pull request review toolkit. Automated code review, security scanning, and actionable feedback.',
+                'source_url' => 'https://github.com/anthropics/claude-code-plugins',
+                'source_author' => 'Anthropic',
+                'uses_standard_install' => true,
+                'readme' => $this->getClaudePluginInstallContent('pr-review-toolkit'),
+            ],
+            [
+                'agent_slug' => 'claude-code',
+                'name' => 'TypeScript LSP',
+                'slug' => 'claude-code-typescript-lsp',
+                'description' => 'TypeScript Language Server Protocol integration. Enhanced code intelligence, type checking, and refactoring support.',
+                'source_url' => 'https://github.com/anthropics/claude-code-plugins',
+                'source_author' => 'Anthropic',
+                'uses_standard_install' => true,
+                'readme' => $this->getClaudePluginInstallContent('typescript-lsp'),
+            ],
+            [
+                'agent_slug' => 'claude-code',
+                'name' => 'Pyright LSP',
+                'slug' => 'claude-code-pyright-lsp',
+                'description' => 'Python type checking and language server integration via Pyright. Static type analysis and intelligent code completion.',
+                'source_url' => 'https://github.com/anthropics/claude-code-plugins',
+                'source_author' => 'Anthropic',
+                'uses_standard_install' => true,
+                'readme' => $this->getClaudePluginInstallContent('pyright-lsp'),
+            ],
+            [
+                'agent_slug' => 'claude-code',
+                'name' => 'Notion Integration',
+                'slug' => 'claude-code-notion',
+                'description' => 'Official Notion integration for Claude Code. Access and update Notion pages, databases, and documentation.',
+                'source_url' => 'https://github.com/anthropics/claude-code-plugins',
+                'source_author' => 'Anthropic',
+                'uses_standard_install' => true,
+                'readme' => $this->getClaudePluginInstallContent('notion'),
+            ],
+            [
+                'agent_slug' => 'claude-code',
+                'name' => 'Sentry Integration',
+                'slug' => 'claude-code-sentry',
+                'description' => 'Sentry error tracking integration. View and debug production errors directly from your coding session.',
+                'source_url' => 'https://github.com/anthropics/claude-code-plugins',
+                'source_author' => 'Anthropic',
+                'uses_standard_install' => true,
+                'readme' => $this->getClaudePluginInstallContent('sentry'),
+            ],
+        ];
+    }
+
+    private function getZellijNamerConfigContent(): string
+    {
+        return <<<'JSON'
+{
+  "plugin": [
+    "opencode-zellij-namer"
+  ]
+}
+JSON;
+    }
+
+    private function getHeliconeSessionConfigContent(): string
+    {
+        return <<<'JSON'
+{
+  "plugin": [
+    "opencode-helicone-session"
+  ]
+}
+JSON;
+    }
+
+    private function getClaudePluginInstallContent(string $pluginName): string
+    {
+        return <<<MD
+# Installation
+
+Install from the official Claude Code marketplace:
+
+```
+/plugin install {$pluginName}@claude-plugins-official
+```
+
+## Scopes
+
+You can install plugins at different scopes:
+- **user**: Available in all your projects
+- **project**: Available only in this project (saved to `.claude/plugins.json`)
+- **local**: Available only in this session
+
+To specify scope:
+```
+/plugin install {$pluginName}@claude-plugins-official --scope user
+```
 MD;
     }
 }

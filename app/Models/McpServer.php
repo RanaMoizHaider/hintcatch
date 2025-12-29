@@ -25,6 +25,7 @@ class McpServer extends Model
         'submitted_by',
         'source_url',
         'source_author',
+        'readme',
         'github_url',
         'vote_score',
         'is_featured',

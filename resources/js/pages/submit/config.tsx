@@ -1,6 +1,7 @@
 import InputError from '@/components/input-error';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import { MarkdownEditor } from '@/components/markdown-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -49,8 +50,11 @@ export default function SubmitConfig({
         source_url: string;
         github_url: string;
         source_author: string;
+        readme: string;
         files: ConfigFile[];
         agent_installs: AgentInstall[];
+        uses_standard_install: boolean;
+        instructions: string;
     }>({
         name: '',
         description: '',
@@ -60,8 +64,11 @@ export default function SubmitConfig({
         source_url: '',
         github_url: '',
         source_author: '',
+        readme: '',
         files: [{ filename: '', content: '', language: 'json', path: '' }],
         agent_installs: [],
+        uses_standard_install: true,
+        instructions: '',
     });
 
     useEffect(() => {
@@ -104,6 +111,8 @@ export default function SubmitConfig({
         (ct) => ct.id.toString() === selectedConfigTypeId,
     );
     const categories: Category[] = selectedConfigType?.categories ?? [];
+    const isPluginType = selectedConfigType?.slug === 'plugins';
+    const selectedAgent = agents.find((a) => a.id.toString() === data.agent_id);
 
     const handleConfigTypeChange = (value: string) => {
         setSelectedConfigTypeId(value);
@@ -253,112 +262,116 @@ export default function SubmitConfig({
                                     </div>
                                 </div>
 
-                                {/* Classification */}
                                 <div className="space-y-4">
                                     <h2 className="text-sm font-medium text-ds-text-muted uppercase">
-                                        Classification
+                                        README (optional)
                                     </h2>
+                                    <p className="text-xs text-ds-text-secondary">
+                                        Add documentation, installation
+                                        instructions, or usage examples.
+                                        Supports Markdown.
+                                    </p>
+                                    <MarkdownEditor
+                                        id="readme"
+                                        value={data.readme}
+                                        onChange={(value) =>
+                                            setData('readme', value)
+                                        }
+                                        placeholder="# Installation&#10;&#10;Describe how to install and use this config..."
+                                        minHeight="200px"
+                                    />
+                                    <InputError message={errors.readme} />
+                                </div>
 
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="agent">Agent</Label>
-                                            <Select
-                                                value={data.agent_id}
-                                                onValueChange={(value) =>
-                                                    setData('agent_id', value)
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Universal (works with multiple agents)" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="">
-                                                        Universal (works with
-                                                        multiple agents)
-                                                    </SelectItem>
-                                                    {agents.map((agent) => (
-                                                        <SelectItem
-                                                            key={agent.id}
-                                                            value={agent.id.toString()}
-                                                        >
-                                                            {agent.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={errors.agent_id}
-                                            />
-                                        </div>
+                                {isPluginType && data.agent_id && (
+                                    <div className="space-y-4">
+                                        <h2 className="text-sm font-medium text-ds-text-muted uppercase">
+                                            Installation Method
+                                        </h2>
 
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="config_type">
-                                                Config Type
-                                            </Label>
-                                            <Select
-                                                value={data.config_type_id}
-                                                onValueChange={
-                                                    handleConfigTypeChange
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a type" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {configTypes.map((ct) => (
-                                                        <SelectItem
-                                                            key={ct.id}
-                                                            value={ct.id.toString()}
-                                                        >
-                                                            {ct.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={errors.config_type_id}
-                                            />
+                                        <div className="space-y-4 border-2 border-ds-border bg-ds-bg-card p-4">
+                                            <div className="flex items-center gap-4">
+                                                <label className="flex cursor-pointer items-center gap-2">
+                                                    <input
+                                                        type="radio"
+                                                        name="install_type"
+                                                        checked={
+                                                            data.uses_standard_install
+                                                        }
+                                                        onChange={() =>
+                                                            setData(
+                                                                'uses_standard_install',
+                                                                true,
+                                                            )
+                                                        }
+                                                        className="text-ds-accent-primary h-4 w-4 border-ds-border bg-ds-bg-secondary"
+                                                    />
+                                                    <span className="text-sm text-ds-text-primary">
+                                                        Uses standard{' '}
+                                                        {selectedAgent?.name}{' '}
+                                                        plugin installation
+                                                    </span>
+                                                </label>
+                                            </div>
+
+                                            <div className="flex items-center gap-4">
+                                                <label className="flex cursor-pointer items-center gap-2">
+                                                    <input
+                                                        type="radio"
+                                                        name="install_type"
+                                                        checked={
+                                                            !data.uses_standard_install
+                                                        }
+                                                        onChange={() =>
+                                                            setData(
+                                                                'uses_standard_install',
+                                                                false,
+                                                            )
+                                                        }
+                                                        className="text-ds-accent-primary h-4 w-4 border-ds-border bg-ds-bg-secondary"
+                                                    />
+                                                    <span className="text-sm text-ds-text-primary">
+                                                        Requires custom
+                                                        installation
+                                                        instructions
+                                                    </span>
+                                                </label>
+                                            </div>
+
+                                            {!data.uses_standard_install && (
+                                                <div className="grid gap-2 pt-2">
+                                                    <Label htmlFor="instructions">
+                                                        Installation
+                                                        Instructions (Markdown)
+                                                    </Label>
+                                                    <textarea
+                                                        id="instructions"
+                                                        value={
+                                                            data.instructions
+                                                        }
+                                                        onChange={(e) =>
+                                                            setData(
+                                                                'instructions',
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder="Provide step-by-step installation instructions..."
+                                                        className="flex min-h-[150px] w-full border border-ds-border bg-ds-bg-secondary px-3 py-2 font-mono text-sm text-ds-text-primary shadow-xs outline-none placeholder:text-ds-text-muted focus-visible:border-white focus-visible:ring-[3px] focus-visible:ring-white/20"
+                                                    />
+                                                    <p className="text-xs text-ds-text-muted">
+                                                        Supports Markdown
+                                                        formatting
+                                                    </p>
+                                                    <InputError
+                                                        message={
+                                                            errors.instructions
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-
-                                    {categories.length > 0 && (
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="category">
-                                                Category (optional)
-                                            </Label>
-                                            <Select
-                                                value={data.category_id}
-                                                onValueChange={(value) =>
-                                                    setData(
-                                                        'category_id',
-                                                        value,
-                                                    )
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a category" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {categories.map(
-                                                        (category) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    category.id
-                                                                }
-                                                                value={category.id.toString()}
-                                                            >
-                                                                {category.name}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={errors.category_id}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
+                                )}
 
                                 {!data.agent_id && (
                                     <div className="space-y-4">

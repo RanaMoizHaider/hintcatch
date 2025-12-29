@@ -2,10 +2,12 @@ import { CommentSection } from '@/components/comment-section';
 import { ConfigCard } from '@/components/config-card';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import { MarkdownRenderer } from '@/components/markdown-renderer';
 import {
     MultiFileViewer,
     type MultiFileViewerFile,
 } from '@/components/multi-file-viewer';
+import { PluginInstallSection } from '@/components/plugin-install-section';
 import { SeoHead } from '@/components/seo-head';
 import { ShowPageHeader } from '@/components/show-page-header';
 import type { ConfigShowPageProps } from '@/types/models';
@@ -14,6 +16,7 @@ import { useMemo } from 'react';
 
 export default function ConfigsShow({
     config,
+    pluginInstallTemplate,
     relatedConfigs,
     moreFromUser,
     comments,
@@ -59,6 +62,26 @@ export default function ConfigsShow({
                             <FileCode className="h-6 w-6 text-ds-text-muted" />
                         }
                     />
+
+                    {config.readme && (
+                        <section className="border-b-2 border-ds-border">
+                            <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
+                                <h2 className="mb-6 text-lg font-medium text-ds-text-primary">
+                                    README
+                                </h2>
+                                <div className="rounded-lg border border-ds-border bg-ds-bg-secondary p-6">
+                                    <MarkdownRenderer content={config.readme} />
+                                </div>
+                            </div>
+                        </section>
+                    )}
+
+                    {pluginInstallTemplate && config.agent && (
+                        <PluginInstallSection
+                            template={pluginInstallTemplate}
+                            agentName={config.agent.name}
+                        />
+                    )}
 
                     {config.instructions && (
                         <section className="border-b-2 border-ds-border">

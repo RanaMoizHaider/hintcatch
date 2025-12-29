@@ -1,6 +1,7 @@
 import { CommentSection } from '@/components/comment-section';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { McpServerCard } from '@/components/mcp-server-card';
 import { SeoHead } from '@/components/seo-head';
 import { ShowPageHeader } from '@/components/show-page-header';
@@ -77,6 +78,21 @@ export default function McpServersShow({
                             )
                         }
                     />
+
+                    {mcpServer.readme && (
+                        <section className="border-b-2 border-ds-border">
+                            <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
+                                <h2 className="mb-6 text-lg font-medium text-ds-text-primary">
+                                    README
+                                </h2>
+                                <div className="rounded-lg border border-ds-border bg-ds-bg-secondary p-6">
+                                    <MarkdownRenderer
+                                        content={mcpServer.readme}
+                                    />
+                                </div>
+                            </div>
+                        </section>
+                    )}
 
                     {agentSlugs.length > 0 && activeIntegration && (
                         <section className="border-b-2 border-ds-border">

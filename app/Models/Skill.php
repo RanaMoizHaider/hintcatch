@@ -27,6 +27,7 @@ class Skill extends Model
         'assets',
         'source_url',
         'source_author',
+        'readme',
         'github_url',
 
         'vote_score',

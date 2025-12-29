@@ -65,9 +65,15 @@ class ConfigController extends Controller
             ? $config->favorites()->where('user_id', $user->id)->exists()
             : false;
 
+        $pluginInstallTemplate = null;
+        if ($config->agent && $config->configType?->slug === 'plugins') {
+            $pluginInstallTemplate = $config->agent->getConfigTypeTemplate('plugins');
+        }
+
         return Inertia::render('configs/show', [
             'seo' => SeoService::forConfig($config),
             'config' => $config,
+            'pluginInstallTemplate' => $pluginInstallTemplate,
             'relatedConfigs' => $config->allConnections()
                 ->load(['submitter', 'agent', 'configType'])
                 ->take(6),

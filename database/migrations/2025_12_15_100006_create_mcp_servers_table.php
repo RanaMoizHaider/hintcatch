@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('submitted_by')->nullable()->constrained('users')->nullOnDelete();
             $table->string('source_url')->nullable();
             $table->string('source_author')->nullable();
+            $table->longText('readme')->nullable();
             $table->string('github_url')->nullable();
             $table->integer('vote_score')->default(0);
             $table->boolean('is_featured')->default(false);

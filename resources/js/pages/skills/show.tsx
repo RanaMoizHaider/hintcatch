@@ -13,6 +13,8 @@ import type { Agent, SkillShowPageProps } from '@/types/models';
 import { BookOpen, Check, Copy } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import { MarkdownRenderer } from '@/components/markdown-renderer';
+
 export default function SkillShow({
     skill,
     agentIntegrations,
@@ -94,6 +96,19 @@ export default function SkillShow({
                             <BookOpen className="h-6 w-6 text-ds-text-muted" />
                         }
                     />
+
+                    {skill.readme && (
+                        <section className="border-b-2 border-ds-border">
+                            <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-6 md:py-12">
+                                <h2 className="mb-6 text-lg font-medium text-ds-text-primary">
+                                    README
+                                </h2>
+                                <div className="rounded-lg border border-ds-border bg-ds-bg-secondary p-6">
+                                    <MarkdownRenderer content={skill.readme} />
+                                </div>
+                            </div>
+                        </section>
+                    )}
 
                     {agents.length > 0 && (
                         <section className="border-b-2 border-ds-border">

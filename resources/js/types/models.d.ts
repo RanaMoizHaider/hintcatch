@@ -37,8 +37,28 @@ export interface ConfigTypeTemplate {
     global_path?: string;
     project_path?: string;
     config_format?: string;
+    file_extension?: string;
     install_method?: string;
     install_command?: string;
+    // OpenCode plugin-specific (npm install via config)
+    npm_install?: {
+        config_file: string;
+        config_key: string;
+        example: string;
+    };
+    // Claude Code plugin-specific (marketplace)
+    marketplace_add_command?: string;
+    scopes?: string[];
+    plugin_structure?: {
+        manifest: string;
+        commands_dir: string;
+        agents_dir: string;
+        skills_dir: string;
+        hooks_file: string;
+        mcp_config: string;
+        lsp_config: string;
+    };
+    test_command?: string;
 }
 
 export interface McpConfigPaths {
@@ -108,6 +128,8 @@ export interface Config {
     source_author: string | null;
     github_url: string | null;
     instructions: string | null;
+    readme: string | null;
+    uses_standard_install: boolean;
     vote_score: number;
     is_featured: boolean;
     created_at: string;
@@ -154,6 +176,7 @@ export interface Skill {
     assets: string[] | null;
     source_url: string | null;
     source_author: string | null;
+    readme: string | null;
     github_url: string | null;
     vote_score: number;
     is_featured: boolean;
@@ -203,6 +226,7 @@ export interface McpServer {
     headers: Record<string, string> | null;
     source_url: string | null;
     source_author: string | null;
+    readme: string | null;
     github_url: string | null;
     vote_score: number;
     is_featured: boolean;
@@ -353,6 +377,7 @@ export interface ConfigTypeShowPageProps {
 
 export interface ConfigShowPageProps {
     config: Config;
+    pluginInstallTemplate: ConfigTypeTemplate | null;
     relatedConfigs: Config[];
     moreFromUser: Config[];
     comments: Comment[];

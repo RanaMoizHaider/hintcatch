@@ -1,6 +1,7 @@
 import InputError from '@/components/input-error';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import { MarkdownEditor } from '@/components/markdown-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,6 +36,7 @@ export default function SubmitMcpServer({}: SubmitMcpServerPageProps) {
         headers: KeyValuePair[];
         source_url: string;
         source_author: string;
+        readme: string;
     }>({
         name: '',
         description: '',
@@ -46,6 +48,7 @@ export default function SubmitMcpServer({}: SubmitMcpServerPageProps) {
         headers: [{ key: '', value: '' }],
         source_url: '',
         source_author: '',
+        readme: '',
     });
 
     const addArg = () => {
@@ -146,6 +149,7 @@ export default function SubmitMcpServer({}: SubmitMcpServerPageProps) {
                     : null,
             source_url: data.source_url || null,
             source_author: data.source_author || null,
+            readme: data.readme || null,
         };
 
         router.post('/submit/mcp-server', submitData, {
@@ -549,6 +553,31 @@ export default function SubmitMcpServer({}: SubmitMcpServerPageProps) {
                                                 message={errors.source_author}
                                             />
                                         </div>
+                                    </div>
+                                </div>
+
+                                {/* README / Documentation */}
+                                <div className="space-y-4">
+                                    <h2 className="text-sm font-medium text-ds-text-muted uppercase">
+                                        Documentation (optional)
+                                    </h2>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="readme">
+                                            README / Instructions
+                                        </Label>
+                                        <MarkdownEditor
+                                            value={data.readme}
+                                            onChange={(value) =>
+                                                setData('readme', value)
+                                            }
+                                            placeholder="Add installation instructions, usage examples, or any additional documentation..."
+                                            minHeight="150px"
+                                        />
+                                        <p className="text-xs text-ds-text-muted">
+                                            Markdown supported. Use this to
+                                            provide setup instructions or usage
+                                            examples.
+                                        </p>
                                     </div>
                                 </div>
 

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->string('source_url')->nullable();
             $table->string('source_author')->nullable();
+            $table->boolean('uses_standard_install')->default(true);
+            $table->longText('readme')->nullable();
             $table->string('github_url')->nullable();
             $table->text('instructions')->nullable();
             $table->integer('vote_score')->default(0);
