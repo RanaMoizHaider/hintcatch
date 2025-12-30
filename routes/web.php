@@ -16,6 +16,8 @@ use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\SubmitController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\VoteController;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -64,6 +66,16 @@ Route::get('/login', function () {
 Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
 Route::post('/logout', [SocialAuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Dev-only login (local environment only)
+if (app()->isLocal()) {
+    Route::get('/dev-login/{user?}', function (?User $user = null) {
+        $user ??= User::first() ?? User::factory()->create();
+        Auth::login($user, true);
+
+        return redirect()->route('dashboard');
+    })->name('dev.login');
+}
 
 // Authenticated routes
 Route::middleware(['auth', 'verified'])->group(function () {
