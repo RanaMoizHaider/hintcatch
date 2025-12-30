@@ -2,7 +2,7 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import type { SubmitIndexPageProps } from '@/types/models';
 import { Head, Link } from '@inertiajs/react';
-import { FileCode, MessageSquare, Server } from 'lucide-react';
+import { FileCode, MessageSquare, Server, Sparkles } from 'lucide-react';
 
 export default function SubmitIndex({}: SubmitIndexPageProps) {
     const submissionTypes = [
@@ -21,6 +21,14 @@ export default function SubmitIndex({}: SubmitIndexPageProps) {
             icon: Server,
             href: '/submit/mcp-server',
             examples: ['Remote servers', 'Local commands', 'API integrations'],
+        },
+        {
+            title: 'Agent Skill',
+            description:
+                'Share reusable skills that teach AI agents new capabilities and workflows.',
+            icon: Sparkles,
+            href: '/submit/skill',
+            examples: ['Code patterns', 'Workflows', 'Domain expertise'],
         },
         {
             title: 'Prompt',
@@ -45,8 +53,8 @@ export default function SubmitIndex({}: SubmitIndexPageProps) {
                                 Submit
                             </h1>
                             <p className="mt-2 text-ds-text-secondary">
-                                Share your configurations, MCP servers, and
-                                prompts with the community
+                                Share your configurations, MCP servers, prompts,
+                                and skills with the community
                             </p>
                         </div>
                     </section>
@@ -56,7 +64,7 @@ export default function SubmitIndex({}: SubmitIndexPageProps) {
                             <h2 className="mb-6 text-sm font-medium text-ds-text-muted uppercase">
                                 Choose what to submit
                             </h2>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                                 {submissionTypes.map((type) => (
                                     <Link
                                         key={type.title}
