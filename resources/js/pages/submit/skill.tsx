@@ -167,36 +167,29 @@ export default function SubmitSkill() {
 
                                     <div className="grid gap-2">
                                         <Label htmlFor="license">License</Label>
-                                        <Select
+                                        <Input
+                                            id="license"
+                                            type="text"
+                                            list="license-options"
                                             value={data.license}
-                                            onValueChange={(value) =>
-                                                setData('license', value)
+                                            onChange={(e) =>
+                                                setData(
+                                                    'license',
+                                                    e.target.value,
+                                                )
                                             }
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="MIT">
-                                                    MIT
-                                                </SelectItem>
-                                                <SelectItem value="Apache-2.0">
-                                                    Apache 2.0
-                                                </SelectItem>
-                                                <SelectItem value="GPL-3.0">
-                                                    GPL 3.0
-                                                </SelectItem>
-                                                <SelectItem value="BSD-3-Clause">
-                                                    BSD 3-Clause
-                                                </SelectItem>
-                                                <SelectItem value="CC-BY-4.0">
-                                                    CC BY 4.0
-                                                </SelectItem>
-                                                <SelectItem value="Unlicense">
-                                                    Unlicense
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                            placeholder="MIT"
+                                        />
+                                        <datalist id="license-options">
+                                            <option value="MIT" />
+                                            <option value="Apache-2.0" />
+                                            <option value="GPL-3.0" />
+                                            <option value="BSD-3-Clause" />
+                                            <option value="CC-BY-4.0" />
+                                            <option value="Unlicense" />
+                                            <option value="ISC" />
+                                            <option value="MPL-2.0" />
+                                        </datalist>
                                         <InputError message={errors.license} />
                                     </div>
                                 </div>
