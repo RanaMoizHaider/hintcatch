@@ -23,9 +23,6 @@ class Skill extends Model
         'compatibility',
         'metadata',
         'allowed_tools',
-        'scripts',
-        'references',
-        'assets',
         'source_url',
         'source_author',
         'readme',
@@ -41,9 +38,6 @@ class Skill extends Model
             'compatibility' => 'array',
             'metadata' => 'array',
             'allowed_tools' => 'array',
-            'scripts' => 'array',
-            'references' => 'array',
-            'assets' => 'array',
 
             'vote_score' => 'integer',
             'is_featured' => 'boolean',
@@ -125,11 +119,18 @@ class Skill extends Model
         $globalPath = $template['global_path'] ?? null;
         $projectPath = $template['project_path'] ?? null;
 
+        $this->loadMissing('files');
+
+        $scripts = $this->files->filter(fn ($f) => str_starts_with($f->path ?? '', 'scripts/'))->values();
+        $references = $this->files->filter(fn ($f) => str_starts_with($f->path ?? '', 'references/'))->values();
+        $assets = $this->files->filter(fn ($f) => str_starts_with($f->path ?? '', 'assets/'))->values();
+
         return [
             'skill_md' => $this->generateSkillMd(),
-            'scripts' => $this->scripts,
-            'references' => $this->references,
-            'assets' => $this->assets,
+            'files' => $this->files,
+            'scripts' => $scripts->isEmpty() ? null : $scripts,
+            'references' => $references->isEmpty() ? null : $references,
+            'assets' => $assets->isEmpty() ? null : $assets,
             'folder_name' => $this->slug,
             'install_path' => $globalPath ? "{$globalPath}{$this->slug}" : null,
             'project_path' => $projectPath ? "{$projectPath}{$this->slug}" : null,

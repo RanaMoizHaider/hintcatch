@@ -30,13 +30,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['review', 'quality', 'best-practices'],
                 ],
                 'allowed_tools' => ['read', 'grep', 'glob', 'lsp_diagnostics'],
-                'content' => $this->getCodeReviewContent(),
-                'scripts' => null,
-                'references' => null,
-                'assets' => null,
                 'github_url' => null,
                 'category_id' => $utilitiesCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getCodeReviewContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Git Commit',
@@ -50,23 +55,34 @@ class SkillSeeder extends Seeder
                     'tags' => ['git', 'commits', 'conventional'],
                 ],
                 'allowed_tools' => ['bash', 'read'],
-                'content' => $this->getGitCommitContent(),
-                'scripts' => [
-                    [
-                        'name' => 'validate-commit.sh',
-                        'content' => "#!/bin/bash\n# Validates commit message format\ncommit_msg=\"\$1\"\npattern='^(feat|fix|docs|style|refactor|test|chore)(\\(.+\\))?: .{1,50}'",
-                    ],
-                ],
-                'references' => [
-                    [
-                        'name' => 'conventional-commits.md',
-                        'content' => "# Conventional Commits\n\nSee https://www.conventionalcommits.org/",
-                    ],
-                ],
-                'assets' => null,
                 'github_url' => null,
                 'category_id' => $utilitiesCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getGitCommitContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                    [
+                        'filename' => 'validate-commit.sh',
+                        'path' => 'scripts/',
+                        'content' => "#!/bin/bash\n# Validates commit message format\ncommit_msg=\"\$1\"\npattern='^(feat|fix|docs|style|refactor|test|chore)(\\(.+\\))?: .{1,50}'",
+                        'language' => 'bash',
+                        'is_primary' => false,
+                        'order' => 1,
+                    ],
+                    [
+                        'filename' => 'conventional-commits.md',
+                        'path' => 'references/',
+                        'content' => "# Conventional Commits\n\nSee https://www.conventionalcommits.org/",
+                        'language' => 'markdown',
+                        'is_primary' => false,
+                        'order' => 2,
+                    ],
+                ],
             ],
             [
                 'name' => 'Testing Guide',
@@ -80,40 +96,66 @@ class SkillSeeder extends Seeder
                     'tags' => ['testing', 'unit-tests', 'integration', 'e2e'],
                 ],
                 'allowed_tools' => ['read', 'write', 'bash', 'glob'],
-                'content' => $this->getTestingGuideContent(),
-                'scripts' => [
-                    [
-                        'name' => 'run-tests.sh',
-                        'content' => "#!/bin/bash\nset -e\nnpm test -- --coverage",
-                    ],
-                    [
-                        'name' => 'setup-fixtures.sh',
-                        'content' => "#!/bin/bash\nmkdir -p tests/fixtures\necho 'Fixtures directory ready'",
-                    ],
-                ],
-                'references' => [
-                    [
-                        'name' => 'test-templates.md',
-                        'content' => $this->getTestTemplatesContent(),
-                    ],
-                    [
-                        'name' => 'test-fixtures.md',
-                        'content' => $this->getTestFixturesContent(),
-                    ],
-                    [
-                        'name' => 'test-helpers.md',
-                        'content' => $this->getTestHelpersContent(),
-                    ],
-                ],
-                'assets' => [
-                    [
-                        'name' => 'sample-data.json',
-                        'content' => json_encode(['users' => [['id' => 1, 'name' => 'Test User']]]),
-                    ],
-                ],
                 'github_url' => null,
                 'category_id' => $utilitiesCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getTestingGuideContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                    [
+                        'filename' => 'run-tests.sh',
+                        'path' => 'scripts/',
+                        'content' => "#!/bin/bash\nset -e\nnpm test -- --coverage",
+                        'language' => 'bash',
+                        'is_primary' => false,
+                        'order' => 1,
+                    ],
+                    [
+                        'filename' => 'setup-fixtures.sh',
+                        'path' => 'scripts/',
+                        'content' => "#!/bin/bash\nmkdir -p tests/fixtures\necho 'Fixtures directory ready'",
+                        'language' => 'bash',
+                        'is_primary' => false,
+                        'order' => 2,
+                    ],
+                    [
+                        'filename' => 'test-templates.md',
+                        'path' => 'references/',
+                        'content' => $this->getTestTemplatesContent(),
+                        'language' => 'markdown',
+                        'is_primary' => false,
+                        'order' => 3,
+                    ],
+                    [
+                        'filename' => 'test-fixtures.md',
+                        'path' => 'references/',
+                        'content' => $this->getTestFixturesContent(),
+                        'language' => 'markdown',
+                        'is_primary' => false,
+                        'order' => 4,
+                    ],
+                    [
+                        'filename' => 'test-helpers.md',
+                        'path' => 'references/',
+                        'content' => $this->getTestHelpersContent(),
+                        'language' => 'markdown',
+                        'is_primary' => false,
+                        'order' => 5,
+                    ],
+                    [
+                        'filename' => 'sample-data.json',
+                        'path' => 'assets/',
+                        'content' => json_encode(['users' => [['id' => 1, 'name' => 'Test User']]]),
+                        'language' => 'json',
+                        'is_primary' => false,
+                        'order' => 6,
+                    ],
+                ],
             ],
             // Productivity Skills from awesome-claude-code
             [
@@ -128,16 +170,26 @@ class SkillSeeder extends Seeder
                     'tags' => ['context', 'performance', 'ai-optimization'],
                 ],
                 'allowed_tools' => ['read', 'write', 'glob', 'mgrep'],
-                'content' => $this->getContextManagementContent(),
-                'scripts' => [
-                    [
-                        'name' => 'context-analyze.js',
-                        'content' => "// Analyze current context usage\nconst analyzeContext = () => {\n  return {\n    totalFiles: context.files.length,\n    contextSize: JSON.stringify(context).length,\n    recommendations: generateRecommendations()\n  };\n};",
-                    ],
-                ],
                 'github_url' => 'https://github.com/hesreallyhim/awesome-claude-code',
                 'category_id' => $productivityCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getContextManagementContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                    [
+                        'filename' => 'context-analyze.js',
+                        'path' => 'scripts/',
+                        'content' => "// Analyze current context usage\nconst analyzeContext = () => {\n  return {\n    totalFiles: context.files.length,\n    contextSize: JSON.stringify(context).length,\n    recommendations: generateRecommendations()\n  };\n};",
+                        'language' => 'javascript',
+                        'is_primary' => false,
+                        'order' => 1,
+                    ],
+                ],
             ],
             [
                 'name' => 'Project Templates',
@@ -151,20 +203,34 @@ class SkillSeeder extends Seeder
                     'tags' => ['templates', 'boilerplate', 'project-setup'],
                 ],
                 'allowed_tools' => ['write', 'bash', 'glob'],
-                'content' => $this->getProjectTemplatesContent(),
-                'assets' => [
-                    [
-                        'name' => 'laravel-starter.zip',
-                        'content' => 'base64-encoded-laravel-template',
-                    ],
-                    [
-                        'name' => 'react-starter.zip',
-                        'content' => 'base64-encoded-react-template',
-                    ],
-                ],
                 'github_url' => 'https://github.com/hesreallyhim/awesome-claude-code',
                 'category_id' => $productivityCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getProjectTemplatesContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                    [
+                        'filename' => 'laravel-starter.zip',
+                        'path' => 'assets/',
+                        'content' => 'base64-encoded-laravel-template',
+                        'language' => 'binary',
+                        'is_primary' => false,
+                        'order' => 1,
+                    ],
+                    [
+                        'filename' => 'react-starter.zip',
+                        'path' => 'assets/',
+                        'content' => 'base64-encoded-react-template',
+                        'language' => 'binary',
+                        'is_primary' => false,
+                        'order' => 2,
+                    ],
+                ],
             ],
             [
                 'name' => 'Status Line Integration',
@@ -178,10 +244,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['status-line', 'ide', 'ui'],
                 ],
                 'allowed_tools' => ['read', 'write'],
-                'content' => $this->getStatusLineContent(),
                 'github_url' => 'https://github.com/hesreallyhim/awesome-claude-code',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getStatusLineContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Task Automation',
@@ -195,10 +269,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['automation', 'tasks', 'workflow'],
                 ],
                 'allowed_tools' => ['bash', 'write', 'read'],
-                'content' => $this->getTaskAutomationContent(),
                 'github_url' => 'https://github.com/hesreallyhim/awesome-claude-code',
                 'category_id' => $productivityCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getTaskAutomationContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             // Agentic Subagents (OpenCode) - https://github.com/Cluster444/agentic
             [
@@ -213,10 +295,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['analysis', 'codebase', 'architecture', 'agentic'],
                 ],
                 'allowed_tools' => ['read', 'glob', 'grep', 'mgrep'],
-                'content' => $this->getAgenticCodebaseAnalyzerContent(),
                 'github_url' => 'https://github.com/Cluster444/agentic',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getAgenticCodebaseAnalyzerContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Codebase Locator',
@@ -230,10 +320,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['search', 'locate', 'codebase', 'agentic'],
                 ],
                 'allowed_tools' => ['read', 'glob', 'grep', 'mgrep', 'lsp_goto_definition', 'lsp_find_references'],
-                'content' => $this->getAgenticCodebaseLocatorContent(),
                 'github_url' => 'https://github.com/Cluster444/agentic',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getAgenticCodebaseLocatorContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Codebase Pattern Finder',
@@ -247,10 +345,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['patterns', 'conventions', 'analysis', 'agentic'],
                 ],
                 'allowed_tools' => ['read', 'glob', 'grep', 'mgrep', 'ast_grep_search'],
-                'content' => $this->getAgenticPatternFinderContent(),
                 'github_url' => 'https://github.com/Cluster444/agentic',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getAgenticPatternFinderContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Thoughts Analyzer',
@@ -264,10 +370,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['reasoning', 'analysis', 'thinking', 'agentic'],
                 ],
                 'allowed_tools' => ['read'],
-                'content' => $this->getAgenticThoughtsAnalyzerContent(),
                 'github_url' => 'https://github.com/Cluster444/agentic',
                 'category_id' => $productivityCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getAgenticThoughtsAnalyzerContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Thoughts Locator',
@@ -281,10 +395,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['memory', 'context', 'thinking', 'agentic'],
                 ],
                 'allowed_tools' => ['read', 'grep'],
-                'content' => $this->getAgenticThoughtsLocatorContent(),
                 'github_url' => 'https://github.com/Cluster444/agentic',
                 'category_id' => $productivityCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getAgenticThoughtsLocatorContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Web Search Researcher',
@@ -298,10 +420,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['research', 'web-search', 'documentation', 'agentic'],
                 ],
                 'allowed_tools' => ['webfetch', 'websearch_exa_web_search_exa'],
-                'content' => $this->getAgenticWebSearchContent(),
                 'github_url' => 'https://github.com/Cluster444/agentic',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getAgenticWebSearchContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             // TÂCHES Skills (Claude Code) - https://github.com/glittercowboy/taches-cc-resources
             [
@@ -316,10 +446,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['meta', 'skills', 'creation', 'taches'],
                 ],
                 'allowed_tools' => ['read', 'write', 'glob'],
-                'content' => $this->getTachesCreateAgentSkillsContent(),
                 'github_url' => 'https://github.com/glittercowboy/taches-cc-resources',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getTachesCreateAgentSkillsContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Create Hooks',
@@ -333,10 +471,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['hooks', 'lifecycle', 'automation', 'taches'],
                 ],
                 'allowed_tools' => ['read', 'write', 'glob'],
-                'content' => $this->getTachesCreateHooksContent(),
                 'github_url' => 'https://github.com/glittercowboy/taches-cc-resources',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getTachesCreateHooksContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Create Meta Prompts',
@@ -350,10 +496,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['meta-prompts', 'templates', 'generation', 'taches'],
                 ],
                 'allowed_tools' => ['read', 'write'],
-                'content' => $this->getTachesCreateMetaPromptsContent(),
                 'github_url' => 'https://github.com/glittercowboy/taches-cc-resources',
                 'category_id' => $productivityCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getTachesCreateMetaPromptsContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Create Plans',
@@ -367,10 +521,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['planning', 'tasks', 'project-management', 'taches'],
                 ],
                 'allowed_tools' => ['read', 'write', 'todowrite'],
-                'content' => $this->getTachesCreatePlansContent(),
                 'github_url' => 'https://github.com/glittercowboy/taches-cc-resources',
                 'category_id' => $productivityCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getTachesCreatePlansContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Create Slash Commands',
@@ -384,10 +546,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['commands', 'slash-commands', 'automation', 'taches'],
                 ],
                 'allowed_tools' => ['read', 'write', 'glob'],
-                'content' => $this->getTachesCreateSlashCommandsContent(),
                 'github_url' => 'https://github.com/glittercowboy/taches-cc-resources',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getTachesCreateSlashCommandsContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Create Subagents',
@@ -401,10 +571,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['subagents', 'delegation', 'specialization', 'taches'],
                 ],
                 'allowed_tools' => ['read', 'write', 'glob'],
-                'content' => $this->getTachesCreateSubagentsContent(),
                 'github_url' => 'https://github.com/glittercowboy/taches-cc-resources',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getTachesCreateSubagentsContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Debug Like Expert',
@@ -418,10 +596,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['debugging', 'troubleshooting', 'expert', 'taches'],
                 ],
                 'allowed_tools' => ['read', 'write', 'bash', 'grep', 'lsp_diagnostics'],
-                'content' => $this->getTachesDebugLikeExpertContent(),
                 'github_url' => 'https://github.com/glittercowboy/taches-cc-resources',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getTachesDebugLikeExpertContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             // Claude Codex Settings Skills - https://github.com/fcakyon/claude-codex-settings
             [
@@ -436,10 +622,18 @@ class SkillSeeder extends Seeder
                     'tags' => ['testing', 'playwright', 'e2e', 'browser-automation'],
                 ],
                 'allowed_tools' => ['read', 'write', 'bash', 'playwriter_execute'],
-                'content' => $this->getCodexPlaywrightTestingContent(),
                 'github_url' => 'https://github.com/fcakyon/claude-codex-settings',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getCodexPlaywrightTestingContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
             [
                 'name' => 'Plugin Development',
@@ -453,18 +647,38 @@ class SkillSeeder extends Seeder
                     'tags' => ['plugins', 'development', 'extensions'],
                 ],
                 'allowed_tools' => ['read', 'write', 'bash', 'glob'],
-                'content' => $this->getCodexPluginDevelopmentContent(),
                 'github_url' => 'https://github.com/fcakyon/claude-codex-settings',
                 'category_id' => $developerCategory?->id,
                 'is_featured' => false,
+                'files' => [
+                    [
+                        'filename' => 'skill.md',
+                        'content' => $this->getCodexPluginDevelopmentContent(),
+                        'language' => 'markdown',
+                        'is_primary' => true,
+                        'order' => 0,
+                    ],
+                ],
             ],
         ];
 
         foreach ($skills as $skillData) {
-            Skill::updateOrCreate(
+            $files = $skillData['files'] ?? [];
+            unset($skillData['files']);
+
+            $primaryFile = collect($files)->firstWhere('is_primary', true);
+            $skillData['content'] = $primaryFile['content'] ?? '';
+
+            $skill = Skill::updateOrCreate(
                 ['slug' => $skillData['slug']],
                 [...$skillData, 'submitted_by' => $systemUser?->id]
             );
+
+            $skill->files()->delete();
+
+            foreach ($files as $fileData) {
+                $skill->files()->create($fileData);
+            }
         }
     }
 

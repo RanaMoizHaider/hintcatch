@@ -32,9 +32,6 @@ class SkillFactory extends Factory
             ],
             'metadata' => null,
             'allowed_tools' => null,
-            'scripts' => null,
-            'references' => null,
-            'assets' => null,
             'source_url' => fake()->optional()->url(),
             'source_author' => fake()->optional()->name(),
             'github_url' => fake()->optional()->url(),
@@ -59,54 +56,28 @@ class SkillFactory extends Factory
         ]);
     }
 
-    public function withScripts(): static
+    public function withFiles(int $count = 1): static
     {
-        return $this->state(fn () => [
-            'scripts' => [
-                [
-                    'filename' => 'setup.sh',
-                    'content' => "#!/bin/bash\necho 'Setting up skill...'",
-                    'description' => 'Setup script for the skill',
-                ],
-            ],
-        ]);
-    }
-
-    public function withReferences(): static
-    {
-        return $this->state(fn () => [
-            'references' => [
-                [
-                    'title' => 'Documentation',
-                    'url' => fake()->url(),
-                    'description' => 'Official documentation',
-                ],
-            ],
-        ]);
-    }
-
-    public function withAssets(): static
-    {
-        return $this->state(fn () => [
-            'assets' => [
-                [
-                    'filename' => 'template.md',
-                    'content' => '# Template\n\nThis is a template file.',
-                    'description' => 'Template file for the skill',
-                ],
-            ],
-        ]);
+        return $this->afterCreating(function (Skill $skill) use ($count) {
+            \App\Models\SkillFile::factory()
+                ->count($count)
+                ->sequence(fn ($sequence) => [
+                    'is_primary' => $sequence->index === 0,
+                    'order' => $sequence->index,
+                ])
+                ->create(['skill_id' => $skill->id]);
+        });
     }
 
     public function complete(): static
     {
-        return $this->withScripts()->withReferences()->withAssets()->state(fn () => [
+        return $this->state(fn () => [
             'allowed_tools' => ['read', 'write', 'bash'],
             'metadata' => [
                 'version' => '1.0.0',
                 'author' => fake()->name(),
             ],
-        ]);
+        ])->withFiles(3);
     }
 
     private function generateSkillContent(): string
