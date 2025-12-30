@@ -15,7 +15,8 @@
         "laravel/socialite": "^5.24",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
-        "saasykit/laravel-open-graphy": "^1.2"
+        "saasykit/laravel-open-graphy": "^1.2",
+        "symfony/yaml": "^7.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
