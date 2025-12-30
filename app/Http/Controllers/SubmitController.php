@@ -186,50 +186,45 @@ class SubmitController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:1000'],
-            'content' => ['required', 'string'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'license' => ['nullable', 'string', 'max:100'],
-            'compatibility' => ['nullable', 'array'],
-            'compatibility.agents' => ['nullable', 'array'],
-            'compatibility.agents.*' => ['string'],
-            'metadata' => ['nullable', 'array'],
-            'allowed_tools' => ['nullable', 'array'],
-            'allowed_tools.*' => ['string'],
-            'scripts' => ['nullable', 'array'],
-            'scripts.*.filename' => ['required', 'string', 'max:255'],
-            'scripts.*.content' => ['required', 'string'],
-            'scripts.*.description' => ['nullable', 'string', 'max:500'],
-            'references' => ['nullable', 'array'],
-            'references.*.title' => ['required', 'string', 'max:255'],
-            'references.*.url' => ['required', 'url', 'max:500'],
-            'references.*.description' => ['nullable', 'string', 'max:500'],
-            'assets' => ['nullable', 'array'],
-            'assets.*.filename' => ['required', 'string', 'max:255'],
-            'assets.*.content' => ['required', 'string'],
-            'assets.*.description' => ['nullable', 'string', 'max:500'],
+            'readme' => ['nullable', 'string'],
+            'files' => ['required', 'array', 'min:1'],
+            'files.*.filename' => ['required', 'string', 'max:255'],
+            'files.*.content' => ['required', 'string'],
+            'files.*.language' => ['nullable', 'string', 'max:50'],
+            'files.*.path' => ['nullable', 'string', 'max:500'],
             'source_url' => ['nullable', 'url', 'max:500'],
             'source_author' => ['nullable', 'string', 'max:255'],
             'github_url' => ['nullable', 'url', 'max:500'],
         ]);
+
+        $primaryFile = $validated['files'][0] ?? null;
 
         $skill = Skill::create([
             'submitted_by' => $request->user()->id,
             'name' => $validated['name'],
             'slug' => $this->generateUniqueSlug($validated['name'], Skill::class),
             'description' => $validated['description'],
-            'content' => $validated['content'],
+            'content' => $primaryFile['content'] ?? '',
             'category_id' => $validated['category_id'] ?? null,
             'license' => $validated['license'] ?? null,
-            'compatibility' => $validated['compatibility'] ?? null,
-            'metadata' => $validated['metadata'] ?? null,
-            'allowed_tools' => $validated['allowed_tools'] ?? null,
-            'scripts' => $validated['scripts'] ?? null,
-            'references' => $validated['references'] ?? null,
-            'assets' => $validated['assets'] ?? null,
+            'readme' => $validated['readme'] ?? null,
             'source_url' => $validated['source_url'] ?? null,
             'source_author' => $validated['source_author'] ?? null,
             'github_url' => $validated['github_url'] ?? null,
         ]);
+
+        foreach ($validated['files'] as $index => $fileData) {
+            $skill->files()->create([
+                'filename' => $fileData['filename'],
+                'path' => $fileData['path'] ?? null,
+                'content' => $fileData['content'],
+                'language' => $fileData['language'] ?? 'markdown',
+                'is_primary' => $index === 0,
+                'order' => $index,
+            ]);
+        }
 
         return redirect()->route('skills.show', $skill->slug)
             ->with('success', 'Skill submitted successfully!');

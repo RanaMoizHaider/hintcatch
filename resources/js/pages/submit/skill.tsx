@@ -14,82 +14,87 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import type { SubmitSkillPageProps } from '@/types/models';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+
+interface SkillFile {
+    filename: string;
+    content: string;
+    language: string;
+    path: string;
+}
 
 export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const { data, setData, errors, setError } = useForm<{
+    const { data, setData, post, processing, errors } = useForm<{
         name: string;
         description: string;
-        content: string;
         category_id: string;
         license: string;
-        allowed_tools: string[];
+        readme: string;
+        files: SkillFile[];
         source_url: string;
         source_author: string;
         github_url: string;
-        readme: string;
     }>({
         name: '',
         description: '',
-        content: '',
         category_id: '',
         license: 'MIT',
-        allowed_tools: [''],
+        readme: '',
+        files: [
+            {
+                filename: 'SKILL.md',
+                content: '',
+                language: 'markdown',
+                path: '',
+            },
+        ],
         source_url: '',
         source_author: '',
         github_url: '',
-        readme: '',
     });
 
-    const addAllowedTool = () => {
-        setData('allowed_tools', [...data.allowed_tools, '']);
+    const addFile = () => {
+        setData('files', [
+            ...data.files,
+            { filename: '', content: '', language: 'markdown', path: '' },
+        ]);
     };
 
-    const removeAllowedTool = (index: number) => {
-        if (data.allowed_tools.length > 1) {
+    const removeFile = (index: number) => {
+        if (data.files.length > 1) {
             setData(
-                'allowed_tools',
-                data.allowed_tools.filter((_, i) => i !== index),
+                'files',
+                data.files.filter((_, i) => i !== index),
             );
         }
     };
 
-    const updateAllowedTool = (index: number, value: string) => {
-        const newTools = [...data.allowed_tools];
-        newTools[index] = value;
-        setData('allowed_tools', newTools);
+    const updateFile = (
+        index: number,
+        field: keyof SkillFile,
+        value: string,
+    ) => {
+        const newFiles = [...data.files];
+        newFiles[index] = { ...newFiles[index], [field]: value };
+        setData('files', newFiles);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSubmitting(true);
-
-        const submitData = {
-            name: data.name,
-            description: data.description,
-            content: data.content,
-            category_id: data.category_id || null,
-            license: data.license || null,
-            allowed_tools: data.allowed_tools.filter((t) => t.trim() !== ''),
-            source_url: data.source_url || null,
-            source_author: data.source_author || null,
-            github_url: data.github_url || null,
-            readme: data.readme || null,
-        };
-
-        router.post('/submit/skill', submitData, {
-            onError: (errors) => {
-                Object.entries(errors).forEach(([key, value]) => {
-                    setError(key as keyof typeof data, value as string);
-                });
-                setIsSubmitting(false);
-            },
-            onFinish: () => setIsSubmitting(false),
-        });
+        post('/submit/skill');
     };
+
+    const languageOptions = [
+        { value: 'markdown', label: 'Markdown' },
+        { value: 'text', label: 'Plain Text' },
+        { value: 'json', label: 'JSON' },
+        { value: 'yaml', label: 'YAML' },
+        { value: 'javascript', label: 'JavaScript' },
+        { value: 'typescript', label: 'TypeScript' },
+        { value: 'python', label: 'Python' },
+        { value: 'bash', label: 'Bash' },
+    ];
 
     return (
         <>
@@ -120,6 +125,7 @@ export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
                     <section className="border-ds-border">
                         <div className="mx-auto max-w-[800px] px-4 py-8 md:px-6 md:py-12">
                             <form onSubmit={handleSubmit} className="space-y-6">
+                                {/* Basic Info */}
                                 <div className="space-y-4">
                                     <h2 className="text-sm font-medium text-ds-text-muted uppercase">
                                         Basic Information
@@ -154,7 +160,7 @@ export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
                                                 )
                                             }
                                             placeholder="A brief description of what this skill does..."
-                                            className="flex min-h-[80px] w-full border border-ds-border bg-ds-bg-card px-3 py-2 text-sm text-ds-text-primary shadow-xs outline-none placeholder:text-ds-text-muted focus-visible:border-white focus-visible:ring-[3px] focus-visible:ring-white/20"
+                                            className="flex min-h-[100px] w-full border border-ds-border bg-ds-bg-card px-3 py-2 text-sm text-ds-text-primary shadow-xs outline-none placeholder:text-ds-text-muted focus-visible:border-white focus-visible:ring-[3px] focus-visible:ring-white/20"
                                             required
                                         />
                                         <InputError
@@ -242,25 +248,182 @@ export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
                                     </div>
                                 </div>
 
+                                {/* README */}
                                 <div className="space-y-4">
                                     <h2 className="text-sm font-medium text-ds-text-muted uppercase">
-                                        Skill Content (Markdown)
+                                        README (optional)
                                     </h2>
+                                    <p className="text-xs text-ds-text-secondary">
+                                        Add documentation, installation
+                                        instructions, or usage examples.
+                                        Supports Markdown.
+                                    </p>
+                                    <MarkdownEditor
+                                        id="readme"
+                                        value={data.readme}
+                                        onChange={(value) =>
+                                            setData('readme', value)
+                                        }
+                                        placeholder="# Installation&#10;&#10;Describe how to install and use this skill..."
+                                        minHeight="200px"
+                                    />
+                                    <InputError message={errors.readme} />
+                                </div>
 
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="content">
-                                            Instructions
-                                        </Label>
-                                        <textarea
-                                            id="content"
-                                            value={data.content}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'content',
-                                                    e.target.value,
-                                                )
-                                            }
-                                            placeholder={`## When to use this skill
+                                {/* Skill Files */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="text-sm font-medium text-ds-text-muted uppercase">
+                                            Skill Files
+                                        </h2>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={addFile}
+                                            className="border-ds-border"
+                                        >
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Add File
+                                        </Button>
+                                    </div>
+
+                                    {data.files.map((file, index) => (
+                                        <div
+                                            key={index}
+                                            className="space-y-4 border-2 border-ds-border bg-ds-bg-card p-4"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-sm text-ds-text-muted">
+                                                    File {index + 1}
+                                                    {index === 0 &&
+                                                        ' (primary)'}
+                                                </span>
+                                                {data.files.length > 1 && (
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            removeFile(index)
+                                                        }
+                                                        className="text-red-500 hover:text-red-400"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                            </div>
+
+                                            <div className="grid gap-4 md:grid-cols-3">
+                                                <div className="grid gap-2">
+                                                    <Label
+                                                        htmlFor={`filename-${index}`}
+                                                    >
+                                                        Filename
+                                                    </Label>
+                                                    <Input
+                                                        id={`filename-${index}`}
+                                                        type="text"
+                                                        value={file.filename}
+                                                        onChange={(e) =>
+                                                            updateFile(
+                                                                index,
+                                                                'filename',
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder="SKILL.md"
+                                                        required
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <Label
+                                                        htmlFor={`language-${index}`}
+                                                    >
+                                                        Language
+                                                    </Label>
+                                                    <Select
+                                                        value={file.language}
+                                                        onValueChange={(
+                                                            value,
+                                                        ) =>
+                                                            updateFile(
+                                                                index,
+                                                                'language',
+                                                                value,
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {languageOptions.map(
+                                                                (lang) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            lang.value
+                                                                        }
+                                                                        value={
+                                                                            lang.value
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            lang.label
+                                                                        }
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <Label
+                                                        htmlFor={`path-${index}`}
+                                                    >
+                                                        Path (optional)
+                                                    </Label>
+                                                    <Input
+                                                        id={`path-${index}`}
+                                                        type="text"
+                                                        value={file.path}
+                                                        onChange={(e) =>
+                                                            updateFile(
+                                                                index,
+                                                                'path',
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder=".skills/my-skill/"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <Label
+                                                    htmlFor={`content-${index}`}
+                                                >
+                                                    Content
+                                                </Label>
+                                                <textarea
+                                                    id={`content-${index}`}
+                                                    value={file.content}
+                                                    onChange={(e) =>
+                                                        updateFile(
+                                                            index,
+                                                            'content',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder={`---
+name: ${data.name || 'My Skill'}
+description: ${data.description || 'Skill description'}
+license: ${data.license}
+---
+
+## When to use this skill
 
 Describe when this skill should be invoked...
 
@@ -270,81 +433,25 @@ Step-by-step instructions for the AI agent...
 
 ## Keywords
 keyword1, keyword2, keyword3`}
-                                            className="flex min-h-[300px] w-full border border-ds-border bg-ds-bg-card px-3 py-2 font-mono text-sm text-ds-text-primary shadow-xs outline-none placeholder:text-ds-text-muted focus-visible:border-white focus-visible:ring-[3px] focus-visible:ring-white/20"
-                                            required
-                                        />
-                                        <p className="text-xs text-ds-text-muted">
-                                            Write the skill instructions in
-                                            Markdown format following the
-                                            AgentSkills.io spec
-                                        </p>
-                                        <InputError message={errors.content} />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="text-sm font-medium text-ds-text-muted uppercase">
-                                            Allowed Tools (optional)
-                                        </h2>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={addAllowedTool}
-                                            className="border-ds-border"
-                                        >
-                                            <Plus className="mr-2 h-4 w-4" />
-                                            Add Tool
-                                        </Button>
-                                    </div>
-                                    <p className="text-xs text-ds-text-muted">
-                                        Specify which tools this skill is
-                                        allowed to use (e.g., bash, read, write,
-                                        grep)
-                                    </p>
-                                    {data.allowed_tools.map((tool, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center gap-2"
-                                        >
-                                            <Input
-                                                type="text"
-                                                value={tool}
-                                                onChange={(e) =>
-                                                    updateAllowedTool(
-                                                        index,
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                placeholder="bash"
-                                            />
-                                            {data.allowed_tools.length > 1 && (
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        removeAllowedTool(index)
-                                                    }
-                                                    className="text-red-500 hover:text-red-400"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            )}
+                                                    className="flex min-h-[300px] w-full border border-ds-border bg-ds-bg-secondary px-3 py-2 font-mono text-sm text-ds-text-primary shadow-xs outline-none placeholder:text-ds-text-muted focus-visible:border-white focus-visible:ring-[3px] focus-visible:ring-white/20"
+                                                    required
+                                                />
+                                            </div>
                                         </div>
                                     ))}
+                                    <InputError message={errors.files} />
                                 </div>
 
+                                {/* Source */}
                                 <div className="space-y-4">
                                     <h2 className="text-sm font-medium text-ds-text-muted uppercase">
                                         Source (optional)
                                     </h2>
 
-                                    <div className="grid gap-4">
+                                    <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
                                             <Label htmlFor="github_url">
-                                                GitHub Repository
+                                                GitHub URL
                                             </Label>
                                             <Input
                                                 id="github_url"
@@ -356,80 +463,58 @@ keyword1, keyword2, keyword3`}
                                                         e.target.value,
                                                     )
                                                 }
-                                                placeholder="https://github.com/user/repo"
+                                                placeholder="https://github.com/username/repo"
                                             />
                                             <InputError
                                                 message={errors.github_url}
                                             />
                                         </div>
 
-                                        <div className="grid gap-4 md:grid-cols-2">
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="source_url">
-                                                    Source URL
-                                                </Label>
-                                                <Input
-                                                    id="source_url"
-                                                    type="url"
-                                                    value={data.source_url}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            'source_url',
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="https://..."
-                                                />
-                                                <InputError
-                                                    message={errors.source_url}
-                                                />
-                                            </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="source_url">
+                                                Source URL
+                                            </Label>
+                                            <Input
+                                                id="source_url"
+                                                type="url"
+                                                value={data.source_url}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'source_url',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder="https://example.com/skill"
+                                            />
+                                            <InputError
+                                                message={errors.source_url}
+                                            />
+                                        </div>
 
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="source_author">
-                                                    Original Author
-                                                </Label>
-                                                <Input
-                                                    id="source_author"
-                                                    type="text"
-                                                    value={data.source_author}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            'source_author',
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="@username"
-                                                />
-                                                <InputError
-                                                    message={
-                                                        errors.source_author
-                                                    }
-                                                />
-                                            </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="source_author">
+                                                Original Author
+                                            </Label>
+                                            <Input
+                                                id="source_author"
+                                                type="text"
+                                                value={data.source_author}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'source_author',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder="@username"
+                                            />
+                                            <InputError
+                                                message={errors.source_author}
+                                            />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="bg-ds-card rounded-lg p-6">
-                                    <h2 className="mb-4 text-lg font-semibold text-ds-text-primary">
-                                        README / Documentation (optional)
-                                    </h2>
-                                    <p className="mb-4 text-sm text-ds-text-secondary">
-                                        Add installation instructions, usage
-                                        examples, or any documentation you want
-                                        to share. Supports Markdown formatting.
-                                    </p>
-                                    <MarkdownEditor
-                                        value={data.readme}
-                                        onChange={(value: string) =>
-                                            setData('readme', value)
-                                        }
-                                        placeholder="# Installation&#10;&#10;Instructions for installing this skill...&#10;&#10;## Usage&#10;&#10;How to use this skill..."
-                                    />
-                                    <InputError message={errors.readme} />
-                                </div>
-
+                                {/* Submit */}
                                 <div className="flex justify-end gap-4 border-t-2 border-ds-border pt-6">
                                     <Link href="/submit">
                                         <Button
@@ -440,11 +525,8 @@ keyword1, keyword2, keyword3`}
                                             Cancel
                                         </Button>
                                     </Link>
-                                    <Button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                    >
-                                        {isSubmitting && <Spinner />}
+                                    <Button type="submit" disabled={processing}>
+                                        {processing && <Spinner />}
                                         Submit Skill
                                     </Button>
                                 </div>

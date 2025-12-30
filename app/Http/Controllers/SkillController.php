@@ -45,7 +45,7 @@ class SkillController extends Controller
 
     public function show(Skill $skill): Response
     {
-        $skill->load(['submitter', 'category']);
+        $skill->load(['submitter', 'category', 'files']);
 
         $user = Auth::user();
 
