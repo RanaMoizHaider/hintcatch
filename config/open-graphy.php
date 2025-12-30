@@ -2,7 +2,7 @@
 
 // config for SaaSykit/OpenGraphy
 return [
-    'chrome_binary' => null,
+    'chrome_binary' => '/Applications/Comet.app/Contents/MacOS/Comet',
     'generate_with_command' => false,
 
     'open_graph_image' => [
@@ -37,31 +37,31 @@ return [
 
     'template_settings' => [
         'strings' => [
-            'background' => '#0a0a0a',
-            'stroke_color' => '#3b82f6',
+            'background' => '#101010',
+            'stroke_color' => '#00bc7d',
             'stroke_width' => '2',
             'text_color' => '#ffffff',
         ],
         'stripes' => [
-            'start_color' => '#0a0a0a',
-            'end_color' => '#1f2937',
+            'start_color' => '#101010',
+            'end_color' => '#171717',
             'text_color' => '#ffffff',
         ],
         'sunny' => [
-            'start_color' => '#0a0a0a',
-            'end_color' => '#1f2937',
+            'start_color' => '#101010',
+            'end_color' => '#171717',
             'text_color' => '#ffffff',
         ],
         'verticals' => [
-            'start_color' => '#0a0a0a',
-            'mid_color' => '#111827',
-            'end_color' => '#1f2937',
+            'start_color' => '#101010',
+            'mid_color' => '#141414',
+            'end_color' => '#171717',
             'text_color' => '#ffffff',
         ],
         'nodes' => [
-            'background' => '#0a0a0a',
-            'node_color' => '#1f2937',
-            'edge_color' => '#374151',
+            'background' => '#101010',
+            'node_color' => '#171717',
+            'edge_color' => '#00bc7d',
             'text_color' => '#ffffff',
         ],
     ],
