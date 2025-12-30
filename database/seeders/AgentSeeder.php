@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\InstallMethod;
 use App\Models\Agent;
 use Illuminate\Database\Seeder;
 
@@ -289,6 +290,12 @@ class AgentSeeder extends Seeder
                 'logo' => 'https://geminicli.com/icon.png',
                 'skills_config_template' => null,
                 'config_type_templates' => [
+                    'commands' => [
+                        'global_path' => '~/.gemini/commands/',
+                        'project_path' => '.gemini/commands/',
+                        'config_format' => 'toml',
+                        'file_extension' => '.toml',
+                    ],
                     'extensions' => [
                         'global_path' => '~/.gemini/extensions/',
                         'config_format' => 'javascript',
@@ -369,7 +376,14 @@ class AgentSeeder extends Seeder
                     'global_path' => '~/.codex/skills/',
                     'file_extension' => '.md',
                 ],
-                'config_type_templates' => null,
+                'config_type_templates' => [
+                    'commands' => [
+                        'global_path' => '~/.codex/prompts/',
+                        'config_format' => 'markdown',
+                        'file_extension' => '.md',
+                        'invocation_prefix' => '/prompts:',
+                    ],
+                ],
             ],
             [
                 'name' => 'Aider',
@@ -718,6 +732,93 @@ class AgentSeeder extends Seeder
                 ],
                 'rules_filename' => '.github/copilot-instructions.md',
                 'logo' => 'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
+            ],
+            [
+                'name' => 'Droid',
+                'slug' => 'droid',
+                'description' => 'Factory\'s CLI coding agent. AI-powered development assistant with MCP support, custom droids (subagents), skills, slash commands, and hooks.',
+                'website' => 'https://factory.ai',
+                'docs_url' => 'https://docs.factory.ai',
+                'is_active' => true,
+                'install_method' => InstallMethod::CliCommand,
+                'install_command' => 'curl -fsSL https://app.factory.ai/cli | sh',
+                'supported_config_types' => ['rules', 'mcp', 'slash-commands', 'agents', 'skills', 'hooks'],
+                'config_type_templates' => [
+                    'slash-commands' => [
+                        'filename' => '{command-name}.md',
+                        'project' => '.factory/commands/',
+                        'global' => '~/.factory/commands/',
+                    ],
+                    'agents' => [
+                        'filename' => '{agent-name}.md',
+                        'project' => '.factory/droids/',
+                        'global' => '~/.factory/droids/',
+                    ],
+                    'skills' => [
+                        'filename' => 'SKILL.md',
+                        'project' => '.factory/skills/{skill-name}/',
+                        'global' => '~/.factory/skills/{skill-name}/',
+                    ],
+                    'hooks' => [
+                        'filename' => 'settings.json',
+                        'project' => '.factory/settings.json',
+                        'global' => '~/.factory/settings.json',
+                    ],
+                ],
+                'mcp_config_paths' => [
+                    'project' => '.factory/mcp.json',
+                    'global' => '~/.factory/mcp.json',
+                ],
+                'mcp_config_template' => [
+                    'wrapper_key' => 'mcpServers',
+                    'config_format' => 'json',
+                    // CLI command templates for adding MCP servers
+                    // HTTP: droid mcp add <name> <url> --type http [--header "KEY: VALUE"...]
+                    'cli_add_command_http' => 'droid mcp add {name} {url} --type http',
+                    // Stdio: droid mcp add <name> "<command>" [--env KEY=VALUE...]
+                    'cli_add_command_stdio' => 'droid mcp add {name} "{command}" {env_flags}',
+                    'cli_remove_command' => 'droid mcp remove {name}',
+                    // Interactive: /mcp opens registry with 40+ pre-configured servers
+                    'interactive_command' => '/mcp',
+                    'stdio' => [
+                        'fields' => [
+                            'type' => 'type',
+                            'command' => 'command',
+                            'args' => 'args',
+                            'env' => 'env',
+                            'disabled' => 'disabled',
+                        ],
+                    ],
+                    'http' => [
+                        'fields' => [
+                            'type' => 'type',
+                            'url' => 'url',
+                            'headers' => 'headers',
+                            'disabled' => 'disabled',
+                        ],
+                    ],
+                    'example_stdio' => [
+                        'mcpServers' => [
+                            'playwright' => [
+                                'type' => 'stdio',
+                                'command' => 'npx',
+                                'args' => ['-y', '@playwright/mcp@latest'],
+                                'disabled' => false,
+                            ],
+                        ],
+                    ],
+                    'example_http' => [
+                        'mcpServers' => [
+                            'linear' => [
+                                'type' => 'http',
+                                'url' => 'https://mcp.linear.app/mcp',
+                                'disabled' => false,
+                            ],
+                        ],
+                    ],
+                ],
+                'rules_filename' => 'AGENTS.md',
+                'logo' => 'https://factory.ai/favicon.ico',
             ],
         ];
 
