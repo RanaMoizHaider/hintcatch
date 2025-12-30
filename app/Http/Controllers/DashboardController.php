@@ -50,7 +50,7 @@ class DashboardController extends Controller
             ->get();
 
         return Inertia::render('dashboard', [
-            'stats' => [
+            'stats' => Inertia::defer(fn () => [
                 'totalConfigs' => Config::where('submitted_by', $user->id)->count(),
                 'totalMcpServers' => McpServer::where('submitted_by', $user->id)->count(),
                 'totalPrompts' => Prompt::where('submitted_by', $user->id)->count(),
@@ -60,7 +60,7 @@ class DashboardController extends Controller
                     + McpServer::where('submitted_by', $user->id)->sum('vote_score')
                     + Prompt::where('submitted_by', $user->id)->sum('vote_score')
                     + Skill::where('submitted_by', $user->id)->sum('vote_score'),
-            ],
+            ]),
             'recentConfigs' => $recentConfigs,
             'recentMcpServers' => $recentMcpServers,
             'recentPrompts' => $recentPrompts,

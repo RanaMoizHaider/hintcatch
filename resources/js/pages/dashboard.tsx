@@ -7,7 +7,7 @@ import {
 import { show as showUserProfile } from '@/actions/App/Http/Controllers/UserProfileController';
 import AppLayout from '@/layouts/app-layout';
 import { SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Deferred, Head, Link, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
     ArrowUp,
@@ -28,7 +28,7 @@ interface RecentItem {
 }
 
 interface DashboardProps {
-    stats: {
+    stats?: {
         totalConfigs: number;
         totalMcpServers: number;
         totalPrompts: number;
@@ -40,6 +40,85 @@ interface DashboardProps {
     recentMcpServers: RecentItem[];
     recentPrompts: RecentItem[];
     recentSkills: RecentItem[];
+}
+
+function StatsGrid({
+    stats,
+    profileUrl,
+}: {
+    stats: DashboardProps['stats'];
+    profileUrl: string;
+}) {
+    return (
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
+            <Link
+                href={profileUrl}
+                className="hover:border-ds-accent border-2 border-ds-border bg-ds-bg-card p-4 text-center transition-colors"
+            >
+                <div className="flex items-center justify-center gap-2 text-ds-text-muted">
+                    <FileCode className="h-4 w-4" />
+                    <span className="text-xs uppercase">Configs</span>
+                </div>
+                <div className="mt-1 text-2xl font-medium text-ds-text-primary">
+                    {stats?.totalConfigs}
+                </div>
+            </Link>
+            <Link
+                href={profileUrl}
+                className="hover:border-ds-accent border-2 border-ds-border bg-ds-bg-card p-4 text-center transition-colors"
+            >
+                <div className="flex items-center justify-center gap-2 text-ds-text-muted">
+                    <Server className="h-4 w-4" />
+                    <span className="text-xs uppercase">MCP Servers</span>
+                </div>
+                <div className="mt-1 text-2xl font-medium text-ds-text-primary">
+                    {stats?.totalMcpServers}
+                </div>
+            </Link>
+            <Link
+                href={profileUrl}
+                className="hover:border-ds-accent border-2 border-ds-border bg-ds-bg-card p-4 text-center transition-colors"
+            >
+                <div className="flex items-center justify-center gap-2 text-ds-text-muted">
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="text-xs uppercase">Prompts</span>
+                </div>
+                <div className="mt-1 text-2xl font-medium text-ds-text-primary">
+                    {stats?.totalPrompts}
+                </div>
+            </Link>
+            <Link
+                href={profileUrl}
+                className="hover:border-ds-accent border-2 border-ds-border bg-ds-bg-card p-4 text-center transition-colors"
+            >
+                <div className="flex items-center justify-center gap-2 text-ds-text-muted">
+                    <Sparkles className="h-4 w-4" />
+                    <span className="text-xs uppercase">Skills</span>
+                </div>
+                <div className="mt-1 text-2xl font-medium text-ds-text-primary">
+                    {stats?.totalSkills}
+                </div>
+            </Link>
+            <div className="border-2 border-ds-border bg-ds-bg-card p-4 text-center">
+                <div className="flex items-center justify-center gap-2 text-ds-text-muted">
+                    <Heart className="h-4 w-4" />
+                    <span className="text-xs uppercase">Favorites</span>
+                </div>
+                <div className="mt-1 text-2xl font-medium text-ds-text-primary">
+                    {stats?.totalFavorites}
+                </div>
+            </div>
+            <div className="border-2 border-ds-border bg-ds-bg-card p-4 text-center">
+                <div className="flex items-center justify-center gap-2 text-ds-text-muted">
+                    <ArrowUp className="h-4 w-4" />
+                    <span className="text-xs uppercase">Upvotes</span>
+                </div>
+                <div className="mt-1 text-2xl font-medium text-ds-text-primary">
+                    {stats?.totalUpvotesReceived}
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default function Dashboard({
@@ -67,76 +146,27 @@ export default function Dashboard({
                     </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
-                    <Link
-                        href={profileUrl}
-                        className="hover:border-ds-accent border-2 border-ds-border bg-ds-bg-card p-4 text-center transition-colors"
-                    >
-                        <div className="flex items-center justify-center gap-2 text-ds-text-muted">
-                            <FileCode className="h-4 w-4" />
-                            <span className="text-xs uppercase">Configs</span>
+                <Deferred
+                    data="stats"
+                    fallback={
+                        <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
+                            {[...Array(6)].map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="animate-pulse border-2 border-ds-border bg-ds-bg-card p-4 text-center"
+                                >
+                                    <div className="flex items-center justify-center gap-2">
+                                        <div className="h-4 w-4 rounded bg-ds-border" />
+                                        <div className="h-3 w-16 rounded bg-ds-border" />
+                                    </div>
+                                    <div className="mx-auto mt-2 h-8 w-8 rounded bg-ds-border" />
+                                </div>
+                            ))}
                         </div>
-                        <div className="mt-1 text-2xl font-medium text-ds-text-primary">
-                            {stats.totalConfigs}
-                        </div>
-                    </Link>
-                    <Link
-                        href={profileUrl}
-                        className="hover:border-ds-accent border-2 border-ds-border bg-ds-bg-card p-4 text-center transition-colors"
-                    >
-                        <div className="flex items-center justify-center gap-2 text-ds-text-muted">
-                            <Server className="h-4 w-4" />
-                            <span className="text-xs uppercase">
-                                MCP Servers
-                            </span>
-                        </div>
-                        <div className="mt-1 text-2xl font-medium text-ds-text-primary">
-                            {stats.totalMcpServers}
-                        </div>
-                    </Link>
-                    <Link
-                        href={profileUrl}
-                        className="hover:border-ds-accent border-2 border-ds-border bg-ds-bg-card p-4 text-center transition-colors"
-                    >
-                        <div className="flex items-center justify-center gap-2 text-ds-text-muted">
-                            <MessageSquare className="h-4 w-4" />
-                            <span className="text-xs uppercase">Prompts</span>
-                        </div>
-                        <div className="mt-1 text-2xl font-medium text-ds-text-primary">
-                            {stats.totalPrompts}
-                        </div>
-                    </Link>
-                    <Link
-                        href={profileUrl}
-                        className="hover:border-ds-accent border-2 border-ds-border bg-ds-bg-card p-4 text-center transition-colors"
-                    >
-                        <div className="flex items-center justify-center gap-2 text-ds-text-muted">
-                            <Sparkles className="h-4 w-4" />
-                            <span className="text-xs uppercase">Skills</span>
-                        </div>
-                        <div className="mt-1 text-2xl font-medium text-ds-text-primary">
-                            {stats.totalSkills}
-                        </div>
-                    </Link>
-                    <div className="border-2 border-ds-border bg-ds-bg-card p-4 text-center">
-                        <div className="flex items-center justify-center gap-2 text-ds-text-muted">
-                            <Heart className="h-4 w-4" />
-                            <span className="text-xs uppercase">Favorites</span>
-                        </div>
-                        <div className="mt-1 text-2xl font-medium text-ds-text-primary">
-                            {stats.totalFavorites}
-                        </div>
-                    </div>
-                    <div className="border-2 border-ds-border bg-ds-bg-card p-4 text-center">
-                        <div className="flex items-center justify-center gap-2 text-ds-text-muted">
-                            <ArrowUp className="h-4 w-4" />
-                            <span className="text-xs uppercase">Upvotes</span>
-                        </div>
-                        <div className="mt-1 text-2xl font-medium text-ds-text-primary">
-                            {stats.totalUpvotesReceived}
-                        </div>
-                    </div>
-                </div>
+                    }
+                >
+                    <StatsGrid stats={stats!} profileUrl={profileUrl} />
+                </Deferred>
 
                 <div>
                     <h2 className="mb-4 text-sm font-medium text-ds-text-muted uppercase">
