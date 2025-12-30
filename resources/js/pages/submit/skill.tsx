@@ -13,7 +13,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import type { SubmitSkillPageProps } from '@/types/models';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 
@@ -24,11 +23,10 @@ interface SkillFile {
     path: string;
 }
 
-export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
+export default function SubmitSkill() {
     const { data, setData, post, processing, errors } = useForm<{
         name: string;
         description: string;
-        category_id: string;
         license: string;
         readme: string;
         files: SkillFile[];
@@ -38,7 +36,6 @@ export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
     }>({
         name: '',
         description: '',
-        category_id: '',
         license: 'MIT',
         readme: '',
         files: [
@@ -168,83 +165,39 @@ export default function SubmitSkill({ categories }: SubmitSkillPageProps) {
                                         />
                                     </div>
 
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="category">
-                                                Category
-                                            </Label>
-                                            <Select
-                                                value={data.category_id}
-                                                onValueChange={(value) =>
-                                                    setData(
-                                                        'category_id',
-                                                        value,
-                                                    )
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select category" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {categories.map(
-                                                        (category) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    category.id
-                                                                }
-                                                                value={String(
-                                                                    category.id,
-                                                                )}
-                                                            >
-                                                                {category.name}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={errors.category_id}
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="license">
-                                                License
-                                            </Label>
-                                            <Select
-                                                value={data.license}
-                                                onValueChange={(value) =>
-                                                    setData('license', value)
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="MIT">
-                                                        MIT
-                                                    </SelectItem>
-                                                    <SelectItem value="Apache-2.0">
-                                                        Apache 2.0
-                                                    </SelectItem>
-                                                    <SelectItem value="GPL-3.0">
-                                                        GPL 3.0
-                                                    </SelectItem>
-                                                    <SelectItem value="BSD-3-Clause">
-                                                        BSD 3-Clause
-                                                    </SelectItem>
-                                                    <SelectItem value="CC-BY-4.0">
-                                                        CC BY 4.0
-                                                    </SelectItem>
-                                                    <SelectItem value="Unlicense">
-                                                        Unlicense
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={errors.license}
-                                            />
-                                        </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="license">License</Label>
+                                        <Select
+                                            value={data.license}
+                                            onValueChange={(value) =>
+                                                setData('license', value)
+                                            }
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="MIT">
+                                                    MIT
+                                                </SelectItem>
+                                                <SelectItem value="Apache-2.0">
+                                                    Apache 2.0
+                                                </SelectItem>
+                                                <SelectItem value="GPL-3.0">
+                                                    GPL 3.0
+                                                </SelectItem>
+                                                <SelectItem value="BSD-3-Clause">
+                                                    BSD 3-Clause
+                                                </SelectItem>
+                                                <SelectItem value="CC-BY-4.0">
+                                                    CC BY 4.0
+                                                </SelectItem>
+                                                <SelectItem value="Unlicense">
+                                                    Unlicense
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <InputError message={errors.license} />
                                     </div>
                                 </div>
 

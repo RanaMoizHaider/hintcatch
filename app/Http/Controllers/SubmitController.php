@@ -176,7 +176,6 @@ class SubmitController extends Controller
     public function createSkill(): Response
     {
         return Inertia::render('submit/skill', [
-            'categories' => Category::orderBy('name')->get(),
             'agents' => Agent::whereNotNull('skills_config_template')->orderBy('name')->get(),
         ]);
     }
@@ -186,7 +185,6 @@ class SubmitController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:1000'],
-            'category_id' => ['nullable', 'exists:categories,id'],
             'license' => ['nullable', 'string', 'max:100'],
             'readme' => ['nullable', 'string'],
             'files' => ['required', 'array', 'min:1'],
@@ -207,7 +205,6 @@ class SubmitController extends Controller
             'slug' => $this->generateUniqueSlug($validated['name'], Skill::class),
             'description' => $validated['description'],
             'content' => $primaryFile['content'] ?? '',
-            'category_id' => $validated['category_id'] ?? null,
             'license' => $validated['license'] ?? null,
             'readme' => $validated['readme'] ?? null,
             'source_url' => $validated['source_url'] ?? null,
