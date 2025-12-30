@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use SaaSykit\OpenGraphy\Facades\OpenGraphy;
-
 class SeoService
 {
     private const SITE_NAME = 'Hint Catch';
@@ -12,11 +10,9 @@ class SeoService
 
     private const DEFAULT_DESCRIPTION = 'The directory for AI agent configurations. Find and share tools, skills, and MCP server configs for OpenCode, Claude Code, Cursor, and more.';
 
-    public static function generateOgImageUrl(string $title): string
+    public static function getOgImageUrl(): string
     {
-        return OpenGraphy::generateUrl([
-            'title' => $title,
-        ]);
+        return asset('og-default.png');
     }
 
     public static function forHome(): array
@@ -24,7 +20,7 @@ class SeoService
         return [
             'title' => 'AI Agent Configs',
             'description' => self::DEFAULT_DESCRIPTION,
-            'ogImage' => self::generateOgImageUrl('Catch hints. Ship faster.'),
+            'ogImage' => self::getOgImageUrl(),
             'canonicalUrl' => url('/'),
         ];
     }
@@ -34,7 +30,7 @@ class SeoService
         return [
             'title' => $config->name,
             'description' => $config->description ?? self::DEFAULT_DESCRIPTION,
-            'ogImage' => self::generateOgImageUrl($config->name),
+            'ogImage' => self::getOgImageUrl(),
             'canonicalUrl' => route('configs.show', $config),
         ];
     }
@@ -44,7 +40,7 @@ class SeoService
         return [
             'title' => $mcpServer->name,
             'description' => $mcpServer->description ?? self::DEFAULT_DESCRIPTION,
-            'ogImage' => self::generateOgImageUrl($mcpServer->name),
+            'ogImage' => self::getOgImageUrl(),
             'canonicalUrl' => route('mcp-servers.show', $mcpServer),
         ];
     }
@@ -54,7 +50,7 @@ class SeoService
         return [
             'title' => $prompt->name,
             'description' => $prompt->description ?? self::DEFAULT_DESCRIPTION,
-            'ogImage' => self::generateOgImageUrl($prompt->name),
+            'ogImage' => self::getOgImageUrl(),
             'canonicalUrl' => route('prompts.show', $prompt),
         ];
     }
@@ -64,7 +60,7 @@ class SeoService
         return [
             'title' => $skill->name,
             'description' => $skill->description ?? self::DEFAULT_DESCRIPTION,
-            'ogImage' => self::generateOgImageUrl($skill->name),
+            'ogImage' => self::getOgImageUrl(),
             'canonicalUrl' => route('skills.show', $skill),
         ];
     }
@@ -74,7 +70,7 @@ class SeoService
         return [
             'title' => $agent->name,
             'description' => $agent->description ?? self::DEFAULT_DESCRIPTION,
-            'ogImage' => self::generateOgImageUrl($agent->name),
+            'ogImage' => self::getOgImageUrl(),
             'canonicalUrl' => route('agents.show', $agent),
         ];
     }
@@ -84,7 +80,7 @@ class SeoService
         return [
             'title' => $title,
             'description' => $description ?? self::DEFAULT_DESCRIPTION,
-            'ogImage' => self::generateOgImageUrl($title),
+            'ogImage' => self::getOgImageUrl($title),
             'canonicalUrl' => route("{$type}.index"),
         ];
     }
@@ -114,7 +110,7 @@ class SeoService
         return [
             'title' => 'Config Types',
             'description' => 'Browse configuration types for AI coding agents. Find commands, rules, hooks, plugins, and more.',
-            'ogImage' => self::generateOgImageUrl('Config Types'),
+            'ogImage' => self::getOgImageUrl(),
             'canonicalUrl' => route('config-types.index'),
         ];
     }
@@ -124,7 +120,7 @@ class SeoService
         return [
             'title' => $configType->name,
             'description' => $configType->description ?? "Browse {$configType->name} configurations for AI coding agents.",
-            'ogImage' => self::generateOgImageUrl($configType->name),
+            'ogImage' => self::getOgImageUrl(),
             'canonicalUrl' => route('config-types.show', $configType),
         ];
     }
@@ -134,7 +130,7 @@ class SeoService
         return [
             'title' => 'AI Agents',
             'description' => 'Browse AI coding agents. Find configurations for Claude Code, Cursor, OpenCode, Windsurf, and more.',
-            'ogImage' => self::generateOgImageUrl('AI Agents'),
+            'ogImage' => self::getOgImageUrl(),
             'canonicalUrl' => route('agents.index'),
         ];
     }
@@ -146,7 +142,7 @@ class SeoService
         return [
             'title' => $title,
             'description' => "Browse {$configType->name} configurations for {$agent->name}.",
-            'ogImage' => self::generateOgImageUrl($title),
+            'ogImage' => self::getOgImageUrl($title),
             'canonicalUrl' => route('agents.configs', [$agent, $configType]),
         ];
     }
