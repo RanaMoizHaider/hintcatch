@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\InstallMethod;
 use App\Models\Agent;
 use Illuminate\Database\Seeder;
 
@@ -739,10 +738,11 @@ class AgentSeeder extends Seeder
                 'description' => 'Factory\'s CLI coding agent. AI-powered development assistant with MCP support, custom droids (subagents), skills, slash commands, and hooks.',
                 'website' => 'https://factory.ai',
                 'docs_url' => 'https://docs.factory.ai',
-                'is_active' => true,
-                'install_method' => InstallMethod::CliCommand,
-                'install_command' => 'curl -fsSL https://app.factory.ai/cli | sh',
-                'supported_config_types' => ['rules', 'mcp', 'slash-commands', 'agents', 'skills', 'hooks'],
+                'github_url' => null,
+                'supported_config_types' => ['rules', 'mcp-servers', 'slash-commands', 'agents', 'skills', 'hooks'],
+                'supported_file_formats' => ['json', 'md'],
+                'supports_mcp' => true,
+                'mcp_transport_types' => ['stdio', 'http'],
                 'config_type_templates' => [
                     'slash-commands' => [
                         'filename' => '{command-name}.md',
