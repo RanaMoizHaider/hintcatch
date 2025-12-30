@@ -58,11 +58,11 @@ class ConfigTypeSeeder extends Seeder
             [
                 'name' => 'Slash Commands',
                 'slug' => 'slash-commands',
-                'description' => 'User-invoked prompts stored as Markdown files that can be executed with /command-name',
-                'allowed_formats' => ['md'],
+                'description' => 'User-invoked prompts stored as Markdown or TOML files that can be executed with /command-name',
+                'allowed_formats' => ['md', 'toml'],
                 'allows_multiple_files' => false,
                 'is_standard' => false,
-                'requires_agent' => false,
+                'requires_agent' => true,
             ],
         ];
 
