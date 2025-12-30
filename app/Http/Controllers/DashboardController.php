@@ -48,7 +48,7 @@ class DashboardController extends Controller
                 'totalMcpServers' => McpServer::where('submitted_by', $user->id)->count(),
                 'totalPrompts' => Prompt::where('submitted_by', $user->id)->count(),
                 'totalFavorites' => Favorite::where('user_id', $user->id)->count(),
-                'totalUpvotes' => Config::where('submitted_by', $user->id)->sum('vote_score')
+                'totalUpvotesReceived' => Config::where('submitted_by', $user->id)->sum('vote_score')
                     + McpServer::where('submitted_by', $user->id)->sum('vote_score')
                     + Prompt::where('submitted_by', $user->id)->sum('vote_score'),
             ],
