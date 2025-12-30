@@ -23,7 +23,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'code-review',
                 'description' => 'Comprehensive code review skill for identifying bugs, security issues, and suggesting improvements',
                 'license' => 'MIT',
-                'compatibility' => ['opencode', 'claude', 'cursor', 'windsurf'],
+                
                 'metadata' => [
                     'author' => '',
                     'version' => '1.0.0',
@@ -48,7 +48,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'git-commit',
                 'description' => 'Skill for creating well-structured, conventional git commits with proper messages',
                 'license' => 'MIT',
-                'compatibility' => ['opencode', 'claude', 'cursor', 'windsurf'],
+                
                 'metadata' => [
                     'author' => '',
                     'version' => '1.0.0',
@@ -89,7 +89,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'testing-guide',
                 'description' => 'Comprehensive testing skill with templates, fixtures, and helpers for unit, integration, and e2e tests',
                 'license' => 'Apache-2.0',
-                'compatibility' => ['opencode', 'claude', 'cursor'],
+                
                 'metadata' => [
                     'author' => '',
                     'version' => '1.0.0',
@@ -163,7 +163,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'context-management',
                 'description' => 'Advanced context management for optimal AI performance with file filtering and prioritization',
                 'license' => 'MIT',
-                'compatibility' => ['claude', 'claude-code', 'cursor'],
+                
                 'metadata' => [
                     'author' => 'OpenCode Community',
                     'version' => '1.0.0',
@@ -196,7 +196,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'project-templates',
                 'description' => 'Comprehensive project templates for various frameworks and languages',
                 'license' => 'MIT',
-                'compatibility' => ['claude', 'claude-code', 'opencode'],
+                
                 'metadata' => [
                     'author' => 'OpenCode Community',
                     'version' => '1.0.0',
@@ -237,7 +237,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'status-line',
                 'description' => 'Custom status line components for IDE integration',
                 'license' => 'MIT',
-                'compatibility' => ['claude', 'claude-code'],
+                
                 'metadata' => [
                     'author' => 'OpenCode Community',
                     'version' => '1.0.0',
@@ -262,7 +262,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'task-automation',
                 'description' => 'Automated task management and workflow optimization',
                 'license' => 'MIT',
-                'compatibility' => ['claude', 'claude-code', 'opencode'],
+                
                 'metadata' => [
                     'author' => 'OpenCode Community',
                     'version' => '1.0.0',
@@ -288,7 +288,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'agentic-codebase-analyzer',
                 'description' => 'Analyzes codebase structure, patterns, and architecture to provide comprehensive understanding of the project',
                 'license' => 'MIT',
-                'compatibility' => ['opencode'],
+                
                 'metadata' => [
                     'author' => 'Chris Covington',
                     'version' => '1.0.0',
@@ -313,7 +313,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'agentic-codebase-locator',
                 'description' => 'Locates specific code elements, functions, classes, and patterns within the codebase',
                 'license' => 'MIT',
-                'compatibility' => ['opencode'],
+                
                 'metadata' => [
                     'author' => 'Chris Covington',
                     'version' => '1.0.0',
@@ -338,7 +338,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'agentic-codebase-pattern-finder',
                 'description' => 'Identifies and documents recurring patterns, conventions, and anti-patterns in the codebase',
                 'license' => 'MIT',
-                'compatibility' => ['opencode'],
+                
                 'metadata' => [
                     'author' => 'Chris Covington',
                     'version' => '1.0.0',
@@ -363,7 +363,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'agentic-thoughts-analyzer',
                 'description' => 'Analyzes reasoning and thought processes to improve decision-making and problem-solving',
                 'license' => 'MIT',
-                'compatibility' => ['opencode'],
+                
                 'metadata' => [
                     'author' => 'Chris Covington',
                     'version' => '1.0.0',
@@ -388,7 +388,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'agentic-thoughts-locator',
                 'description' => 'Locates and retrieves relevant thoughts, decisions, and reasoning from previous interactions',
                 'license' => 'MIT',
-                'compatibility' => ['opencode'],
+                
                 'metadata' => [
                     'author' => 'Chris Covington',
                     'version' => '1.0.0',
@@ -413,7 +413,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'agentic-web-search-researcher',
                 'description' => 'Performs web research to gather information, documentation, and solutions for development tasks',
                 'license' => 'MIT',
-                'compatibility' => ['opencode'],
+                
                 'metadata' => [
                     'author' => 'Chris Covington',
                     'version' => '1.0.0',
@@ -439,7 +439,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'taches-create-agent-skills',
                 'description' => 'Skill for creating new agent skills with proper structure, documentation, and best practices',
                 'license' => 'MIT',
-                'compatibility' => ['claude-code'],
+                
                 'metadata' => [
                     'author' => 'Lex Christopherson',
                     'version' => '1.0.0',
@@ -464,7 +464,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'taches-create-hooks',
                 'description' => 'Skill for creating lifecycle hooks that trigger on specific events during agent execution',
                 'license' => 'MIT',
-                'compatibility' => ['claude-code'],
+                
                 'metadata' => [
                     'author' => 'Lex Christopherson',
                     'version' => '1.0.0',
@@ -489,7 +489,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'taches-create-meta-prompts',
                 'description' => 'Skill for creating meta-prompts that generate other prompts based on patterns and templates',
                 'license' => 'MIT',
-                'compatibility' => ['claude-code'],
+                
                 'metadata' => [
                     'author' => 'Lex Christopherson',
                     'version' => '1.0.0',
@@ -514,7 +514,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'taches-create-plans',
                 'description' => 'Skill for creating structured execution plans with tasks, dependencies, and milestones',
                 'license' => 'MIT',
-                'compatibility' => ['claude-code'],
+                
                 'metadata' => [
                     'author' => 'Lex Christopherson',
                     'version' => '1.0.0',
@@ -539,7 +539,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'taches-create-slash-commands',
                 'description' => 'Skill for creating custom slash commands with proper frontmatter and documentation',
                 'license' => 'MIT',
-                'compatibility' => ['claude-code'],
+                
                 'metadata' => [
                     'author' => 'Lex Christopherson',
                     'version' => '1.0.0',
@@ -564,7 +564,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'taches-create-subagents',
                 'description' => 'Skill for creating specialized subagents with defined capabilities and boundaries',
                 'license' => 'MIT',
-                'compatibility' => ['claude-code'],
+                
                 'metadata' => [
                     'author' => 'Lex Christopherson',
                     'version' => '1.0.0',
@@ -589,7 +589,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'taches-debug-like-expert',
                 'description' => 'Expert debugging skill with systematic approach to identifying and fixing issues',
                 'license' => 'MIT',
-                'compatibility' => ['claude-code'],
+                
                 'metadata' => [
                     'author' => 'Lex Christopherson',
                     'version' => '1.0.0',
@@ -615,7 +615,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'codex-playwright-testing',
                 'description' => 'Comprehensive Playwright testing skill for browser automation and E2E testing',
                 'license' => 'Apache-2.0',
-                'compatibility' => ['claude-code', 'codex'],
+                
                 'metadata' => [
                     'author' => 'Fatih Akyon',
                     'version' => '1.0.0',
@@ -640,7 +640,7 @@ class SkillSeeder extends Seeder
                 'slug' => 'codex-plugin-development',
                 'description' => 'Skill for developing Claude Code and Codex plugins with proper structure and best practices',
                 'license' => 'Apache-2.0',
-                'compatibility' => ['claude-code', 'codex'],
+                
                 'metadata' => [
                     'author' => 'Fatih Akyon',
                     'version' => '1.0.0',

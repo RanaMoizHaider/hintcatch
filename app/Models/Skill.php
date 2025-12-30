@@ -20,7 +20,6 @@ class Skill extends Model
         'submitted_by',
         'category_id',
         'license',
-        'compatibility',
         'metadata',
         'allowed_tools',
         'source_url',
@@ -35,7 +34,6 @@ class Skill extends Model
     protected function casts(): array
     {
         return [
-            'compatibility' => 'array',
             'metadata' => 'array',
             'allowed_tools' => 'array',
 
@@ -89,10 +87,6 @@ class Skill extends Model
 
         if ($this->license) {
             $frontmatter['license'] = $this->license;
-        }
-
-        if ($this->compatibility) {
-            $frontmatter['compatibility'] = $this->compatibility;
         }
 
         if ($this->metadata) {
