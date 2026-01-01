@@ -37,12 +37,13 @@ export function SiteHeader() {
     const currentPath = usePage().url;
     const [mobileOpen, setMobileOpen] = useState(false);
 
+    const user = auth?.user;
+
     const isActive = (path: string) => {
         return currentPath === path || currentPath.startsWith(path + '/');
     };
 
-    // Submit button href - goes to login if not authenticated, otherwise to submit page
-    const submitHref = auth.user ? '/submit' : login();
+    const submitHref = user ? '/submit' : login();
 
     return (
         <header className="w-full border-b border-ds-border bg-ds-bg-card">
@@ -88,7 +89,7 @@ export function SiteHeader() {
                         </Link>
                     </Button>
 
-                    {auth.user ? (
+                    {user ? (
                         <>
                             {/* Mobile Menu Toggle */}
                             <button
@@ -130,11 +131,11 @@ export function SiteHeader() {
                                 <DropdownMenuTrigger asChild>
                                     <Avatar className="size-8 cursor-pointer">
                                         <AvatarImage
-                                            src={auth.user.avatar}
-                                            alt={auth.user.name}
+                                            src={user.avatar}
+                                            alt={user.name}
                                         />
                                         <AvatarFallback className="bg-ds-bg-secondary text-xs text-ds-text-muted">
-                                            {getInitials(auth.user.name)}
+                                            {getInitials(user.name)}
                                         </AvatarFallback>
                                     </Avatar>
                                 </DropdownMenuTrigger>
@@ -148,21 +149,19 @@ export function SiteHeader() {
                                         <div className="flex items-center gap-2 px-2 py-2 text-left text-sm">
                                             <Avatar className="h-8 w-8">
                                                 <AvatarImage
-                                                    src={auth.user.avatar}
-                                                    alt={auth.user.name}
+                                                    src={user.avatar}
+                                                    alt={user.name}
                                                 />
                                                 <AvatarFallback className="bg-ds-bg-secondary text-ds-text-muted">
-                                                    {getInitials(
-                                                        auth.user.name,
-                                                    )}
+                                                    {getInitials(user.name)}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div className="grid flex-1 text-left text-sm leading-tight">
                                                 <span className="truncate font-medium text-ds-text-primary">
-                                                    {auth.user.name}
+                                                    {user.name}
                                                 </span>
                                                 <span className="truncate text-xs text-ds-text-muted">
-                                                    {auth.user.email}
+                                                    {user.email}
                                                 </span>
                                             </div>
                                         </div>
@@ -275,7 +274,7 @@ export function SiteHeader() {
                             <Plus className="mr-1 inline h-4 w-4" />
                             Submit
                         </Link>
-                        {!auth.user && (
+                        {!user && (
                             <Link
                                 href={login()}
                                 onClick={() => setMobileOpen(false)}
