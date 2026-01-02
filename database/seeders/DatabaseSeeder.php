@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'oss@moizhaider.com',
                 'password' => 'password',
                 'email_verified_at' => now(),
+                'is_admin' => true,
             ]
         );
 
