@@ -38,6 +38,7 @@ class UserFactory extends Factory
             'github_token' => null,
             'github_refresh_token' => null,
             'avatar' => null,
+            'is_admin' => false,
             'remember_token' => Str::random(10),
         ];
     }
@@ -88,6 +89,16 @@ class UserFactory extends Factory
             'two_factor_secret' => encrypt('test-secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1', 'recovery-code-2'])),
             'two_factor_confirmed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Indicate that the user is an admin.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_admin' => true,
         ]);
     }
 }
