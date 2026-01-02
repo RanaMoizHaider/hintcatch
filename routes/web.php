@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ConfigController;
@@ -98,6 +99,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::patch('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', AdminDashboardController::class)->name('dashboard');
 });
 
 require __DIR__.'/settings.php';
