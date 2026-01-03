@@ -19,11 +19,6 @@ export function PromptCard({ prompt }: PromptCardProps) {
                     <h3 className="truncate text-sm font-medium text-ds-text-primary group-hover:text-ds-text-secondary">
                         {prompt.name}
                     </h3>
-                    {prompt.submitter && (
-                        <div className="mt-1 text-xs text-ds-text-muted">
-                            by {prompt.submitter.name}
-                        </div>
-                    )}
                 </div>
                 <div className="flex items-center gap-1 text-xs text-ds-text-muted">
                     <ArrowUp className="h-3 w-3" />

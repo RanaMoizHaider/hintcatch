@@ -20,11 +20,6 @@ export function ConfigCard({ config, showAgent = true }: ConfigCardProps) {
                     <h3 className="truncate text-sm font-medium text-ds-text-primary group-hover:text-ds-text-secondary">
                         {config.name}
                     </h3>
-                    {config.submitter && (
-                        <div className="mt-1 text-xs text-ds-text-muted">
-                            by {config.submitter.name}
-                        </div>
-                    )}
                 </div>
                 <div className="flex items-center gap-1 text-xs text-ds-text-muted">
                     <ArrowUp className="h-3 w-3" />

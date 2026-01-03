@@ -19,11 +19,6 @@ export function SkillCard({ skill }: SkillCardProps) {
                     <h3 className="truncate text-sm font-medium text-ds-text-primary group-hover:text-ds-text-secondary">
                         {skill.name}
                     </h3>
-                    {skill.submitter && (
-                        <div className="mt-1 text-xs text-ds-text-muted">
-                            by {skill.submitter.name}
-                        </div>
-                    )}
                 </div>
                 <div className="flex items-center gap-1 text-xs text-ds-text-muted">
                     <ArrowUp className="h-3 w-3" />

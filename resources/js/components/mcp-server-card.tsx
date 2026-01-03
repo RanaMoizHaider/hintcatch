@@ -18,11 +18,6 @@ export function McpServerCard({ mcpServer }: McpServerCardProps) {
                     <h3 className="truncate text-sm font-medium text-ds-text-primary group-hover:text-ds-text-secondary">
                         {mcpServer.name}
                     </h3>
-                    {mcpServer.submitter && (
-                        <div className="text-xs text-ds-text-muted">
-                            by {mcpServer.submitter.name}
-                        </div>
-                    )}
                 </div>
                 <Badge
                     variant="outline"
